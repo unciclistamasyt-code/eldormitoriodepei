@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>&nbsp;</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content=" " />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+<style>
+  .wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 56px;
+  }
+  .item {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.75;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .item:active {
+    opacity: 1;
+    transform: scale(0.92);
+  }
+  .item svg {
+    width: 30px;
+    height: 30px;
+    stroke: var(--text);
+    fill: none;
+    stroke-width: 1.4;
+  }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="topbar"></div>
+    <div class="wrap fade-in">
+      <a class="item" href="ruleta.html" aria-label="uno">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><line x1="12" y1="3" x2="12" y2="6"/></svg>
+      </a>
+      <a class="item" href="checklist.html" aria-label="dos">
+        <svg viewBox="0 0 24 24"><path d="M4 12 L9 17 L20 6"/></svg>
+      </a>
+      <a class="item" href="pomodoro.html" aria-label="tres">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7 v5 l3.5 2"/></svg>
+      </a>
+    </div>
+  </div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>
