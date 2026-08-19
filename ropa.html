@@ -343,44 +343,48 @@
             </defs>
 
             <g id="bodyBase">
-              <path class="skin" d="M55 200
-                C 52 250, 50 305, 48 345
-                C 47 368, 47 388, 52 404
-                C 58 408, 66 408, 72 404
-                C 72 386, 74 366, 78 344
-                C 84 300, 92 260, 100 224
+              <path class="skin" d="M72 200
+                C 69 250, 67 305, 65 345
+                C 64 368, 65 385, 68 400
+                C 74 404, 80 404, 84 400
+                C 83 384, 83 366, 85 344
+                C 89 300, 94 260, 100 224
                 Z"/>
-              <path class="skin" d="M145 200
-                C 148 250, 150 305, 152 345
-                C 153 368, 153 388, 148 404
-                C 142 408, 134 408, 128 404
-                C 128 386, 126 366, 122 344
-                C 116 300, 108 260, 100 224
+              <path class="skin" d="M128 200
+                C 131 250, 133 305, 135 345
+                C 136 368, 135 385, 132 400
+                C 126 404, 120 404, 116 400
+                C 117 384, 117 366, 115 344
+                C 111 300, 106 260, 100 224
                 Z"/>
               <path class="skin" d="M70 70
                 C 58 80, 52 100, 54 122
                 C 55 140, 60 155, 64 168
-                C 60 185, 52 205, 48 226
-                L 152 226
-                C 148 205, 140 185, 136 168
+                C 62 185, 58 205, 62 226
+                L 138 226
+                C 142 205, 138 185, 136 168
                 C 140 155, 145 140, 146 122
                 C 148 100, 142 80, 130 70
                 C 118 62, 108 58, 100 58
                 C 92 58, 82 62, 70 70
                 Z"/>
-              <path class="skin" d="M76 76
-                C 58 84, 40 100, 26 128
-                C 18 142, 14 156, 14 168
-                C 14 176, 20 180, 26 178
-                C 28 166, 34 150, 44 136
-                C 56 118, 70 104, 90 92
+              <path class="skin" d="M68 78
+                C 54 84, 42 96, 36 118
+                C 31 138, 30 160, 33 182
+                C 35 196, 38 206, 42 212
+                C 47 216, 53 215, 56 210
+                C 53 200, 51 188, 50 174
+                C 48 154, 50 134, 56 116
+                C 60 102, 66 90, 84 76
                 Z"/>
-              <path class="skin" d="M124 76
-                C 142 84, 160 100, 174 128
-                C 182 142, 186 156, 186 168
-                C 186 176, 180 180, 174 178
-                C 172 166, 166 150, 156 136
-                C 144 118, 130 104, 110 92
+              <path class="skin" d="M132 78
+                C 146 84, 158 96, 164 118
+                C 169 138, 170 160, 167 182
+                C 165 196, 162 206, 158 212
+                C 153 216, 147 215, 144 210
+                C 147 200, 149 188, 150 174
+                C 152 154, 150 134, 144 116
+                C 140 102, 134 90, 116 76
                 Z"/>
               <circle class="skin" cx="100" cy="46" r="26"/>
             </g>
@@ -915,14 +919,14 @@ async function buildOutfit() {
   const byLabel = Object.fromEntries(pieces);
 
   if (byLabel['vestido']) {
-    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 28, 64, 144, 344));
+    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 54, 50, 92, 356));
   } else {
-    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 46, 198, 108, 218));
-    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 26, 62, 148, 150));
+    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 58, 200, 84, 205));
+    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 40, 50, 120, 162));
   }
-  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 20, 58, 160, 172));
+  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 34, 48, 132, 180));
   if (byLabel['calzado']) {
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 44, 390, 112, 44));
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 60, 392, 80, 40));
   }
 
   chipsWrap.innerHTML = '';
