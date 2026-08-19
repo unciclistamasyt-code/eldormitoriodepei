@@ -99,11 +99,7 @@
     aspect-ratio: 200 / 480;
   }
   .mannequinWrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
-  .skin { fill: #d9a77a; }
-  .hair { fill: #2b2320; }
-  .face { fill: #241b16; }
-  .smile { fill: none; stroke: #241b16; stroke-width: 2; stroke-linecap: round; }
-  .legSeam { stroke: #c3956d; stroke-width: 2.2; stroke-linecap: round; opacity: 0.75; fill: none; }
+  .skin { fill: #c7c9ce; }
 
   .pieceChips {
     display: flex;
@@ -335,31 +331,49 @@
             </defs>
 
             <g id="bodyBase">
-              <path class="skin" d="M64 200 C 60 240, 58 290, 62 340 C 64 365, 63 385, 68 398 L 100 398 L 100 200 Z"/>
-              <path class="skin" d="M136 200 C 140 240, 142 290, 138 340 C 136 365, 137 385, 132 398 L 100 398 L 100 200 Z"/>
-              <path class="legSeam" d="M100 214 L100 392"/>
-              <ellipse class="skin" cx="80" cy="408" rx="20" ry="12"/>
-              <ellipse class="skin" cx="120" cy="408" rx="20" ry="12"/>
-              <path class="skin" d="M58 104 C 44 116, 37 140, 36 165 C 34 188, 36 205, 40 220 C 46 224, 52 224, 56 220 C 54 200, 55 175, 60 150 C 63 130, 66 115, 80 102 Z"/>
-              <path class="skin" d="M142 104 C 156 116, 163 140, 164 165 C 166 188, 164 205, 160 220 C 154 224, 148 224, 144 220 C 146 200, 145 175, 140 150 C 137 130, 134 115, 120 102 Z"/>
-              <circle class="skin" cx="46" cy="227" r="13"/>
-              <circle class="skin" cx="154" cy="227" r="13"/>
-              <rect class="skin" x="88" y="80" width="24" height="24" rx="6"/>
-              <path class="skin" d="M60 100 C 55 118, 58 145, 70 165 C 61 180, 58 195, 62 208 L 138 208 C 142 195, 139 180, 130 165 C 142 145, 145 118, 140 100 C 125 90, 112 84, 100 84 C 88 84, 75 90, 60 100 Z"/>
+              <path class="skin" d="M55 200
+                C 52 250, 50 305, 48 345
+                C 47 368, 47 388, 52 404
+                C 58 408, 66 408, 72 404
+                C 72 386, 74 366, 78 344
+                C 84 300, 92 260, 100 224
+                Z"/>
+              <path class="skin" d="M145 200
+                C 148 250, 150 305, 152 345
+                C 153 368, 153 388, 148 404
+                C 142 408, 134 408, 128 404
+                C 128 386, 126 366, 122 344
+                C 116 300, 108 260, 100 224
+                Z"/>
+              <path class="skin" d="M70 70
+                C 58 80, 52 100, 54 122
+                C 55 140, 60 155, 64 168
+                C 60 185, 52 205, 48 226
+                L 152 226
+                C 148 205, 140 185, 136 168
+                C 140 155, 145 140, 146 122
+                C 148 100, 142 80, 130 70
+                C 118 62, 108 58, 100 58
+                C 92 58, 82 62, 70 70
+                Z"/>
+              <path class="skin" d="M76 76
+                C 58 84, 40 100, 26 128
+                C 18 142, 14 156, 14 168
+                C 14 176, 20 180, 26 178
+                C 28 166, 34 150, 44 136
+                C 56 118, 70 104, 90 92
+                Z"/>
+              <path class="skin" d="M124 76
+                C 142 84, 160 100, 174 128
+                C 182 142, 186 156, 186 168
+                C 186 176, 180 180, 174 178
+                C 172 166, 166 150, 156 136
+                C 144 118, 130 104, 110 92
+                Z"/>
+              <circle class="skin" cx="100" cy="46" r="26"/>
             </g>
 
             <g id="clothingLayer"></g>
-
-            <g id="headGroup">
-              <ellipse class="hair" cx="100" cy="52" rx="40" ry="42"/>
-              <ellipse class="skin" cx="100" cy="55" rx="30" ry="32"/>
-              <path class="hair" d="M62 48 C 62 20, 138 20, 138 48 C 138 34, 122 26, 100 26 C 78 26, 62 34, 62 48 Z"/>
-              <path class="hair" d="M64 44 C 58 70, 58 100, 62 118 L 74 118 C 70 96, 70 66, 74 46 Z"/>
-              <path class="hair" d="M136 44 C 142 70, 142 100, 138 118 L 126 118 C 130 96, 130 66, 126 46 Z"/>
-              <ellipse class="face" cx="89" cy="56" rx="3.2" ry="4"/>
-              <ellipse class="face" cx="111" cy="56" rx="3.2" ry="4"/>
-              <path class="smile" d="M91 68 Q100 74 109 68"/>
-            </g>
           </svg>
         </div>
         <div class="pieceChips" id="pieceChips"></div>
@@ -889,14 +903,14 @@ async function buildOutfit() {
   const byLabel = Object.fromEntries(pieces);
 
   if (byLabel['vestido']) {
-    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 30, 82, 140, 335));
+    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 28, 64, 144, 344));
   } else {
-    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 58, 188, 84, 230));
-    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 30, 82, 140, 125));
+    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 46, 198, 108, 218));
+    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 26, 62, 148, 150));
   }
-  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 25, 78, 150, 135));
+  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 20, 58, 160, 172));
   if (byLabel['calzado']) {
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 60, 376, 80, 46));
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 44, 390, 112, 44));
   }
 
   chipsWrap.innerHTML = '';
