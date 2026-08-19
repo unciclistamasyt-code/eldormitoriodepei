@@ -93,37 +93,45 @@
     min-height: 14px;
   }
 
-  .flatlay {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    flex: 1;
-    align-content: start;
+  .mannequinWrap {
+    width: min(56vw, 230px);
+    margin: 0 auto;
+    aspect-ratio: 200 / 480;
   }
-  .flatlay .piece {
-    background: var(--bg-soft);
+  .mannequinWrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .outline {
+    fill: none;
+    stroke: var(--text-dim);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .pieceChips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .pieceChips .pchip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
-    aspect-ratio: 1;
-    position: relative;
+    border-radius: 999px;
+    padding: 4px 12px 4px 4px;
   }
-  .flatlay .piece img {
-    width: 100%;
-    height: 100%;
+  .pieceChips .pchip img {
+    width: 22px; height: 22px;
+    border-radius: 50%;
     object-fit: cover;
   }
-  .flatlay .piece .lbl {
-    position: absolute;
-    bottom: 6px;
-    left: 8px;
+  .pieceChips .pchip span {
     font-size: 10px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
     color: var(--text-dim);
-    background: rgba(10,10,12,0.7);
-    padding: 2px 6px;
-    border-radius: 6px;
   }
 
   .shuffleRow {
@@ -281,12 +289,46 @@
         </button>
       </div>
       <div class="guessTag" id="guessTag"></div>
-      <div id="combinarBody">
-        <div class="emptyState">
-          <div>agrega algunas prendas primero</div>
-          <button id="goToAgregar">agregar ropa</button>
-        </div>
+
+      <div class="emptyState" id="combinarEmpty" style="display:none;">
+        <div>agrega algunas prendas primero</div>
+        <button id="goToAgregar">agregar ropa</button>
       </div>
+
+      <div id="combinarResult" style="display:none; flex:1; flex-direction:column;">
+        <div class="mannequinWrap">
+          <svg viewBox="0 0 200 480" id="mannequinSvg">
+            <defs>
+              <clipPath id="clipTorso"><path d="M70 60 C 71 75, 74 88, 74 95 C 74 108, 77 120, 80 130 C 78 145, 75 158, 75 165 C 70 178, 66 188, 66 195 C 66 205, 67 211, 70 215 L 130 215 C 133 211, 134 205, 134 195 C 134 188, 130 178, 125 165 C 125 158, 122 145, 120 130 C 123 120, 126 108, 126 95 C 126 88, 129 75, 130 60 C 122 56, 111 54, 100 54 C 89 54, 78 56, 70 60 Z"/></clipPath>
+              <clipPath id="clipLegs">
+                <path d="M70 210 C 68 225, 66 240, 66 255 C 66 275, 68 290, 72 300 C 70 315, 68 330, 67 340 C 66 355, 66 368, 66 380 C 66 398, 65 412, 63 425 C 62 435, 61 445, 60 452 C 59 458, 60 462, 64 464 C 68 466, 73 466, 76 463 C 78 460, 77 455, 77 448 C 78 435, 79 420, 80 405 C 81 388, 82 370, 83 352 C 84 330, 85 305, 86 280 C 87 258, 88 238, 89 220 L 89 210 Z"/>
+                <path d="M130 210 C 132 225, 134 240, 134 255 C 134 275, 132 290, 128 300 C 130 315, 132 330, 133 340 C 134 355, 134 368, 134 380 C 134 398, 135 412, 137 425 C 138 435, 139 445, 140 452 C 141 458, 140 462, 136 464 C 132 466, 127 466, 124 463 C 122 460, 123 455, 123 448 C 122 435, 121 420, 120 405 C 119 388, 118 370, 117 352 C 116 330, 115 305, 114 280 C 113 258, 112 238, 111 220 L 111 210 Z"/>
+              </clipPath>
+              <clipPath id="clipDress">
+                <path d="M70 60 C 71 75, 74 88, 74 95 C 74 108, 77 120, 80 130 C 78 145, 75 158, 75 165 C 70 178, 66 188, 66 195 C 66 205, 67 211, 70 215 L 130 215 C 133 211, 134 205, 134 195 C 134 188, 130 178, 125 165 C 125 158, 122 145, 120 130 C 123 120, 126 108, 126 95 C 126 88, 129 75, 130 60 C 122 56, 111 54, 100 54 C 89 54, 78 56, 70 60 Z"/>
+                <path d="M70 210 C 68 225, 66 240, 66 255 C 66 275, 68 290, 72 300 C 70 315, 68 330, 67 340 C 66 355, 66 368, 66 380 C 66 398, 65 412, 63 425 C 62 435, 61 445, 60 452 C 59 458, 60 462, 64 464 C 68 466, 73 466, 76 463 C 78 460, 77 455, 77 448 C 78 435, 79 420, 80 405 C 81 388, 82 370, 83 352 C 84 330, 85 305, 86 280 C 87 258, 88 238, 89 220 L 89 210 Z"/>
+                <path d="M130 210 C 132 225, 134 240, 134 255 C 134 275, 132 290, 128 300 C 130 315, 132 330, 133 340 C 134 355, 134 368, 134 380 C 134 398, 135 412, 137 425 C 138 435, 139 445, 140 452 C 141 458, 140 462, 136 464 C 132 466, 127 466, 124 463 C 122 460, 123 455, 123 448 C 122 435, 121 420, 120 405 C 119 388, 118 370, 117 352 C 116 330, 115 305, 114 280 C 113 258, 112 238, 111 220 L 111 210 Z"/>
+              </clipPath>
+              <clipPath id="clipShoeL"><ellipse cx="71" cy="461" rx="14" ry="11"/></clipPath>
+              <clipPath id="clipShoeR"><ellipse cx="129" cy="461" rx="14" ry="11"/></clipPath>
+            </defs>
+
+            <g id="clothingLayer"></g>
+
+            <g class="outlineGroup">
+              <ellipse class="outline" cx="100" cy="28" rx="17" ry="21"/>
+              <path class="outline" d="M92 47 L91 60 M108 47 L109 60"/>
+              <path class="outline" d="M70 60 C 71 75, 74 88, 74 95 C 74 108, 77 120, 80 130 C 78 145, 75 158, 75 165 C 70 178, 66 188, 66 195 C 66 205, 67 211, 70 215 L 130 215 C 133 211, 134 205, 134 195 C 134 188, 130 178, 125 165 C 125 158, 122 145, 120 130 C 123 120, 126 108, 126 95 C 126 88, 129 75, 130 60 C 122 56, 111 54, 100 54 C 89 54, 78 56, 70 60 Z"/>
+              <path class="outline" d="M70 210 C 68 225, 66 240, 66 255 C 66 275, 68 290, 72 300 C 70 315, 68 330, 67 340 C 66 355, 66 368, 66 380 C 66 398, 65 412, 63 425 C 62 435, 61 445, 60 452 C 59 458, 60 462, 64 464 C 68 466, 73 466, 76 463 C 78 460, 77 455, 77 448 C 78 435, 79 420, 80 405 C 81 388, 82 370, 83 352 C 84 330, 85 305, 86 280 C 87 258, 88 238, 89 220 L 89 212"/>
+              <path class="outline" d="M130 210 C 132 225, 134 240, 134 255 C 134 275, 132 290, 128 300 C 130 315, 132 330, 133 340 C 134 355, 134 368, 134 380 C 134 398, 135 412, 137 425 C 138 435, 139 445, 140 452 C 141 458, 140 462, 136 464 C 132 466, 127 466, 124 463 C 122 460, 123 455, 123 448 C 122 435, 121 420, 120 405 C 119 388, 118 370, 117 352 C 116 330, 115 305, 114 280 C 113 258, 112 238, 111 220 L 111 212"/>
+              <path class="outline" d="M69 62 C 52 78, 47 118, 51 158 C 52 174, 56 188, 61 200"/>
+              <path class="outline" d="M131 62 C 148 78, 153 118, 149 158 C 148 174, 144 188, 139 200"/>
+            </g>
+          </svg>
+        </div>
+        <div class="pieceChips" id="pieceChips"></div>
+      </div>
+
       <div class="shuffleRow" id="shuffleRow" style="display:none;">
         <button class="shuffleBtn" id="shuffleBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 3l4 4-4 4"/><path d="M3 7h6a4 4 0 0 1 4 4"/><path d="M17 21l4-4-4-4"/><path d="M3 17h6a4 4 0 0 0 4-4"/></svg>
@@ -565,14 +607,33 @@ function pickForCategory(items, category, tags) {
 
 let lastGuessedTags = null;
 
+function svgImage(href, x, y, w, h, clipId) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const img = document.createElementNS(ns, 'image');
+  img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', href);
+  img.setAttribute('href', href);
+  img.setAttribute('x', x);
+  img.setAttribute('y', y);
+  img.setAttribute('width', w);
+  img.setAttribute('height', h);
+  img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+  img.setAttribute('clip-path', `url(#${clipId})`);
+  return img;
+}
+
 async function buildOutfit() {
   const items = await dbGetAll();
-  const body = document.getElementById('combinarBody');
+  const empty = document.getElementById('combinarEmpty');
+  const result = document.getElementById('combinarResult');
   const shuffleRow = document.getElementById('shuffleRow');
+  const chipsWrap = document.getElementById('pieceChips');
+  const clothingLayer = document.getElementById('clothingLayer');
 
   if (!items.length) {
-    body.innerHTML = '<div class="emptyState"><div>agrega algunas prendas primero</div><button id="goToAgregar2">agregar ropa</button></div>';
+    empty.innerHTML = '<div>agrega algunas prendas primero</div><button id="goToAgregar2">agregar ropa</button>';
     document.getElementById('goToAgregar2').addEventListener('click', () => switchView('agregar'));
+    empty.style.display = 'flex';
+    result.style.display = 'none';
     shuffleRow.style.display = 'none';
     document.getElementById('guessTag').textContent = '';
     return;
@@ -606,22 +667,39 @@ async function buildOutfit() {
   }
 
   if (!pieces.length) {
-    body.innerHTML = '<div class="emptyState"><div>no hay suficientes prendas para esa combinación todavía</div></div>';
+    empty.style.display = 'flex';
+    empty.innerHTML = '<div>no hay suficientes prendas para esa combinación todavía</div>';
+    result.style.display = 'none';
     shuffleRow.style.display = 'none';
     return;
   }
 
-  const grid = document.createElement('div');
-  grid.className = 'flatlay';
-  pieces.forEach(([label, item]) => {
-    const el = document.createElement('div');
-    el.className = 'piece';
-    el.innerHTML = `<img src="${item.photo}" /><div class="lbl">${label}</div>`;
-    grid.appendChild(el);
-  });
-  body.innerHTML = '';
-  body.appendChild(grid);
+  empty.style.display = 'none';
+  result.style.display = 'flex';
   shuffleRow.style.display = 'flex';
+
+  clothingLayer.innerHTML = '';
+  const byLabel = Object.fromEntries(pieces);
+
+  if (byLabel['vestido']) {
+    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 46, 44, 108, 428, 'clipDress'));
+  } else {
+    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 50, 48, 100, 175, 'clipTorso'));
+    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 52, 205, 96, 265, 'clipLegs'));
+  }
+  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 50, 48, 100, 175, 'clipTorso'));
+  if (byLabel['calzado']) {
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 55, 448, 32, 28, 'clipShoeL'));
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 113, 448, 32, 28, 'clipShoeR'));
+  }
+
+  chipsWrap.innerHTML = '';
+  pieces.forEach(([label, item]) => {
+    const chip = document.createElement('div');
+    chip.className = 'pchip';
+    chip.innerHTML = `<img src="${item.photo}" /><span>${label}</span>`;
+    chipsWrap.appendChild(chip);
+  });
 }
 
 document.getElementById('occasionGo').addEventListener('click', buildOutfit);
