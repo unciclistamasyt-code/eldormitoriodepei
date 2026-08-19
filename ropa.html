@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
 <title>&nbsp;</title>
 
+<!-- El removedor de fondo con IA importa "onnxruntime-web" por nombre (no por
+     URL), así que el navegador necesita este mapa para saber de dónde
+     descargarlo. Debe ir antes de cualquier import() dinámico. -->
+<script type="importmap">
+{
+  "imports": {
+    "onnxruntime-web": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/ort.bundle.min.mjs",
+    "onnxruntime-web/webgpu": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/ort.webgpu.bundle.min.mjs"
+  }
+}
+</script>
+
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#0a0a0c" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
