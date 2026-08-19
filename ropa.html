@@ -99,13 +99,20 @@
     aspect-ratio: 200 / 480;
   }
   .mannequinWrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
-  .outline {
-    fill: none;
-    stroke: var(--text-dim);
-    stroke-width: 1.6;
+  .skin {
+    fill: #d9a77a;
+    stroke: var(--text);
+    stroke-width: 1.4;
     stroke-linejoin: round;
-    stroke-linecap: round;
   }
+  .hair {
+    fill: #2b2320;
+    stroke: var(--text);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+  }
+  .face { fill: #241b16; }
+  .smile { fill: none; stroke: #241b16; stroke-width: 2; stroke-linecap: round; }
 
   .pieceChips {
     display: flex;
@@ -259,6 +266,32 @@
     margin-bottom: 24px;
   }
 
+  .photoProcessing {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,10,12,0.82);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 3;
+  }
+  .photoProcessing.show { display: flex; }
+  .photoProcessing .spinner {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    border-top-color: var(--text);
+    animation: spin 0.8s linear infinite;
+  }
+  .photoProcessing span {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   .saveBtn {
     width: 100%;
     background: var(--text);
@@ -310,16 +343,30 @@
               </filter>
             </defs>
 
+            <g id="bodyBase">
+              <rect class="skin" x="36" y="104" width="24" height="112" rx="12"/>
+              <rect class="skin" x="140" y="104" width="24" height="112" rx="12"/>
+              <circle class="skin" cx="48" cy="222" r="14"/>
+              <circle class="skin" cx="152" cy="222" r="14"/>
+              <rect class="skin" x="66" y="196" width="34" height="205" rx="17"/>
+              <rect class="skin" x="100" y="196" width="34" height="205" rx="17"/>
+              <ellipse class="skin" cx="83" cy="399" rx="21" ry="13"/>
+              <ellipse class="skin" cx="117" cy="399" rx="21" ry="13"/>
+              <rect class="skin" x="88" y="80" width="24" height="24" rx="6"/>
+              <path class="skin" d="M64 100 C 60 100, 58 106, 58 112 L 62 175 C 63 188, 70 196, 80 198 L 120 198 C 130 196, 137 188, 138 175 L 142 112 C 142 106, 140 100, 136 100 C 122 92, 112 88, 100 88 C 88 88, 78 92, 64 100 Z"/>
+            </g>
+
             <g id="clothingLayer"></g>
 
-            <g class="outlineGroup">
-              <ellipse class="outline" cx="100" cy="28" rx="17" ry="21"/>
-              <path class="outline" d="M92 47 L91 60 M108 47 L109 60"/>
-              <path class="outline" d="M70 60 C 71 75, 74 88, 74 95 C 74 108, 77 120, 80 130 C 78 145, 75 158, 75 165 C 70 178, 66 188, 66 195 C 66 205, 67 211, 70 215 L 130 215 C 133 211, 134 205, 134 195 C 134 188, 130 178, 125 165 C 125 158, 122 145, 120 130 C 123 120, 126 108, 126 95 C 126 88, 129 75, 130 60 C 122 56, 111 54, 100 54 C 89 54, 78 56, 70 60 Z"/>
-              <path class="outline" d="M70 210 C 68 225, 66 240, 66 255 C 66 275, 68 290, 72 300 C 70 315, 68 330, 67 340 C 66 355, 66 368, 66 380 C 66 398, 65 412, 63 425 C 62 435, 61 445, 60 452 C 59 458, 60 462, 64 464 C 68 466, 73 466, 76 463 C 78 460, 77 455, 77 448 C 78 435, 79 420, 80 405 C 81 388, 82 370, 83 352 C 84 330, 85 305, 86 280 C 87 258, 88 238, 89 220 L 89 212"/>
-              <path class="outline" d="M130 210 C 132 225, 134 240, 134 255 C 134 275, 132 290, 128 300 C 130 315, 132 330, 133 340 C 134 355, 134 368, 134 380 C 134 398, 135 412, 137 425 C 138 435, 139 445, 140 452 C 141 458, 140 462, 136 464 C 132 466, 127 466, 124 463 C 122 460, 123 455, 123 448 C 122 435, 121 420, 120 405 C 119 388, 118 370, 117 352 C 116 330, 115 305, 114 280 C 113 258, 112 238, 111 220 L 111 212"/>
-              <path class="outline" d="M69 62 C 52 78, 47 118, 51 158 C 52 174, 56 188, 61 200"/>
-              <path class="outline" d="M131 62 C 148 78, 153 118, 149 158 C 148 174, 144 188, 139 200"/>
+            <g id="headGroup">
+              <ellipse class="hair" cx="100" cy="52" rx="40" ry="42"/>
+              <ellipse class="skin" cx="100" cy="55" rx="30" ry="32"/>
+              <path class="hair" d="M62 48 C 62 20, 138 20, 138 48 C 138 34, 122 26, 100 26 C 78 26, 62 34, 62 48 Z"/>
+              <path class="hair" d="M64 44 C 58 70, 58 100, 62 118 L 74 118 C 70 96, 70 66, 74 46 Z"/>
+              <path class="hair" d="M136 44 C 142 70, 142 100, 138 118 L 126 118 C 130 96, 130 66, 126 46 Z"/>
+              <ellipse class="face" cx="89" cy="56" rx="3.2" ry="4"/>
+              <ellipse class="face" cx="111" cy="56" rx="3.2" ry="4"/>
+              <path class="smile" d="M91 68 Q100 74 109 68"/>
             </g>
           </svg>
         </div>
@@ -344,9 +391,10 @@
       <div class="photoPicker" id="photoPicker">
         <span id="photoPickerLabel">toca para elegir foto</span>
         <img id="photoPreview" style="display:none;" />
+        <div class="photoProcessing" id="photoProcessing"><div class="spinner"></div><span>quitando el fondo…</span></div>
         <input type="file" accept="image/*" id="photoInput" />
       </div>
-      <div class="photoHint" id="photoHint">fondo liso y parejo (pared, sábana, mesa) — se recorta solo</div>
+      <div class="photoHint" id="photoHint">el fondo se quita solo, sea liso o no</div>
 
       <div class="fieldGroup">
         <div class="fieldLabel">categoría</div>
@@ -548,6 +596,15 @@ function removeBackground(canvas) {
     }
   }
 
+  /* Second pass: catch background-colored pockets that are fully enclosed
+     by the garment (e.g. the gap between two pant legs) and so were never
+     reached by the border flood-fill above. */
+  for (let idx = 0; idx < w * h; idx++) {
+    if (!visited[idx] && colorDist(idx * 4) < threshold) {
+      isBg[idx] = 1;
+    }
+  }
+
   for (let idx = 0; idx < w * h; idx++) {
     if (isBg[idx]) {
       data[idx * 4 + 3] = 0;
@@ -592,13 +649,45 @@ function cropToContent(canvas) {
   return out;
 }
 
+/* AI background removal (works on any background, not just plain ones).
+   Loaded lazily from a CDN the first time it's needed and cached by the
+   browser after that. If it fails to load or times out for any reason
+   (offline, CDN hiccup, slow device), we fall back to the lightweight
+   flood-fill removal above so adding clothes never gets stuck. */
+const IMGLY_CDN_URL = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/dist/index.mjs';
+let _imglyModulePromise = null;
+function loadImgly() {
+  if (!_imglyModulePromise) _imglyModulePromise = import(IMGLY_CDN_URL);
+  return _imglyModulePromise;
+}
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+async function removeBackgroundAI(sourceCanvas) {
+  const blob = await new Promise(res => sourceCanvas.toBlob(res, 'image/png'));
+  const mod = await withTimeout(loadImgly(), 25000);
+  const removeBg = mod.default || mod.removeBackground;
+  const resultBlob = await withTimeout(
+    removeBg(blob, { model: 'isnet_quant8', output: { format: 'image/png' } }),
+    45000
+  );
+  const bitmap = await createImageBitmap(resultBlob);
+  const out = document.createElement('canvas');
+  out.width = bitmap.width; out.height = bitmap.height;
+  out.getContext('2d').drawImage(bitmap, 0, 0);
+  return out;
+}
+
 document.getElementById('photoInput').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = (ev) => {
     const img = new Image();
-    img.onload = () => {
+    img.onload = async () => {
       const maxDim = 800;
       let w = img.width, h = img.height;
       if (w > h && w > maxDim) { h = h * (maxDim / w); w = maxDim; }
@@ -606,8 +695,22 @@ document.getElementById('photoInput').addEventListener('change', (e) => {
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      removeBackground(canvas);
-      const cropped = cropToContent(canvas);
+
+      const processingEl = document.getElementById('photoProcessing');
+      processingEl.classList.add('show');
+      document.getElementById('saveItemBtn').disabled = true;
+
+      let finalCanvas;
+      try {
+        finalCanvas = await removeBackgroundAI(canvas);
+      } catch (err) {
+        console.warn('AI background removal no disponible, usando método simple:', err);
+        removeBackground(canvas);
+        finalCanvas = canvas;
+      }
+
+      processingEl.classList.remove('show');
+      const cropped = cropToContent(finalCanvas);
       pendingPhotoDataUrl = cropped.toDataURL('image/png');
       document.getElementById('photoPreview').src = pendingPhotoDataUrl;
       document.getElementById('photoPreview').style.display = 'block';
@@ -788,15 +891,14 @@ async function buildOutfit() {
   const byLabel = Object.fromEntries(pieces);
 
   if (byLabel['vestido']) {
-    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 35, 46, 130, 430));
+    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 30, 82, 140, 335));
   } else {
-    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 40, 200, 120, 275));
-    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 35, 48, 130, 185));
+    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 58, 188, 84, 230));
+    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 30, 82, 140, 125));
   }
-  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 30, 44, 140, 195));
+  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 25, 78, 150, 135));
   if (byLabel['calzado']) {
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 46, 438, 50, 44));
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 104, 438, 50, 44));
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 60, 376, 80, 46));
   }
 
   chipsWrap.innerHTML = '';
