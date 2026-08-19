@@ -678,7 +678,7 @@ async function removeBackgroundAI(sourceCanvas) {
   const mod = await withTimeout(loadImgly(), 25000);
   const removeBg = mod.default || mod.removeBackground;
   const resultBlob = await withTimeout(
-    removeBg(blob, { model: 'isnet_quint8', output: { format: 'image/png' } }),
+    removeBg(blob, { model: 'isnet_quant8', output: { format: 'image/png' } }),
     45000
   );
   const bitmap = await createImageBitmap(resultBlob);
