@@ -340,15 +340,6 @@
               <filter id="clothShadow" x="-60%" y="-60%" width="220%" height="220%">
                 <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.45"/>
               </filter>
-              <clipPath id="clipTop" clipPathUnits="userSpaceOnUse">
-                <path d="M62 66 L138 66 C148 68,158 80,158 100 C158 116,150 130,140 140 L138 226 L62 226 L60 140 C50 130,42 116,42 100 C42 80,52 68,62 66 Z"/>
-              </clipPath>
-              <clipPath id="clipBottom" clipPathUnits="userSpaceOnUse">
-                <path d="M65 198 L135 198 L135 226 L131 344 L127 404 L108 404 L100 230 L92 404 L73 404 L69 344 L65 226 Z"/>
-              </clipPath>
-              <clipPath id="clipShoes" clipPathUnits="userSpaceOnUse">
-                <path d="M58 394 C58 390,62 388,68 388 L84 388 C90 388,94 392,94 398 C94 406,88 410,76 410 C64 410,58 406,58 398 Z M106 394 C106 390,110 388,116 388 L132 388 C138 388,142 392,142 398 C142 406,136 410,124 410 C112 410,106 406,106 398 Z"/>
-              </clipPath>
             </defs>
 
             <g id="bodyBase">
@@ -535,6 +526,7 @@ function switchView(name) {
 let selectedCategory = null;
 let selectedTags = new Set();
 let pendingPhotoDataUrl = null;
+let pendingPhotoColor = '#9a9a9a';
 
 CATEGORIES.forEach(c => {
   const chip = document.createElement('div');
@@ -681,6 +673,35 @@ function cropToContent(canvas) {
   return out;
 }
 
+/* Finds the most common color among the garment's opaque pixels (grouped
+   into coarse buckets so a small logo/print doesn't skew a plain average),
+   used to draw a solid-color illustrated version of the garment on the
+   mannequin instead of stretching the real photo onto a fixed shape. */
+function getDominantColor(canvas) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const data = ctx.getImageData(0, 0, w, h).data;
+  const buckets = new Map();
+  const total = w * h;
+  const step = Math.max(1, Math.floor(total / 20000));
+  for (let i = 0; i < total; i += step) {
+    const idx = i * 4;
+    if (data[idx + 3] < 200) continue;
+    const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+    const key = (r >> 4) + ',' + (g >> 4) + ',' + (b >> 4);
+    let bucket = buckets.get(key);
+    if (!bucket) { bucket = { r: 0, g: 0, b: 0, count: 0 }; buckets.set(key, bucket); }
+    bucket.r += r; bucket.g += g; bucket.b += b; bucket.count++;
+  }
+  let best = null;
+  for (const bucket of buckets.values()) {
+    if (!best || bucket.count > best.count) best = bucket;
+  }
+  if (!best) return '#9a9a9a';
+  const r = Math.round(best.r / best.count), g = Math.round(best.g / best.count), b = Math.round(best.b / best.count);
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
 /* AI background removal (works on any background, not just plain ones).
    Loaded lazily from a CDN the first time it's needed and cached by the
    browser after that. If it fails to load or times out for any reason
@@ -748,6 +769,7 @@ document.getElementById('photoInput').addEventListener('change', (e) => {
       processingEl.classList.remove('show');
       const cropped = cropToContent(finalCanvas);
       pendingPhotoDataUrl = cropped.toDataURL('image/png');
+      pendingPhotoColor = getDominantColor(cropped);
       document.getElementById('photoPreview').src = pendingPhotoDataUrl;
       document.getElementById('photoPreview').style.display = 'block';
       document.getElementById('photoPickerLabel').style.display = 'none';
@@ -769,11 +791,13 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
     category: selectedCategory,
     tags: Array.from(selectedTags),
     photo: pendingPhotoDataUrl,
+    color: pendingPhotoColor,
     createdAt: Date.now()
   };
   await dbAdd(item);
 
   pendingPhotoDataUrl = null;
+  pendingPhotoColor = '#9a9a9a';
   selectedCategory = null;
   selectedTags = new Set();
   document.querySelectorAll('.chip').forEach(el => el.classList.remove('selected'));
@@ -852,6 +876,27 @@ function pickForCategory(items, category, tags) {
 }
 
 let lastGuessedTags = null;
+
+/* Illustrated garment shapes, drawn in solid color (from getDominantColor)
+   instead of the real photo — a real photo's exact cut/length never matches
+   a fixed silhouette, but a flat color always "fits" perfectly, same idea
+   as the reference drawing. */
+const SHAPE_D = {
+  top: 'M62 66 L138 66 C148 68,158 80,158 100 C158 116,150 130,140 140 L138 226 L62 226 L60 140 C50 130,42 116,42 100 C42 80,52 68,62 66 Z',
+  bottom: 'M65 198 L135 198 L135 226 L131 344 L127 404 L108 404 L100 230 L92 404 L73 404 L69 344 L65 226 Z',
+  calzado: 'M58 394 C58 390,62 388,68 388 L84 388 C90 388,94 392,94 398 C94 406,88 410,76 410 C64 410,58 406,58 398 Z M106 394 C106 390,110 388,116 388 L132 388 C138 388,142 392,142 398 C142 406,136 410,124 410 C112 410,106 406,106 398 Z',
+  vestido: 'M62 66 L138 66 C148 68,158 80,158 100 C158 116,150 130,140 140 L138 226 L150 400 L50 400 L62 226 L60 140 C50 130,42 116,42 100 C42 80,52 68,62 66 Z',
+  abrigo: 'M54 62 L146 62 C158 64,170 78,170 102 C170 120,160 136,148 146 L146 280 L54 280 L52 146 C40 136,30 120,30 102 C30 78,42 64,54 62 Z'
+};
+
+function svgShape(d, color) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', d);
+  path.setAttribute('fill', color || '#9a9a9a');
+  path.setAttribute('filter', 'url(#clothShadow)');
+  return path;
+}
 
 function svgImage(href, x, y, w, h, clipId) {
   const ns = 'http://www.w3.org/2000/svg';
@@ -936,14 +981,14 @@ async function buildOutfit() {
   const byLabel = Object.fromEntries(pieces);
 
   if (byLabel['vestido']) {
-    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 54, 50, 92, 356));
+    clothingLayer.appendChild(svgShape(SHAPE_D.vestido, byLabel['vestido'].color));
   } else {
-    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 65, 196, 70, 210, 'clipBottom'));
-    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 34, 64, 132, 164, 'clipTop'));
+    if (byLabel['bottom']) clothingLayer.appendChild(svgShape(SHAPE_D.bottom, byLabel['bottom'].color));
+    if (byLabel['top']) clothingLayer.appendChild(svgShape(SHAPE_D.top, byLabel['top'].color));
   }
-  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 34, 48, 132, 180));
+  if (byLabel['abrigo']) clothingLayer.appendChild(svgShape(SHAPE_D.abrigo, byLabel['abrigo'].color));
   if (byLabel['calzado']) {
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 56, 386, 88, 26, 'clipShoes'));
+    clothingLayer.appendChild(svgShape(SHAPE_D.calzado, byLabel['calzado'].color));
   }
 
   chipsWrap.innerHTML = '';
