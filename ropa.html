@@ -340,6 +340,15 @@
               <filter id="clothShadow" x="-60%" y="-60%" width="220%" height="220%">
                 <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.45"/>
               </filter>
+              <clipPath id="clipTop" clipPathUnits="userSpaceOnUse">
+                <path d="M62 66 L138 66 C148 68,158 80,158 100 C158 116,150 130,140 140 L138 226 L62 226 L60 140 C50 130,42 116,42 100 C42 80,52 68,62 66 Z"/>
+              </clipPath>
+              <clipPath id="clipBottom" clipPathUnits="userSpaceOnUse">
+                <path d="M65 198 L135 198 L135 226 L131 344 L127 404 L108 404 L100 230 L92 404 L73 404 L69 344 L65 226 Z"/>
+              </clipPath>
+              <clipPath id="clipShoes" clipPathUnits="userSpaceOnUse">
+                <path d="M58 394 C58 390,62 388,68 388 L84 388 C90 388,94 392,94 398 C94 406,88 410,76 410 C64 410,58 406,58 398 Z M106 394 C106 390,110 388,116 388 L132 388 C138 388,142 392,142 398 C142 406,136 410,124 410 C112 410,106 406,106 398 Z"/>
+              </clipPath>
             </defs>
 
             <g id="bodyBase">
@@ -844,7 +853,7 @@ function pickForCategory(items, category, tags) {
 
 let lastGuessedTags = null;
 
-function svgImage(href, x, y, w, h) {
+function svgImage(href, x, y, w, h, clipId) {
   const ns = 'http://www.w3.org/2000/svg';
   const img = document.createElementNS(ns, 'image');
   img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', href);
@@ -853,7 +862,15 @@ function svgImage(href, x, y, w, h) {
   img.setAttribute('y', y);
   img.setAttribute('width', w);
   img.setAttribute('height', h);
-  img.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  if (clipId) {
+    /* "slice" (cover) fills the whole clothing silhouette with the photo,
+       instead of floating the whole photo inside a box — this is what
+       makes the garment look worn instead of pasted on top. */
+    img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    img.setAttribute('clip-path', 'url(#' + clipId + ')');
+  } else {
+    img.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  }
   img.setAttribute('filter', 'url(#clothShadow)');
   return img;
 }
@@ -921,12 +938,12 @@ async function buildOutfit() {
   if (byLabel['vestido']) {
     clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 54, 50, 92, 356));
   } else {
-    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 58, 200, 84, 205));
-    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 40, 50, 120, 162));
+    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 65, 196, 70, 210, 'clipBottom'));
+    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 34, 64, 132, 164, 'clipTop'));
   }
   if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 34, 48, 132, 180));
   if (byLabel['calzado']) {
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 60, 392, 80, 40));
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 56, 386, 88, 26, 'clipShoes'));
   }
 
   chipsWrap.innerHTML = '';
