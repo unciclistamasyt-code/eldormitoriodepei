@@ -242,15 +242,21 @@
     font-size: 13px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 24px;
   }
   .photoPicker img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain;
     position: absolute; inset: 0;
   }
   .photoPicker input {
     position: absolute; inset: 0;
     opacity: 0;
+  }
+  .photoHint {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 24px;
   }
 
   .saveBtn {
@@ -299,18 +305,9 @@
         <div class="mannequinWrap">
           <svg viewBox="0 0 200 480" id="mannequinSvg">
             <defs>
-              <clipPath id="clipTorso"><path d="M70 60 C 71 75, 74 88, 74 95 C 74 108, 77 120, 80 130 C 78 145, 75 158, 75 165 C 70 178, 66 188, 66 195 C 66 205, 67 211, 70 215 L 130 215 C 133 211, 134 205, 134 195 C 134 188, 130 178, 125 165 C 125 158, 122 145, 120 130 C 123 120, 126 108, 126 95 C 126 88, 129 75, 130 60 C 122 56, 111 54, 100 54 C 89 54, 78 56, 70 60 Z"/></clipPath>
-              <clipPath id="clipLegs">
-                <path d="M70 210 C 68 225, 66 240, 66 255 C 66 275, 68 290, 72 300 C 70 315, 68 330, 67 340 C 66 355, 66 368, 66 380 C 66 398, 65 412, 63 425 C 62 435, 61 445, 60 452 C 59 458, 60 462, 64 464 C 68 466, 73 466, 76 463 C 78 460, 77 455, 77 448 C 78 435, 79 420, 80 405 C 81 388, 82 370, 83 352 C 84 330, 85 305, 86 280 C 87 258, 88 238, 89 220 L 89 210 Z"/>
-                <path d="M130 210 C 132 225, 134 240, 134 255 C 134 275, 132 290, 128 300 C 130 315, 132 330, 133 340 C 134 355, 134 368, 134 380 C 134 398, 135 412, 137 425 C 138 435, 139 445, 140 452 C 141 458, 140 462, 136 464 C 132 466, 127 466, 124 463 C 122 460, 123 455, 123 448 C 122 435, 121 420, 120 405 C 119 388, 118 370, 117 352 C 116 330, 115 305, 114 280 C 113 258, 112 238, 111 220 L 111 210 Z"/>
-              </clipPath>
-              <clipPath id="clipDress">
-                <path d="M70 60 C 71 75, 74 88, 74 95 C 74 108, 77 120, 80 130 C 78 145, 75 158, 75 165 C 70 178, 66 188, 66 195 C 66 205, 67 211, 70 215 L 130 215 C 133 211, 134 205, 134 195 C 134 188, 130 178, 125 165 C 125 158, 122 145, 120 130 C 123 120, 126 108, 126 95 C 126 88, 129 75, 130 60 C 122 56, 111 54, 100 54 C 89 54, 78 56, 70 60 Z"/>
-                <path d="M70 210 C 68 225, 66 240, 66 255 C 66 275, 68 290, 72 300 C 70 315, 68 330, 67 340 C 66 355, 66 368, 66 380 C 66 398, 65 412, 63 425 C 62 435, 61 445, 60 452 C 59 458, 60 462, 64 464 C 68 466, 73 466, 76 463 C 78 460, 77 455, 77 448 C 78 435, 79 420, 80 405 C 81 388, 82 370, 83 352 C 84 330, 85 305, 86 280 C 87 258, 88 238, 89 220 L 89 210 Z"/>
-                <path d="M130 210 C 132 225, 134 240, 134 255 C 134 275, 132 290, 128 300 C 130 315, 132 330, 133 340 C 134 355, 134 368, 134 380 C 134 398, 135 412, 137 425 C 138 435, 139 445, 140 452 C 141 458, 140 462, 136 464 C 132 466, 127 466, 124 463 C 122 460, 123 455, 123 448 C 122 435, 121 420, 120 405 C 119 388, 118 370, 117 352 C 116 330, 115 305, 114 280 C 113 258, 112 238, 111 220 L 111 210 Z"/>
-              </clipPath>
-              <clipPath id="clipShoeL"><ellipse cx="71" cy="461" rx="14" ry="11"/></clipPath>
-              <clipPath id="clipShoeR"><ellipse cx="129" cy="461" rx="14" ry="11"/></clipPath>
+              <filter id="clothShadow" x="-60%" y="-60%" width="220%" height="220%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.45"/>
+              </filter>
             </defs>
 
             <g id="clothingLayer"></g>
@@ -349,6 +346,7 @@
         <img id="photoPreview" style="display:none;" />
         <input type="file" accept="image/*" id="photoInput" />
       </div>
+      <div class="photoHint" id="photoHint">fondo liso y parejo (pared, sábana, mesa) — se recorta solo</div>
 
       <div class="fieldGroup">
         <div class="fieldLabel">categoría</div>
@@ -488,6 +486,112 @@ TAGS.forEach(t => {
   document.getElementById('tagChips').appendChild(chip);
 });
 
+/* Lightweight background removal: flood-fill from the border, matching
+   pixels close to the sampled border color, assuming a plain/even backdrop. */
+function removeBackground(canvas) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const imageData = ctx.getImageData(0, 0, w, h);
+  const data = imageData.data;
+
+  let rSum = 0, gSum = 0, bSum = 0, count = 0;
+  for (let x = 0; x < w; x++) {
+    for (const y of [0, h - 1]) {
+      const i = (y * w + x) * 4;
+      rSum += data[i]; gSum += data[i + 1]; bSum += data[i + 2]; count++;
+    }
+  }
+  for (let y = 0; y < h; y++) {
+    for (const x of [0, w - 1]) {
+      const i = (y * w + x) * 4;
+      rSum += data[i]; gSum += data[i + 1]; bSum += data[i + 2]; count++;
+    }
+  }
+  const bgR = rSum / count, bgG = gSum / count, bgB = bSum / count;
+  const threshold = 38;
+  const visited = new Uint8Array(w * h);
+  const isBg = new Uint8Array(w * h);
+  const queue = new Int32Array(w * h);
+  let qHead = 0, qTail = 0;
+
+  function colorDist(i) {
+    const dr = data[i] - bgR, dg = data[i + 1] - bgG, db = data[i + 2] - bgB;
+    return Math.sqrt(dr * dr + dg * dg + db * db);
+  }
+  function tryEnqueue(x, y) {
+    const idx = y * w + x;
+    if (visited[idx]) return;
+    visited[idx] = 1;
+    const i = idx * 4;
+    if (colorDist(i) < threshold) {
+      isBg[idx] = 1;
+      queue[qTail++] = idx;
+    }
+  }
+  for (let x = 0; x < w; x++) { tryEnqueue(x, 0); tryEnqueue(x, h - 1); }
+  for (let y = 0; y < h; y++) { tryEnqueue(0, y); tryEnqueue(w - 1, y); }
+
+  while (qHead < qTail) {
+    const idx = queue[qHead++];
+    const x = idx % w, y = (idx / w) | 0;
+    const neighbors = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]];
+    for (const [nx, ny] of neighbors) {
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      const nidx = ny * w + nx;
+      if (visited[nidx]) continue;
+      visited[nidx] = 1;
+      const i = nidx * 4;
+      if (colorDist(i) < threshold) {
+        isBg[nidx] = 1;
+        queue[qTail++] = nidx;
+      }
+    }
+  }
+
+  for (let idx = 0; idx < w * h; idx++) {
+    if (isBg[idx]) {
+      data[idx * 4 + 3] = 0;
+    } else {
+      const x = idx % w, y = (idx / w) | 0;
+      let edgeCount = 0;
+      if (x > 0 && isBg[idx - 1]) edgeCount++;
+      if (x < w - 1 && isBg[idx + 1]) edgeCount++;
+      if (y > 0 && isBg[idx - w]) edgeCount++;
+      if (y < h - 1 && isBg[idx + w]) edgeCount++;
+      if (edgeCount > 0) data[idx * 4 + 3] = Math.round(255 * (1 - edgeCount * 0.12));
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+}
+
+/* Crop the canvas to the bounding box of its non-transparent pixels, so a
+   loosely-framed photo still fills the mannequin nicely. */
+function cropToContent(canvas) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const data = ctx.getImageData(0, 0, w, h).data;
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (data[(y * w + x) * 4 + 3] > 10) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) return canvas;
+  const pad = 6;
+  minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+  maxX = Math.min(w - 1, maxX + pad); maxY = Math.min(h - 1, maxY + pad);
+  const cw = maxX - minX + 1, ch = maxY - minY + 1;
+  const out = document.createElement('canvas');
+  out.width = cw; out.height = ch;
+  out.getContext('2d').drawImage(canvas, minX, minY, cw, ch, 0, 0, cw, ch);
+  return out;
+}
+
 document.getElementById('photoInput').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -502,7 +606,9 @@ document.getElementById('photoInput').addEventListener('change', (e) => {
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      pendingPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      removeBackground(canvas);
+      const cropped = cropToContent(canvas);
+      pendingPhotoDataUrl = cropped.toDataURL('image/png');
       document.getElementById('photoPreview').src = pendingPhotoDataUrl;
       document.getElementById('photoPreview').style.display = 'block';
       document.getElementById('photoPickerLabel').style.display = 'none';
@@ -607,7 +713,7 @@ function pickForCategory(items, category, tags) {
 
 let lastGuessedTags = null;
 
-function svgImage(href, x, y, w, h, clipId) {
+function svgImage(href, x, y, w, h) {
   const ns = 'http://www.w3.org/2000/svg';
   const img = document.createElementNS(ns, 'image');
   img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', href);
@@ -616,8 +722,8 @@ function svgImage(href, x, y, w, h, clipId) {
   img.setAttribute('y', y);
   img.setAttribute('width', w);
   img.setAttribute('height', h);
-  img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-  img.setAttribute('clip-path', `url(#${clipId})`);
+  img.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  img.setAttribute('filter', 'url(#clothShadow)');
   return img;
 }
 
@@ -682,15 +788,15 @@ async function buildOutfit() {
   const byLabel = Object.fromEntries(pieces);
 
   if (byLabel['vestido']) {
-    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 46, 44, 108, 428, 'clipDress'));
+    clothingLayer.appendChild(svgImage(byLabel['vestido'].photo, 35, 46, 130, 430));
   } else {
-    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 50, 48, 100, 175, 'clipTorso'));
-    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 52, 205, 96, 265, 'clipLegs'));
+    if (byLabel['bottom']) clothingLayer.appendChild(svgImage(byLabel['bottom'].photo, 40, 200, 120, 275));
+    if (byLabel['top']) clothingLayer.appendChild(svgImage(byLabel['top'].photo, 35, 48, 130, 185));
   }
-  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 50, 48, 100, 175, 'clipTorso'));
+  if (byLabel['abrigo']) clothingLayer.appendChild(svgImage(byLabel['abrigo'].photo, 30, 44, 140, 195));
   if (byLabel['calzado']) {
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 55, 448, 32, 28, 'clipShoeL'));
-    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 113, 448, 32, 28, 'clipShoeR'));
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 46, 438, 50, 44));
+    clothingLayer.appendChild(svgImage(byLabel['calzado'].photo, 104, 438, 50, 44));
   }
 
   chipsWrap.innerHTML = '';
