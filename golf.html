@@ -625,49 +625,594 @@ const CURRICULUM = [
     ],
   },
   {
-    id: 'n2', name: 'Nivel 2', subtitle: 'Construyendo tu juego', locked: true,
+    id: 'n2', name: 'Nivel 2', subtitle: 'Construyendo tu juego', locked: false,
     modules: [
-      { title: 'Los palos y cuándo usar cada uno', minutes: 8 },
-      { title: 'Vocabulario técnico de golpes: draw, fade, hook, slice', minutes: 7 },
-      { title: 'Juego corto: chip y pitch', minutes: 8 },
-      { title: 'Putting: técnica y lectura de greens', minutes: 8 },
-      { title: 'Cómo salir de bunkers', minutes: 6 },
-      { title: 'Situaciones difíciles: agua, OB, pelota perdida', minutes: 8 },
-      { title: 'Course management básico', minutes: 7 },
-      { title: 'El sistema de hándicap (World Handicap System)', minutes: 8 },
-      { title: 'Formatos de juego: stroke play vs. match play', minutes: 6 },
+      {
+        id: 'n2m1',
+        title: 'Los palos y cuándo usar cada uno',
+        minutes: 8,
+        content: `
+          <p>Un set típico se organiza en familias, cada una pensada para una parte distinta del juego:</p>
+          <ul>
+            <li><span class="term">Woods</span> (maderas): el <span class="term">driver</span> y fairway woods como el <span class="term">3-wood</span> o <span class="term">5-wood</span>.</li>
+            <li><span class="term">Hybrids</span>: cada vez reemplazan más a los hierros largos (2, 3 o 4), porque son más fáciles de elevar desde el pasto.</li>
+            <li><span class="term">Irons</span>: normalmente del 4 al 9, para distancias medias.</li>
+            <li><span class="term">Wedges</span>: <span class="term">pitching wedge</span> (PW), <span class="term">gap/approach wedge</span> (GW/AW), <span class="term">sand wedge</span> (SW) y <span class="term">lob wedge</span> (LW), de más a menos distancia y más a menos loft.</li>
+          </ul>
+          <p>El <span class="term">loft</span> (el ángulo de la cara) es el factor principal que determina trayectoria y distancia relativa: a menor loft, la bola sale más baja y llega más lejos; a mayor loft, sale más alta y más corta. Por eso el orden de distancia (de más a menos) es, en general: driver → 3-wood → 5-wood → hybrids/hierros largos → hierros medios (6-7) → hierros cortos (8-9) → PW → GW → SW → LW.</p>
+          <p>Ojo: esto es un orden relativo, no una tabla de yardas fija — cada jugador tiene sus propias distancias según su velocidad de swing, así que no tiene mucho sentido comparar tus yardas con las de otra persona.</p>
+          <p>Guía general de uso: driver o hybrid para tiros de salida donde priorizás distancia o control; fairway woods/hybrids/hierros largos para approaches lejanos; hierros medios y cortos para approaches a media y corta distancia; wedges para todo lo que pasa cerca del green (chips, pitches, bunkers).</p>
+        `,
+        summary: 'Los palos se agrupan en woods, hybrids, irons y wedges, ordenados de más a menos distancia según su loft. No hay una tabla de yardas universal: cada jugador tiene su propio set de distancias.',
+        quiz: [
+          { q: '¿Qué factor del palo determina principalmente la trayectoria y la distancia relativa?', options: ['El color de la cabeza', 'El loft', 'El largo del grip', 'El peso de la bolsa'], correct: 1, explain: 'A menor loft, la bola sale más baja y lejos; a mayor loft, sale más alta y corta.' },
+          { q: '¿Qué palos suelen reemplazar hoy a los hierros largos (2, 3 o 4)?', options: ['Los wedges', 'Los hybrids', 'El putter', 'El driver'], correct: 1, explain: 'Los hybrids son más fáciles de elevar desde el pasto que un hierro largo tradicional, así que muchos jugadores los prefieren.' },
+          { q: '¿Tiene sentido comparar tus yardas por palo con las de otro jugador?', options: ['Sí, siempre deberían ser iguales', 'No, cada jugador tiene sus propias distancias según su swing'], correct: 1, explain: 'La distancia por palo depende de la velocidad de swing de cada jugador, así que las yardas son individuales.' },
+          { q: '¿Para qué situación se usan típicamente los wedges?', options: ['Tiros de salida en par 5', 'Golpes cerca del green', 'Solo para putear', 'Solo en el bunker de práctica'], correct: 1, explain: 'Los wedges (PW, GW, SW, LW) están pensados para chips, pitches y golpes cerca o dentro del green.' },
+        ],
+      },
+      {
+        id: 'n2m2',
+        title: 'Vocabulario técnico de golpes: draw, fade, hook, slice',
+        minutes: 7,
+        content: `
+          <p>La instrucción moderna (posible gracias a los datos de <span class="term">launch monitors</span> como TrackMan) reemplazó una explicación más vieja y menos precisa por lo que hoy se conoce como las <span class="term">ball flight laws</span> ("leyes del vuelo de la bola"): la <strong>cara del palo</strong> en el impacto, respecto a la línea objetivo, es lo que más determina la <strong>dirección inicial</strong> de la bola; el <strong>swing path</strong> (camino del palo), respecto a esa misma cara, es lo que determina cuánto se <strong>curva</strong>.</p>
+          <p>Con esa base, así se definen los golpes (para un jugador diestro):</p>
+          <ul>
+            <li><span class="term">Straight</span>: cara cuadrada al objetivo y path igual a la cara — casi sin curva.</li>
+            <li><span class="term">Draw</span>: cara apunta apenas a la izquierda del objetivo, con el path todavía más a la derecha que la cara — curva suave de derecha a izquierda.</li>
+            <li><span class="term">Fade</span>: cara apunta apenas a la derecha del objetivo, con el path todavía más a la izquierda que la cara — curva suave de izquierda a derecha.</li>
+            <li><span class="term">Hook</span>: como el draw pero exagerado — la cara está bastante más cerrada que el path, y suele terminar perdida a la izquierda.</li>
+            <li><span class="term">Slice</span>: como el fade pero exagerado — la cara está bastante más abierta que el path, y suele terminar perdida a la derecha.</li>
+            <li><span class="term">Pull</span> / <span class="term">push</span>: la bola sale (a la izquierda o a la derecha, respectivamente) y viaja casi recta, sin curvarse — pasa cuando la cara y el path apuntan juntos hacia el mismo lado del objetivo.</li>
+          </ul>
+          <p>La idea clave para memorizar: un draw y un hook son la misma "forma" de curva (derecha a izquierda), solo que en distinto grado — lo mismo entre fade y slice. Lo que cambia es cuánto se abre o se cierra la cara respecto al path, no el tipo de curva.</p>
+          <div class="diagram">
+            <svg viewBox="0 0 320 130">
+              <line x1="20" y1="30" x2="300" y2="30" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
+              <text x="20" y="20" text-anchor="start">LÍNEA OBJETIVO</text>
+              <g>
+                <line x1="40" y1="112" x2="40" y2="60" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M40 60 C 20 40, 25 15, 60 8" fill="none" stroke="var(--grass-line)" stroke-width="1.6"/>
+                <path d="M56 12 L60 8 L58 14" fill="none" stroke="var(--grass-line)" stroke-width="1.4"/>
+                <circle cx="40" cy="115" r="2" fill="currentColor" stroke="none"/>
+                <text x="40" y="128" text-anchor="middle">DRAW</text>
+              </g>
+              <g>
+                <line x1="140" y1="112" x2="140" y2="60" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M140 60 C 160 40, 155 15, 120 8" fill="none" stroke="var(--sand-line)" stroke-width="1.6"/>
+                <path d="M124 12 L120 8 L122 14" fill="none" stroke="var(--sand-line)" stroke-width="1.4"/>
+                <circle cx="140" cy="115" r="2" fill="currentColor" stroke="none"/>
+                <text x="140" y="128" text-anchor="middle">FADE</text>
+              </g>
+              <g>
+                <line x1="230" y1="112" x2="230" y2="60" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M230 60 C 195 45, 195 20, 220 6" fill="none" stroke="var(--flag)" stroke-width="1.6"/>
+                <path d="M212 8 L220 6 L216 14" fill="none" stroke="var(--flag)" stroke-width="1.4"/>
+                <circle cx="230" cy="115" r="2" fill="currentColor" stroke="none"/>
+                <text x="230" y="128" text-anchor="middle">HOOK</text>
+              </g>
+            </svg>
+            <div class="diagramCaption">La cara del palo define hacia dónde arranca la bola; el path relativo a esa cara define cuánto se curva. El hook es la misma curva que un draw, solo que exagerada.</div>
+          </div>
+        `,
+        summary: 'La cara del palo en el impacto define la dirección inicial de la bola; el swing path relativo a la cara define cuánto se curva. Draw/hook curvan de derecha a izquierda, fade/slice de izquierda a derecha — la diferencia entre cada par es solo el grado.',
+        quiz: [
+          { q: 'Según las "ball flight laws" modernas, ¿qué determina principalmente la DIRECCIÓN INICIAL de la bola?', options: ['El swing path', 'La cara del palo en el impacto', 'El tipo de bola', 'La velocidad del swing'], correct: 1, explain: 'La cara del palo respecto a la línea objetivo es el factor dominante en la dirección inicial; esto reemplazó la explicación más vieja centrada en el path.' },
+          { q: '¿Qué diferencia hay, técnicamente, entre un draw y un hook?', options: ['Son curvas completamente distintas', 'Son la misma curva (derecha a izquierda), pero el hook es más exagerado', 'El hook no tiene relación con la cara del palo', 'El draw solo ocurre con el driver'], correct: 1, explain: 'Draw y hook son la misma dirección de curva; lo que cambia es cuánto se cierra la cara respecto al path.' },
+          { q: '¿Qué es un "pull"?', options: ['Una curva exagerada a la derecha', 'Una bola que sale hacia un lado y viaja casi recta', 'Un tipo de grip', 'Un golpe desde el bunker'], correct: 1, explain: 'El pull (o push, hacia el otro lado) sale desviado del objetivo pero sin curvarse demasiado, porque cara y path apuntan juntos hacia el mismo lado.' },
+          { q: '¿Qué tecnología permitió afinar estas "leyes del vuelo de la bola" modernas?', options: ['Los relojes GPS', 'Los launch monitors (como TrackMan)', 'Las cámaras de televisión', 'Los simuladores de golf únicamente'], correct: 1, explain: 'Los datos de radar/launch monitor permitieron aislar el efecto de la cara y el path por separado, afinando la explicación anterior.' },
+        ],
+      },
+      {
+        id: 'n2m3',
+        title: 'Juego corto: chip y pitch',
+        minutes: 8,
+        content: `
+          <p>Chip y pitch son los dos golpes básicos para cuando estás cerca del green pero no sobre él, y se diferencian en la técnica y en el resultado que buscan:</p>
+          <p><strong>Chip:</strong> un movimiento simple, descrito por instructores como "de una sola palanca" — básicamente los hombros se mueven en bloque, con poco o nada de <span class="term">wrist hinge</span> (quiebre de muñeca). Se usa cuando estás muy cerca del green. La bola sale <strong>baja y rueda mucho</strong> más de lo que vuela. Postura: bola atrás en el stance, peso favoreciendo el pie delantero, manos adelantadas.</p>
+          <p><strong>Pitch:</strong> un movimiento de "dos palancas" — se le suma quiebre de muñeca al giro de hombros, con un arco más grande y algo de transferencia de peso. Se usa cuando necesitás más distancia aérea o salvar un obstáculo antes del green. La bola sale <strong>más alta, con más tiempo en el aire y rueda menos</strong> al aterrizar. Postura: bola más al centro o levemente adelantada, swing más largo con quiebre de muñeca en el backswing.</p>
+          <p>Una forma simple de decidir cuál usar: si tenés mucho green por delante para trabajar y poco obstáculo, chip; si necesitás que la bola pare rápido o hay algo en el medio (bunker, rough alto), pitch.</p>
+        `,
+        summary: 'El chip es un movimiento simple de hombros sin quiebre de muñeca, bola baja que rueda mucho. El pitch suma quiebre de muñeca y un arco más grande, bola más alta que rueda poco. Se elige uno u otro según cuánto green tenés por delante y si hay obstáculos.',
+        quiz: [
+          { q: '¿Qué caracteriza al chip frente al pitch?', options: ['Mayor altura y menos rodada', 'Un movimiento simple de hombros, bola baja que rueda mucho', 'Siempre se juega con el putter', 'Solo se usa desde el bunker'], correct: 1, explain: 'El chip es un movimiento de "una palanca" (hombros, sin quiebre de muñeca) que produce una bola baja con mucha rodada.' },
+          { q: '¿Cuándo conviene más un pitch que un chip?', options: ['Cuando hay poco green por delante o un obstáculo en el medio', 'Siempre, es más fácil', 'Solo cuando estás en el green', 'Nunca cerca del green'], correct: 0, explain: 'El pitch da más altura y menos rodada, útil cuando necesitás que la bola pare rápido o salvar algo antes del green.' },
+          { q: 'En el chip, ¿dónde suele ir la bola en el stance?', options: ['Muy adelantada', 'Atrás en el stance', 'Fuera del stance', 'No importa la posición'], correct: 1, explain: 'La bola atrás en el stance, con las manos adelantadas, ayuda a producir el golpe descendente y bajo característico del chip.' },
+          { q: '¿Qué se le agrega al pitch que casi no está presente en el chip?', options: ['Quiebre de muñeca (wrist hinge)', 'Uso del putter', 'Un tee', 'Un guante extra'], correct: 0, explain: 'El pitch suma quiebre de muñeca al giro de hombros, generando un arco más grande y más altura.' },
+        ],
+      },
+      {
+        id: 'n2m4',
+        title: 'Putting: técnica y lectura de greens',
+        minutes: 8,
+        content: `
+          <p>Hay varios <span class="term">grips</span> estándar de putt, y ninguno es "el correcto" — cada jugador prueba hasta encontrar el que más control le da:</p>
+          <ul>
+            <li><span class="term">Reverse overlap</span>: el más tradicional; el índice de la mano de arriba se apoya sobre los dedos de la mano de abajo.</li>
+            <li><span class="term">Cross-handed</span> (o <span class="term">left-hand-low</span>): las manos invertidas respecto al grip normal — ayuda a algunos jugadores a nivelar los hombros y evitar que la muñeca de adelante se rompa.</li>
+            <li><span class="term">Claw grip</span>: la mano trasera no envuelve el grip de forma convencional, sino que descansa entre el pulgar y el índice — se usa para "aquietar" una mano trasera demasiado activa.</li>
+          </ul>
+          <p><strong>Lectura de greens:</strong> además de leer la pendiente "a ojo", existe un método sistemático llamado <span class="term">AimPoint</span>: estimás el porcentaje de pendiente bajo la bola y, con el brazo extendido y contando dedos, calculás un punto de apunte hacia el hoyo — un enfoque basado en física, no solo en sensación, que usan varios jugadores de gira junto a sus caddies.</p>
+          <p><strong>Velocidad antes que línea:</strong> la investigación de golpes ganados (strokes gained) popularizada por Mark Broadie sugiere que el control de <em>velocidad/distancia</em> pesa tanto o más que acertar la línea exacta — un putt con buena velocidad pero línea imperfecta suele terminar más cerca del hoyo que uno con línea perfecta pero mala velocidad.</p>
+          <p><strong>Mecánica básica:</strong> se enseña como un movimiento tipo <span class="term">pendulum</span> (péndulo) — hombros y brazos como una sola unidad, cuerpo estable, bola de posición algo adelantada en el stance.</p>
+        `,
+        summary: 'Hay varios grips de putt (reverse overlap, cross-handed, claw); ninguno es "el correcto". AimPoint es un método sistemático de lectura de greens basado en pendiente. La investigación de golpes ganados sugiere que la velocidad importa tanto o más que la línea exacta.',
+        quiz: [
+          { q: '¿Qué es el grip "claw"?', options: ['Las dos manos entrelazadas', 'La mano trasera apoyada entre pulgar e índice, sin envolver el grip', 'Un grip solo para el driver', 'Agarrar el putter con una sola mano'], correct: 1, explain: 'El claw grip busca aquietar una mano trasera demasiado activa en el putt.' },
+          { q: '¿Qué es AimPoint?', options: ['Una marca de putters', 'Un método sistemático de lectura de greens basado en pendiente', 'Un tipo de bola', 'Una regla oficial de golf'], correct: 1, explain: 'AimPoint traduce la pendiente estimada bajo la bola en un punto de apunte concreto, en vez de leer solo "a ojo".' },
+          { q: 'Según la investigación de golpes ganados citada, ¿qué importa tanto o más que la línea exacta en el putt?', options: ['El color de la bola', 'El control de velocidad/distancia', 'El tipo de grip', 'La marca del putter'], correct: 1, explain: 'Un putt con buena velocidad pero línea imperfecta suele terminar más cerca del hoyo que uno con línea perfecta pero mala velocidad.' },
+          { q: '¿Cómo se describe típicamente la mecánica básica del putt?', options: ['Un movimiento tipo péndulo, con hombros y brazos como una unidad', 'Un swing completo como el del driver', 'Solo con la muñeca', 'No tiene una mecánica estándar'], correct: 0, explain: 'La mecánica de péndulo busca un movimiento estable y repetible, con mínima acción independiente de las muñecas.' },
+        ],
+      },
+      {
+        id: 'n2m5',
+        title: 'Cómo salir de bunkers',
+        minutes: 6,
+        content: `
+          <p>El golpe de bunker greenside se juega distinto a casi cualquier otro: la idea NO es golpear la bola directamente, sino "sacarla" con un colchón de arena.</p>
+          <ul>
+            <li><strong>Cara y stance abiertos:</strong> abrí tanto el stance como la cara del palo antes de empezar el swing — esto ayuda a que el palo "resbale" bajo la bola en vez de clavarse.</li>
+            <li><strong>Posición de la bola:</strong> adelantada, cerca del pie de adelante, con el peso favoreciendo ese mismo lado (una guía común es una distribución de peso de aproximadamente 80/20 hacia el pie delantero).</li>
+            <li><strong>Punto de contacto:</strong> golpeá la arena unos 2-3 cm detrás de la bola (no la bola directamente), con un swing de afuera hacia adentro — eso desplaza una capa fina de arena que "empuja" la bola hacia afuera.</li>
+            <li><strong>Follow-through:</strong> comprometete con un final de swing completo y alto. Desacelerar o "cortar" el swing es la causa más común de golpes malos desde el bunker (bola que se queda en la arena, o golpe fino que la manda muy lejos).</li>
+          </ul>
+          <p>El <span class="term">bounce</span> del sand wedge (el ángulo construido en la suela del palo) es justamente lo que permite que el borde de ataque se deslice por debajo de la bola en vez de enterrarse en la arena — por eso el sand wedge está diseñado específicamente para este golpe.</p>
+        `,
+        summary: 'En el bunker se golpea la arena, no la bola directamente: cara y stance abiertos, bola adelantada, peso hacia el pie delantero, contacto un par de centímetros detrás de la bola, y un follow-through completo — nunca desacelerar.',
+        quiz: [
+          { q: 'En un golpe de bunker greenside, ¿qué se golpea primero?', options: ['La bola directamente', 'La arena, unos centímetros detrás de la bola', 'El borde del bunker', 'No se golpea nada, se levanta la bola con la mano'], correct: 1, explain: 'Golpear la arena detrás de la bola crea un colchón que la "empuja" hacia afuera, en vez de golpearla de forma directa.' },
+          { q: '¿Qué se recomienda hacer con la cara del palo y el stance antes del swing?', options: ['Cerrarlos', 'Abrirlos', 'Dejarlos neutros siempre', 'No importa'], correct: 1, explain: 'Abrir cara y stance ayuda a que el palo se deslice bajo la bola en vez de enterrarse en la arena.' },
+          { q: '¿Cuál es la causa más común de un mal golpe desde el bunker?', options: ['Usar mucho loft', 'Desacelerar o "cortar" el swing', 'Pararse muy cerca de la bola', 'Usar guante'], correct: 1, explain: 'Decelerar antes del impacto suele producir golpes chunkeados o mal contactados; conviene comprometerse con un follow-through completo.' },
+          { q: '¿Qué función cumple el "bounce" del sand wedge?', options: ['Hace que la bola rebote más alto', 'Permite que el borde del palo se deslice bajo la bola en vez de enterrarse', 'Sirve para putear', 'No tiene ninguna función específica'], correct: 1, explain: 'El bounce es el ángulo de la suela que evita que el palo se clave profundo en la arena.' },
+        ],
+      },
+      {
+        id: 'n2m6',
+        title: 'Situaciones difíciles: agua, OB, pelota perdida',
+        minutes: 8,
+        content: `
+          <p>Estas situaciones se rigen por las <span class="term">Rules of Golf</span> 2023 (USGA/The R&A) y suelen generar dudas incluso entre jugadores con experiencia:</p>
+          <p><strong>Penalty areas (zonas de penalización, antes llamadas "water hazards"):</strong> se marcan en amarillo o rojo. En ambos colores tenés, por 1 golpe de penalización: jugar <span class="term">stroke and distance</span> (volver a jugar desde el golpe anterior), o alivio <span class="term">back-on-the-line</span> (dejar caer la bola en cualquier punto de una línea imaginaria que una el hoyo con donde la bola cruzó hacia la zona, tan atrás como quieras). Las zonas <strong>rojas</strong> además permiten <span class="term">lateral relief</span>: dejar caer dentro de dos largos de palo de donde la bola cruzó, sin acercarte al hoyo. Importante: una bola en una penalty area <strong>no se puede declarar injugable</strong> — solo tenés las opciones de arriba.</p>
+          <p><strong>Fuera de límites (<span class="term">OB</span>) y pelota perdida:</strong> la regla estándar es <span class="term">stroke and distance</span> — volvés a jugar desde donde pegaste antes, sumando 1 golpe de penalización (perdés el golpe original y la distancia que hubiera avanzado).</p>
+          <p><strong>Regla local opcional (no siempre disponible):</strong> algunos campos adoptan una Regla Local Modelo que permite, para pelota perdida u OB fuera de una penalty area, dejar caer la bola cerca de donde se perdió en vez de volver caminando, mas 2 golpes de penalización (más que el stroke-and-distance estándar, para compensar el ahorro de tiempo). Esta regla es opcional, la decide cada Comité del campo, y <strong>no está pensada para competiciones de élite</strong> — solo para agilizar el juego recreativo.</p>
+        `,
+        summary: 'En una penalty area (amarilla o roja) tenés opciones de alivio por 1 golpe, pero nunca podés declararla injugable; las rojas además permiten alivio lateral. Perder la bola o salir OB cuesta 1 golpe bajo la regla estándar de stroke and distance. Algunos campos adoptan una regla local opcional (2 golpes) para agilizar el juego, no pensada para competiciones de élite.',
+        quiz: [
+          { q: '¿Qué opción de alivio tienen SOLO las zonas de penalización rojas (no las amarillas)?', options: ['Stroke and distance', 'Alivio lateral (dos largos de palo)', 'Jugar la bola como está', 'Declararla injugable'], correct: 1, explain: 'El alivio lateral (dos largos de palo desde donde la bola cruzó) es exclusivo de las zonas rojas; las amarillas solo tienen stroke-and-distance y back-on-the-line.' },
+          { q: '¿Se puede declarar injugable una bola que está dentro de una penalty area?', options: ['Sí, siempre', 'No, ese alivio no aplica dentro de una penalty area'], correct: 1, explain: 'Dentro de una penalty area solo aplican las opciones específicas de esa zona, no el alivio por bola injugable.' },
+          { q: 'Bajo la regla estándar de "stroke and distance", ¿cuál es la penalidad por perder la bola o salir OB?', options: ['Ninguna', '1 golpe, volviendo a jugar desde antes', '2 golpes siempre', 'Pierde el hoyo'], correct: 1, explain: 'La regla estándar cuesta 1 golpe: volvés a jugar desde donde pegaste antes.' },
+          { q: '¿Para qué tipo de juego está pensada la regla local opcional de 2 golpes (dejar caer cerca de donde se perdió la bola)?', options: ['Para competiciones de élite', 'Para agilizar el juego recreativo', 'Es obligatoria en todos los campos', 'Solo para el hoyo 18'], correct: 1, explain: 'Es una Regla Local opcional pensada para no tener que volver caminando en juego recreativo, explícitamente no recomendada para competiciones de élite.' },
+        ],
+      },
+      {
+        id: 'n2m7',
+        title: 'Course management básico',
+        minutes: 7,
+        content: `
+          <p>Jugar bien no es solo pegarle bien a la bola — también es elegir bien qué intentar en cada golpe. Algunos principios que se repiten en la enseñanza de estrategia de juego:</p>
+          <ul>
+            <li><strong>Jugá para tu peor error, no para tu mejor golpe:</strong> elegí el objetivo pensando en qué pasa si el golpe sale mal, no solo en el resultado ideal — por ejemplo, apuntar lejos de un bunker o del agua aunque eso te aleje un poco de la bandera.</li>
+            <li><strong>Apuntá a la parte generosa del green:</strong> salvo que tengas mucha confianza en el golpe, apuntar al centro o a la zona más amplia y segura del green suele salir mejor en el largo plazo que ir siempre directo a banderas complicadas.</li>
+            <li><strong>Evaluá riesgo vs. recompensa:</strong> antes de un tiro agresivo (cortar un dogleg, pasar un hazard), pensá qué tan probable es que salga bien y qué tan caro es el error si sale mal.</li>
+          </ul>
+          <p>La investigación de golpes ganados (basada en el trabajo de Mark Broadie) es útil acá: entre jugadores de distinto nivel, los <strong>approach shots</strong> y los <strong>tiros de salida</strong> explican una parte más grande de la diferencia de puntaje que el juego corto o el putt (que aportan una porción menor, del orden del 15% según algunos análisis). Esto no significa que el juego corto no importe — significa que, para la mayoría de los jugadores, mejorar la toma de decisiones y el golpeo de approach suele tener más impacto en el puntaje que practicar solo cerca del green.</p>
+        `,
+        summary: 'Elegí tus objetivos pensando en el peor resultado posible, no solo en el mejor; apuntá a la zona generosa del green salvo que confíes mucho en el golpe. Según la investigación de golpes ganados, approach y tee shots explican más de la diferencia de puntaje entre niveles que el juego corto o el putt.',
+        quiz: [
+          { q: '¿Qué significa "jugar para tu peor error"?', options: ['Practicar solo los golpes malos', 'Elegir el objetivo pensando en qué pasa si el golpe sale mal', 'Apuntar siempre a la bandera', 'Evitar jugar en días difíciles'], correct: 1, explain: 'Es elegir un objetivo que minimice el daño de un golpe fallado, no solo maximizar el resultado si sale perfecto.' },
+          { q: 'Según la investigación de golpes ganados citada, ¿qué explica una porción más grande de la diferencia de puntaje entre niveles de jugador?', options: ['El putt únicamente', 'Los approach shots y los tiros de salida', 'La elección de bola', 'El clima'], correct: 1, explain: 'Approach shots y tee shots aportan más a la diferencia de puntaje entre niveles que el juego corto o el putt, según esta investigación.' },
+          { q: '¿Qué significa esto para el juego corto?', options: ['Que no importa practicarlo', 'Que aporta una porción menor a la diferencia entre niveles, pero sigue importando', 'Que solo importa en el bunker', 'Que reemplaza al approach'], correct: 1, explain: 'El juego corto aporta una porción menor de la diferencia de puntaje entre niveles — no que no importe, sino que hay más margen de mejora en approach y salida para la mayoría de los jugadores.' },
+          { q: '¿Qué principio general se recomienda al elegir dónde apuntar en el green?', options: ['Siempre ir directo a la bandera', 'Apuntar a la zona generosa/segura salvo mucha confianza en el golpe', 'Apuntar siempre al borde del green', 'No importa dónde apuntar'], correct: 1, explain: 'Apuntar a la parte amplia y segura del green reduce el costo esperado de un golpe que no sale perfecto.' },
+        ],
+      },
+      {
+        id: 'n2m8',
+        title: 'El sistema de hándicap (World Handicap System)',
+        minutes: 8,
+        content: `
+          <p>El <span class="term">World Handicap System</span> (WHS) es administrado conjuntamente por la USGA y The R&A desde su lanzamiento en 2020, y reemplazó varios sistemas regionales que existían antes en distintas partes del mundo, unificando cómo se mide el nivel de un jugador en todo el planeta.</p>
+          <ul>
+            <li><span class="term">Handicap Index</span>: un número portátil que refleja tu nivel de juego demostrado, calculado a partir de tu propio historial de puntajes, ajustado por la dificultad del campo y las condiciones. Se calcula como el <strong>promedio de tus mejores 8 diferenciales de puntaje entre tus últimas 20 rondas</strong>.</li>
+            <li><span class="term">Course Rating</span>: el puntaje que se espera que haga un jugador scratch (hándicap 0) en ese campo, en un buen día y condiciones normales.</li>
+            <li><span class="term">Slope Rating</span>: mide qué tan difícil es un campo, en términos relativos, para un jugador "bogey" (no-scratch) comparado con un jugador scratch. Va de 55 a 155, con 113 como valor "estándar".</li>
+            <li><span class="term">Course Handicap</span>: tu Handicap Index convertido para el campo y las barras específicas que vas a jugar, usando el Course Rating y el Slope Rating de ese set de tees — "vos contra ese campo en particular".</li>
+            <li><span class="term">Playing Handicap</span>: el Course Handicap ajustado además por el formato de competencia que estás jugando (por ejemplo, un torneo de four-ball suele aplicar un porcentaje distinto al de stroke play individual).</li>
+          </ul>
+          <p>Tu Handicap Index se actualiza todos los días: normalmente al día siguiente de cargar un puntaje, a la medianoche hora local.</p>
+        `,
+        summary: 'El WHS es administrado por USGA y The R&A desde 2020. El Handicap Index es el promedio de tus mejores 8 diferenciales entre tus últimas 20 rondas. Course Rating y Slope Rating miden la dificultad del campo; el Handicap Index se convierte en Course Handicap (para ese campo) y luego en Playing Handicap (para ese formato de competencia). Se actualiza a diario.',
+        quiz: [
+          { q: '¿Quiénes administran conjuntamente el World Handicap System?', options: ['PGA Tour y LPGA', 'USGA y The R&A', 'Solo la USGA', 'Cada país por separado'], correct: 1, explain: 'El WHS es administrado conjuntamente por la USGA y The R&A desde 2020, unificando sistemas regionales previos.' },
+          { q: '¿Cómo se calcula el Handicap Index?', options: ['El promedio de todas tus rondas jugadas', 'El promedio de tus mejores 8 diferenciales entre tus últimas 20 rondas', 'Tu mejor puntaje histórico', 'Un número fijo que no cambia'], correct: 1, explain: 'Se toman tus últimas 20 rondas y se promedian los 8 mejores diferenciales de puntaje.' },
+          { q: '¿Qué mide el Slope Rating?', options: ['La distancia total del campo', 'Qué tan difícil es el campo para un jugador no-scratch comparado con uno scratch', 'La cantidad de bunkers', 'El precio del green fee'], correct: 1, explain: 'El Slope Rating (55 a 155, con 113 como estándar) mide la dificultad relativa del campo para un jugador "bogey".' },
+          { q: '¿Con qué frecuencia se actualiza tu Handicap Index?', options: ['Una vez al año', 'Todos los días', 'Solo cuando lo pedís', 'Nunca cambia'], correct: 1, explain: 'El Handicap Index se revisa diariamente, normalmente al día siguiente de cargar un puntaje.' },
+        ],
+      },
+      {
+        id: 'n2m9',
+        title: 'Formatos de juego: stroke play vs. match play',
+        minutes: 6,
+        content: `
+          <p>Las Rules of Golf definen dos grandes formas de competir, con lógicas bien distintas:</p>
+          <p><strong><span class="term">Stroke play</span></strong>: todos los jugadores compiten según su puntaje total. Cada golpe de la ronda (o de todas las rondas, en torneos de varios días) suma al total, y gana quien termina con menos golpes en total. No importa cómo te fue en un hoyo puntual — todo se acumula.</p>
+          <p><strong><span class="term">Match play</span></strong>: se compite hoyo por hoyo. En cada hoyo, ganás, perdés o <span class="term">halve</span>ás (empatás) ese hoyo específico — un hoyo se "halvea" cuando ambos hacen el mismo puntaje. El resultado del partido se decide en cuanto un lado queda arriba por más hoyos de los que quedan por jugar, así que muchas veces el partido termina antes del hoyo 18. El margen se expresa como "X & Y" — por ejemplo, <strong>"3 & 2"</strong> significa que un jugador iba 3 hoyos arriba con solo 2 hoyos restantes, así que el resultado ya estaba matemáticamente decidido.</p>
+          <p>Además de estos dos formatos "base", hay variantes recreativas comunes que vas a encontrar en la cancha: <span class="term">four-ball</span> (equipos de a dos, cada uno juega su bola, cuenta el mejor resultado del equipo), <span class="term">foursomes</span> (equipos de a dos, una sola bola, golpes alternados), <span class="term">scramble</span> (todos pegan, se elige el mejor resultado y se sigue desde ahí) y <span class="term">stableford</span> (puntos por hoyo según el resultado respecto al par, en vez de contar cada golpe).</p>
+        `,
+        summary: 'En stroke play gana quien hace menos golpes en total; en match play se compite hoyo por hoyo (ganás, perdés o halveás cada uno), y el partido termina apenas el resultado queda matemáticamente decidido, expresado como "X & Y". También existen formatos recreativos como four-ball, foursomes, scramble y stableford.',
+        quiz: [
+          { q: 'En stroke play, ¿quién gana?', options: ['Quien gana más hoyos', 'Quien termina con menos golpes en total', 'Quien pega más lejos', 'Se decide por sorteo'], correct: 1, explain: 'En stroke play todo se acumula: gana quien completa la ronda (o rondas) con el total de golpes más bajo.' },
+          { q: 'En match play, ¿qué significa que un hoyo se "halvee"?', options: ['Que nadie lo jugó', 'Que ambos jugadores hicieron el mismo puntaje en ese hoyo', 'Que se cancela el hoyo', 'Que se juega de nuevo'], correct: 1, explain: 'Un hoyo halveado es un empate en ese hoyo puntual — ninguno de los dos lo gana ni lo pierde.' },
+          { q: '¿Qué significa un resultado de "3 & 2" en match play?', options: ['Se jugaron 3 hoyos extra', 'El ganador iba 3 hoyos arriba con solo 2 por jugar', 'El partido terminó en el hoyo 3', 'Hubo 3 empates y 2 victorias'], correct: 1, explain: 'La notación "X & Y" indica cuántos hoyos de ventaja tenía el ganador (X) sobre los hoyos que quedaban por jugar (Y).' },
+          { q: '¿En qué formato dos compañeros de equipo golpean la MISMA bola, alternando quién pega?', options: ['Four-ball', 'Foursomes', 'Scramble', 'Stroke play individual'], correct: 1, explain: 'En foursomes el equipo juega una sola bola con golpes alternados; en four-ball, en cambio, cada jugador juega su propia bola.' },
+        ],
+      },
     ],
   },
   {
-    id: 'n3', name: 'Nivel 3', subtitle: 'Equipamiento y tecnología', locked: true,
+    id: 'n3', name: 'Nivel 3', subtitle: 'Equipamiento y tecnología', locked: false,
     modules: [
-      { title: 'Anatomía del palo: cara, hosel, sweet spot y forgiveness', minutes: 9 },
-      { title: 'Bolas de golf: construcción y por qué importa cuál elegís', minutes: 8 },
-      { title: 'Shafts: materiales, flex/stiffness, torque y kick point', minutes: 9 },
-      { title: 'El driver a fondo: loft, ángulos y forgiveness vs. distancia', minutes: 9 },
+      {
+        id: 'n3m1',
+        title: 'Anatomía del palo: cara, hosel, sweet spot y forgiveness',
+        minutes: 9,
+        content: `
+          <p>Conocer las partes de la cabeza del palo ayuda a entender por qué unos palos "perdonan" más los golpes descentrados que otros:</p>
+          <ul>
+            <li><span class="term">Face</span> (cara): la superficie que golpea la bola.</li>
+            <li><span class="term">Hosel</span>: el punto donde el shaft se conecta con la cabeza.</li>
+            <li><span class="term">Sole</span> (suela): la parte inferior de la cabeza, la que toca (o roza) el pasto.</li>
+            <li><span class="term">Toe</span> / <span class="term">heel</span>: el extremo de la cabeza más lejos del shaft, y el más cerca de él, respectivamente.</li>
+            <li><span class="term">Bounce</span>: el ángulo entre el borde delantero y trasero de la suela — clave en wedges (Nivel 2).</li>
+          </ul>
+          <p>En hierros, hay dos grandes filosofías de diseño: <span class="term">blade</span> (o <span class="term">muscle back</span>), con la parte trasera sólida y rellena, sweet spot chico y poco forgiveness — pensados para jugadores con contacto muy consistente; y <span class="term">cavity back</span>, con la parte trasera hueca, que redistribuye el peso hacia el perímetro de la cabeza, generando un sweet spot más grande.</p>
+          <p>El <span class="term">sweet spot</span> es el punto de la cara donde un golpe produce la máxima distancia y precisión, y está directamente relacionado con dónde está el <span class="term">center of gravity</span> (CG, centro de gravedad) de la cabeza: golpear alineado con el CG minimiza la energía que se pierde en vibración y torsión.</p>
+          <p><span class="term">Forgiveness</span> (indulgencia ante golpes descentrados) se logra principalmente con <span class="term">MOI</span> (<span class="term">Moment of Inertia</span>, momento de inercia): mide cuánto resiste la cabeza a rotar cuando la golpeás fuera del centro. A mayor MOI, más estable queda la cara en un golpe descentrado, así que se pierde menos velocidad y se desvía menos la bola. El MOI se logra con <span class="term">perimeter weighting</span> (peso perimetral): mover el peso disponible hacia los bordes de la cabeza en vez de dejarlo en el centro.</p>
+          <p>El reglamento de equipamiento de USGA/R&A pone un límite oficial al MOI de los drivers: <strong>5,900 g·cm²</strong> como máximo (más una tolerancia de medición de 100 g·cm²) — así se evita que la tecnología haga el juego demasiado fácil para los golpes descentrados en competición.</p>
+        `,
+        summary: 'La forgiveness de un palo depende del MOI (momento de inercia): a mayor MOI, más estable queda la cara ante golpes descentrados. Se logra con peso perimetral, típico de los diseños cavity back frente a los blade. El reglamento limita el MOI de drivers a 5,900 g·cm².',
+        quiz: [
+          { q: '¿Qué mide el MOI (Moment of Inertia) de una cabeza de palo?', options: ['Qué tan lejos pega', 'Cuánto resiste la cabeza a rotar en golpes descentrados', 'El peso total del palo', 'El color de la cara'], correct: 1, explain: 'A mayor MOI, más estable se mantiene la cara ante un golpe fuera del centro, perdiendo menos distancia y precisión.' },
+          { q: '¿Qué diseño de hierro suele dar más forgiveness: blade o cavity back?', options: ['Blade / muscle back', 'Cavity back', 'Da igual, no hay diferencia', 'Ninguno de los dos'], correct: 1, explain: 'El cavity back redistribuye peso hacia el perímetro (perimeter weighting), generando más MOI y un sweet spot más grande.' },
+          { q: '¿Cuál es el límite oficial de MOI para drivers según USGA/R&A?', options: ['460 g·cm²', '5,900 g·cm²', 'No hay límite', '100 g·cm²'], correct: 1, explain: 'El reglamento de equipamiento fija un máximo de 5,900 g·cm² (más 100 g·cm² de tolerancia de medición).' },
+          { q: '¿Qué es el "sweet spot"?', options: ['El grip favorito de un jugador', 'El punto de la cara alineado con el centro de gravedad, que da máxima distancia y precisión', 'Un tipo de bunker', 'El ángulo del hosel'], correct: 1, explain: 'Golpear en el sweet spot minimiza la pérdida de energía por vibración y torsión, alineado con el CG de la cabeza.' },
+        ],
+      },
+      {
+        id: 'n3m2',
+        title: 'Bolas de golf: construcción y por qué importa cuál elegís',
+        minutes: 8,
+        content: `
+          <p>No todas las bolas de golf son iguales por dentro, y la construcción afecta directamente cómo se comportan:</p>
+          <ul>
+            <li><span class="term">2-piece</span>: núcleo sólido de goma rodeado por una cubierta de <span class="term">Surlyn</span>/ionómero. Es el diseño más simple: maximiza distancia (menos spin), muy durable y de menor precio — ideal para principiantes que buscan un vuelo recto y consistente.</li>
+            <li><span class="term">3-piece</span> (y multicapa, 4-5 piezas): agrega una capa "manto" entre el núcleo y la cubierta, casi siempre con cubierta de <span class="term">uretano</span>, para balancear distancia con control de spin cerca del green. Cuestan más y se rayan más fácil, y apuntan a jugadores de hándicap más bajo que buscan control fino.</li>
+          </ul>
+          <p><strong>Cubiertas:</strong> <span class="term">Surlyn</span> (ionómero) es dura y duradera, resiste cortes, y da menos spin desde el tee (más distancia, vuelo más recto) pero menos control cerca del green. <span class="term">Urethane</span> es más blando, típico en bolas de nivel tour: más spin en golpes cortos (más control), mejor tacto, pero más caro y menos durable.</p>
+          <p>Los <span class="term">dimples</span> (hoyuelos) no son decorativos: crean un flujo de aire turbulento alrededor de la bola que reduce el <span class="term">drag</span> (resistencia del aire) y ayuda a generar <span class="term">lift</span> (sustentación) — sin ellos, la bola "caería del cielo" mucho más rápido de lo que lo hace.</p>
+          <p>Sobre la <span class="term">compression</span> (compresión): un dato que sorprende a muchos jugadores es que <strong>no hay una correlación directa comprobada</strong> entre velocidad de swing y la compresión "ideal" de la bola — incluso swings lentos logran comprimir bolas de compresión estándar. La recomendación de los fitters es fijarse en el resultado real (trayectoria y spin), no en hacer coincidir mecánicamente la compresión con la velocidad de swing.</p>
+          <p>Por reglamento (USGA/R&A), toda bola conforme debe medir al menos <strong>1.680 pulgadas</strong> de diámetro y pesar como máximo <strong>1.620 onzas</strong> — además de cumplir límites de velocidad inicial y de distancia total bajo condiciones de prueba estandarizadas.</p>
+        `,
+        summary: 'Las bolas de 2 piezas maximizan distancia y durabilidad; las de 3+ piezas con cubierta de uretano dan más control de spin cerca del green. Los dimples reducen la resistencia del aire. La compresión no se correlaciona directamente con la velocidad de swing, contra la creencia popular. El reglamento fija un diámetro mínimo de 1.680" y un peso máximo de 1.620 oz.',
+        quiz: [
+          { q: '¿Qué tipo de bola suele dar MÁS distancia y durabilidad, a costa de menos control cerca del green?', options: ['3-piece con uretano', '2-piece con cubierta Surlyn', 'No hay diferencia', 'Las bolas multicapa siempre'], correct: 1, explain: 'La bola de 2 piezas con cubierta Surlyn prioriza distancia y durabilidad sobre control de spin.' },
+          { q: '¿Para qué sirven los dimples de una bola de golf?', options: ['Solo decoración', 'Reducir la resistencia del aire y ayudar a la sustentación', 'Hacerla más pesada', 'Evitar que se raye'], correct: 1, explain: 'Los dimples generan un flujo de aire turbulento que reduce el drag y ayuda a mantener la bola más tiempo en el aire.' },
+          { q: '¿Es cierto que un swing lento necesita obligatoriamente una bola de compresión baja?', options: ['Sí, siempre', 'No — no hay una correlación directa comprobada entre velocidad de swing y compresión ideal'], correct: 1, explain: 'Es una creencia muy extendida pero no confirmada: incluso swings lentos logran comprimir bolas de compresión estándar.' },
+          { q: '¿Cuál es el diámetro mínimo reglamentario de una bola de golf conforme?', options: ['1.500 pulgadas', '1.680 pulgadas', '2.000 pulgadas', 'No hay mínimo'], correct: 1, explain: 'El reglamento USGA/R&A exige un diámetro mínimo de 1.680 pulgadas (42.67 mm).' },
+        ],
+      },
+      {
+        id: 'n3m3',
+        title: 'Shafts: materiales, flex/stiffness, torque y kick point',
+        minutes: 9,
+        content: `
+          <p>El shaft es, para muchos fitters, la parte del palo con más impacto en cómo se siente y se comporta el golpe:</p>
+          <p><strong>Materiales:</strong> <span class="term">steel</span> (acero) es más pesado y en general más consistente/predecible en su flexión — el material más común en hierros. <span class="term">Graphite</span> (grafito) es más liviano, típico en maderas y drivers, y suele asociarse con mayor absorción de vibración y más velocidad de cabeza para un mismo esfuerzo del jugador.</p>
+          <p><strong>Flex / stiffness:</strong> las categorías estándar de la industria son <span class="term">L</span> (Ladies), <span class="term">A</span> (Senior), <span class="term">R</span> (Regular), <span class="term">S</span> (Stiff) y <span class="term">X</span> (Extra Stiff), de menos a más rígido. Como guía general de fitting (no una regla estricta, ya que cada jugador es distinto), suelen asociarse a rangos de velocidad de swing con el driver: L por debajo de 72 mph, A entre 72-83, R entre 84-96, S entre 97-104, y X por encima de 105 mph.</p>
+          <p><strong><span class="term">Torque</span>:</strong> mide cuánto resiste el shaft a torcerse sobre su propio eje durante el swing, medido en grados — a menor grado, menos se tuerce. Un shaft con torque excesivo para tu swing puede sentirse descontrolado (la cara llega abierta al impacto); uno con torque insuficiente puede sentirse "muerto" y difícil de cargar. En general, un shaft más rígido (mayor stiffness) tiende a tener también menor torque.</p>
+          <p><strong><span class="term">Kick point</span></strong> (o <span class="term">bend point</span>): el punto del shaft que más se flexiona durante el swing. Un kick point <strong>bajo</strong> flexiona más cerca de la cabeza, sube el loft dinámico y da un lanzamiento más alto — útil para swings más lentos que necesitan ayuda para elevar la bola. Un kick point <strong>alto</strong> flexiona menos, da un lanzamiento más bajo y más control — útil para swings rápidos que ya generan altura de sobra.</p>
+        `,
+        summary: 'El acero es más pesado y consistente (típico en hierros); el grafito es más liviano y absorbe más vibración (típico en maderas). El flex va de L a X según velocidad de swing (guía general, no regla estricta). El torque mide resistencia a torcerse — menor torque suele ir con más stiffness. El kick point bajo da más altura; el alto, menos altura y más control.',
+        quiz: [
+          { q: '¿Qué material de shaft es típicamente más liviano y absorbe más vibración?', options: ['Acero', 'Grafito', 'Titanio', 'Ninguno absorbe vibración'], correct: 1, explain: 'El grafito es más liviano que el acero y suele absorber más vibración, por eso es común en maderas y drivers.' },
+          { q: '¿Qué mide el "torque" de un shaft?', options: ['Su peso total', 'Cuánto resiste a torcerse sobre su propio eje', 'Su largo', 'El precio'], correct: 1, explain: 'El torque mide la resistencia a la torsión del shaft durante el swing, medido en grados.' },
+          { q: '¿Qué efecto tiene un kick point BAJO?', options: ['Lanzamiento más bajo', 'Lanzamiento más alto', 'No afecta el lanzamiento', 'Solo afecta el color del shaft'], correct: 1, explain: 'Un kick point bajo flexiona más cerca de la cabeza, sumando loft dinámico y elevando el lanzamiento.' },
+          { q: '¿Los rangos de flex por velocidad de swing (L, A, R, S, X) son una regla estricta?', options: ['Sí, son obligatorios', 'No, son una guía general — cada jugador es distinto y conviene un fitting'], correct: 1, explain: 'Son guías generales de la industria; un fitting profesional (Nivel 5) ajusta esto a las características reales del jugador.' },
+        ],
+      },
+      {
+        id: 'n3m4',
+        title: 'El driver a fondo: loft, ángulos y forgiveness vs. distancia',
+        minutes: 9,
+        content: `
+          <p>El driver es el palo más especializado de la bolsa, y varios ángulos determinan cómo vuela la bola:</p>
+          <ul>
+            <li><span class="term">Loft</span>: en drivers de hombre suele ir de 8° a 12°, con 9°-10.5° como lo más común. Contra la intuición, un swing más lento generalmente necesita <strong>más</strong> loft (no menos) para lograr buen carry — no menos, como muchos jugadores asumen.</li>
+            <li><span class="term">Lie angle</span>: el ángulo entre el eje del shaft y la suela del palo. Determina si la suela toca el piso de forma pareja al address, lo cual afecta si la cara llega cuadrada al impacto.</li>
+            <li><span class="term">Face angle</span>: si la cara está cuadrada, abierta o cerrada respecto a la línea de vuelo — es, según fuentes de fitting, el factor más determinante de la dirección inicial de la bola (más que el swing path). Cara abierta tiende a producir slice; cara cerrada, draw/hook.</li>
+          </ul>
+          <p>Por reglamento, el volumen máximo de una cabeza de driver es de <strong>460 cm³</strong> (más 10 cm³ de tolerancia) — casi todos los drivers modernos usan el máximo permitido para maximizar forgiveness, aunque existen modelos algo más chicos (430-450 cm³) para jugadores avanzados que priorizan menos spin sobre más perdón.</p>
+          <p><strong>Tendencia moderna de fitting</strong> (no una regla del reglamento, sino un patrón observado en datos de launch monitor): combinar <strong>más lanzamiento con menos spin</strong> del que la intuición sugeriría suele maximizar la distancia total para muchos jugadores amateur — optimizar estos dos números, según análisis basados en datos de TrackMan, puede sumar del orden de 10-12 yardas de distancia total sin necesitar más velocidad de swing.</p>
+        `,
+        summary: 'El loft del driver va típicamente de 8° a 12°; contra la intuición, un swing más lento suele necesitar más loft, no menos. El face angle es el factor más determinante de la dirección inicial. El volumen máximo reglamentario es 460 cm³. La tendencia moderna de fitting busca más lanzamiento con menos spin del esperado, según datos de launch monitor.',
+        quiz: [
+          { q: 'Contra la intuición común, ¿qué necesita generalmente un swing MÁS LENTO respecto al loft del driver?', options: ['Menos loft', 'Más loft', 'Exactamente el mismo loft que un swing rápido', 'El loft no importa'], correct: 1, explain: 'Un swing más lento generalmente necesita más loft (no menos) para lograr un buen carry, según guías de fitting como la de Callaway.' },
+          { q: '¿Qué ángulo es, según fuentes de fitting, el más determinante de la DIRECCIÓN INICIAL de la bola con el driver?', options: ['El lie angle', 'El face angle', 'El ángulo del hosel', 'El swing path únicamente'], correct: 1, explain: 'El face angle (cara cuadrada, abierta o cerrada) determina en gran medida hacia dónde arranca la bola.' },
+          { q: '¿Cuál es el volumen máximo reglamentario de una cabeza de driver?', options: ['360 cm³', '460 cm³', '560 cm³', 'No hay límite'], correct: 1, explain: 'El límite oficial USGA/R&A es 460 cm³, más 10 cm³ de tolerancia de medición.' },
+          { q: 'La tendencia moderna de fitting hacia "más lanzamiento, menos spin" — ¿es una regla del reglamento de golf?', options: ['Sí, es una regla oficial', 'No, es un patrón observado en datos de launch monitor, no una regla'], correct: 1, explain: 'Es una tendencia de fitting basada en datos (TrackMan y similares), distinta de las reglas de conformidad de equipo como el límite de 460 cm³.' },
+        ],
+      },
     ],
   },
   {
-    id: 'n4', name: 'Nivel 4', subtitle: 'Perfeccionamiento', locked: true,
+    id: 'n4', name: 'Nivel 4', subtitle: 'Perfeccionamiento', locked: false,
     modules: [
-      { title: 'Biomecánica del swing y plano de swing', minutes: 9 },
-      { title: 'Trabajar la pelota: draw, fade y control de trayectoria', minutes: 9 },
-      { title: 'El reglamento oficial a fondo (Rules of Golf 2023)', minutes: 10 },
-      { title: 'Preparación física y mental para competir', minutes: 8 },
-      { title: 'Torneos y formatos de competencia', minutes: 7 },
-      { title: 'Estadísticas de juego: cómo analizar tu rendimiento', minutes: 8 },
+      {
+        id: 'n4m1',
+        title: 'Biomecánica del swing y plano de swing',
+        minutes: 9,
+        content: `
+          <p>El <span class="term">swing plane</span> (plano de swing) es, técnicamente, el ángulo entre el piso y el círculo que describe la cabeza del palo durante la parte baja del arco del swing (aproximadamente desde la altura de la rodilla en el downswing hasta el impacto). Los palos más largos y con menos loft (como el driver) generan planos más "planos" (ángulo menor); los palos más cortos y con más loft, planos más "verticales".</p>
+          <p>Un marco de enseñanza popular (del instructor Jim Hardy) distingue entre <span class="term">one-plane swing</span> (el palo gira "alrededor" del cuerpo en un arco más ancho y plano, impulsado sobre todo por la rotación del cuerpo) y <span class="term">two-plane swing</span> (el palo se mueve más "arriba y abajo" por delante del cuerpo, con más participación de los brazos). Vale aclarar: esto es <strong>una filosofía de enseñanza específica, no un consenso biomecánico universal</strong> — hay swings híbridos, y distintos instructores enseñan distinto.</p>
+          <p>Donde sí hay más consenso es en el concepto de <span class="term">kinematic sequence</span> (secuencia cinemática), que enseña el Titleist Performance Institute (TPI): en un downswing eficiente, la <strong>cadera</strong> alcanza su velocidad angular máxima primero, después el <strong>torso</strong>, después los <strong>brazos</strong> y por último el <strong>palo</strong> — un orden de adentro hacia afuera (proximal a distal) que genera un efecto de "látigo", transfiriendo energía y maximizando la velocidad de cabeza en el impacto. Incluso así, TPI documenta variantes de esta secuencia entre jugadores de elite — no es una receta única.</p>
+        `,
+        summary: 'El swing plane es el ángulo del círculo que describe la cabeza del palo cerca del impacto. One-plane vs. two-plane es una filosofía de enseñanza específica (Jim Hardy), no consenso universal. La secuencia cinemática de TPI (cadera → torso → brazos → palo) tiene más consenso como principio general, aunque con variantes entre jugadores de elite.',
+        quiz: [
+          { q: '¿Qué es el "swing plane"?', options: ['El peso del palo', 'El ángulo del círculo que describe la cabeza del palo cerca del impacto', 'Un tipo de grip', 'La marca del palo'], correct: 1, explain: 'Es el ángulo entre el piso y el círculo que describe la cabeza del palo en la parte baja del swing.' },
+          { q: '¿El marco "one-plane vs. two-plane" es un consenso biomecánico universal?', options: ['Sí, todos los instructores enseñan exactamente esto', 'No, es una filosofía de enseñanza específica (de Jim Hardy)'], correct: 1, explain: 'Es una escuela de pensamiento particular, no la única forma aceptada de entender el swing.' },
+          { q: 'Según la secuencia cinemática que enseña TPI, ¿qué parte del cuerpo alcanza su velocidad máxima PRIMERO en un downswing eficiente?', options: ['El palo', 'Los brazos', 'La cadera', 'La cabeza'], correct: 2, explain: 'El orden proximal-a-distal empieza en la cadera, sigue por el torso, luego los brazos, y termina en el palo.' },
+          { q: '¿Todos los jugadores de elite muestran exactamente la misma secuencia cinemática?', options: ['Sí, sin excepción', 'No, TPI documenta variantes entre jugadores de elite'], correct: 1, explain: 'Aunque hay un patrón general eficiente, existen variaciones documentadas incluso entre los mejores jugadores.' },
+        ],
+      },
+      {
+        id: 'n4m2',
+        title: 'Trabajar la pelota: draw, fade y control de trayectoria',
+        minutes: 9,
+        content: `
+          <p>Más allá de entender la teoría (Nivel 2), producir un draw o fade <em>a propósito</em> es una habilidad que se trabaja con setup e intención:</p>
+          <p>Para un <strong>draw intencional</strong>, el patrón habitual es un swing path relativamente hacia la derecha del objetivo (<span class="term">in-to-out</span>), combinado con una cara que apunta a la derecha de la línea objetivo pero cerrada respecto al path. Para un <strong>fade intencional</strong>, el patrón inverso: path hacia la izquierda del objetivo (<span class="term">out-to-in</span>), con la cara abierta respecto al path pero cerrada respecto al objetivo.</p>
+          <p>Instructores reconocidos enseñan a "agregar la curva en el address": ajustar la alineación del cuerpo (pies, caderas, hombros) y la cara del palo <em>antes</em> de empezar el swing, en vez de intentar manipular la trayectoria a mitad de movimiento.</p>
+          <p>El control de trayectoria (altura, spin) también se trabaja con la posición de la bola en el stance: moverla más atrás tiende a bajar el ángulo de lanzamiento y el spin (golpe más penetrante), mientras que moverla más adelante tiende a subir el lanzamiento.</p>
+        `,
+        summary: 'Un draw intencional combina un path hacia la derecha con una cara cerrada respecto al path; un fade intencional, lo inverso. Se recomienda ajustar la alineación y la cara en el address, no durante el swing. Mover la bola atrás en el stance baja la trayectoria; adelantarla la sube.',
+        quiz: [
+          { q: 'Para un draw intencional, ¿hacia dónde suele apuntar el swing path respecto al objetivo?', options: ['Hacia la izquierda (out-to-in)', 'Hacia la derecha (in-to-out)', 'Exactamente al objetivo', 'No importa el path'], correct: 1, explain: 'Un path in-to-out (hacia la derecha del objetivo), combinado con una cara cerrada respecto al path, produce un draw.' },
+          { q: '¿Cuándo se recomienda "agregar la curva" según instructores reconocidos?', options: ['A mitad del downswing', 'En el address, antes de empezar el swing', 'Después del impacto', 'Nunca, se debe dejar al azar'], correct: 1, explain: 'Se recomienda predisponer la alineación y la cara desde el address, en vez de manipular la trayectoria durante el movimiento.' },
+          { q: 'Si movés la bola más atrás en el stance, ¿qué tiende a pasar con la trayectoria?', options: ['Sube el lanzamiento', 'Baja el lanzamiento y el spin, golpe más penetrante', 'No cambia nada', 'Solo afecta la dirección, no la altura'], correct: 1, explain: 'Ball más atrás en el stance suele producir un golpe más bajo y penetrante, con menos spin.' },
+          { q: 'Para un fade intencional, ¿cómo suele estar la cara respecto al PATH (no al objetivo)?', options: ['Cerrada respecto al path', 'Abierta respecto al path', 'Exactamente igual al path', 'No influye'], correct: 1, explain: 'En un fade, la cara está abierta respecto al path (aunque cerrada respecto al objetivo), lo que produce la curva de izquierda a derecha.' },
+        ],
+      },
+      {
+        id: 'n4m3',
+        title: 'El reglamento oficial a fondo (Rules of Golf 2023)',
+        minutes: 10,
+        content: `
+          <p>Las Rules of Golf vigentes son la edición <strong>2023</strong>, publicada conjuntamente por USGA y The R&A, en vigor desde el 1 de enero de 2023. Al día de hoy no se ha publicado una edición numerada nueva — el reglamento se actualiza con "aclaraciones" (clarifications) trimestrales, no con ediciones completas nuevas (aunque el ciclo histórico de grandes revisiones, cada 4 años aproximadamente, sugiere que la próxima podría llegar alrededor de 2027, sin confirmación oficial todavía).</p>
+          <p><strong><span class="term">Unplayable ball</span> (Regla 19):</strong> podés declarar tu bola injugable en casi cualquier parte del campo (excepto dentro de una penalty area), con tres opciones de alivio, cada una de 1 golpe de penalización: <span class="term">stroke and distance</span> (volver a jugar desde antes), <span class="term">back-on-the-line relief</span> (dejar caer sobre la línea que une el hoyo con la bola, tan atrás como quieras) o alivio lateral (dentro de dos largos de palo, sin acercarte al hoyo). Si la bola injugable está en un bunker, hay una cuarta opción: salir del bunker en línea hacia atrás, mas 2 golpes de penalización.</p>
+          <p><strong><span class="term">Equipment Rules</span> vs. reglas de juego:</strong> las Equipment Rules son un subconjunto específico (Regla 4 y Apéndice II para palos, Regla 5 y Apéndice III para bolas) que regula qué equipo puede usarse — son de naturaleza técnica y restrictiva, con el objetivo declarado de que los avances tecnológicos beneficien al juego sin desequilibrarlo.</p>
+          <p><strong>El <span class="term">Committee</span> (Comité)</strong> de una competencia define las condiciones antes del torneo (elegibilidad, marcación del campo, reglas locales, horarios), las administra durante el juego (resuelve dudas, gestiona el clima, valida tarjetas) y resuelve empates y resultados al final. Un <span class="term">Rules Official</span> (árbitro) es la persona designada para hacer cumplir las reglas y dar fallos durante el juego — distinto del Comité, que fija las condiciones generales.</p>
+        `,
+        summary: 'La edición vigente de las Rules of Golf es la de 2023, actualizada por aclaraciones trimestrales (sin nueva edición numerada confirmada aún). La Regla 19 (bola injugable) da tres opciones de alivio de 1 golpe, más una cuarta especial en bunkers (2 golpes). Las Equipment Rules regulan el equipo permitido; el Comité fija las condiciones de la competencia y un Rules Official hace cumplir las reglas durante el juego.',
+        quiz: [
+          { q: '¿Cuál es la edición vigente de las Rules of Golf?', options: ['2019', '2023', '2028', '2015'], correct: 1, explain: 'La edición de 2023 (USGA/The R&A) sigue vigente, actualizada por aclaraciones trimestrales, sin nueva edición numerada confirmada.' },
+          { q: 'Bajo la Regla 19 (bola injugable), ¿en cuántos golpes de penalización cuesta el alivio estándar?', options: ['0 golpes', '1 golpe', '2 golpes', '3 golpes'], correct: 1, explain: 'Las tres opciones estándar de alivio por bola injugable cuestan 1 golpe de penalización cada una.' },
+          { q: '¿Qué regulan específicamente las "Equipment Rules"?', options: ['El comportamiento de los jugadores', 'Qué palos y bolas pueden usarse', 'El clima permitido para jugar', 'El código de vestimenta'], correct: 1, explain: 'Las Equipment Rules son el subconjunto de reglas (Reglas 4 y 5) que regula específicamente el equipo permitido.' },
+          { q: '¿Quién define las condiciones generales de una competencia (elegibilidad, reglas locales, horarios)?', options: ['El Rules Official', 'El Comité (Committee)', 'Cualquier jugador', 'La USGA para cada torneo individual'], correct: 1, explain: 'El Comité de la competencia define y administra las condiciones; el Rules Official hace cumplir las reglas durante el juego.' },
+        ],
+      },
+      {
+        id: 'n4m4',
+        title: 'Preparación física y mental para competir',
+        minutes: 8,
+        content: `
+          <p>Competir bien no depende solo de la técnica del swing — hay dos áreas que los jugadores avanzados suelen trabajar de forma deliberada:</p>
+          <p><strong>Preparación mental:</strong> una <span class="term">pre-shot routine</span> (rutina previa al golpe) consistente y repetible es una de las herramientas más enseñadas en la psicología deportiva del golf — asociada, entre otros, al psicólogo deportivo Bob Rotella. La idea es que repetir siempre los mismos pasos antes de cada golpe ayuda a mantener la concentración, manejar la presión y ejecutar con confianza en vez de duda, sin importar lo que pasó en el golpe anterior.</p>
+          <p><strong>Preparación física:</strong> el Titleist Performance Institute (TPI), referencia en acondicionamiento físico específico para golf, enfatiza de forma consistente tres áreas generales: <strong>movilidad</strong> (especialmente de cadera y columna torácica, para permitir la rotación del swing), <strong>estabilidad del core</strong> (tronco) y <strong>equilibrio</strong>. Estas áreas se asocian con poder ejecutar el swing de forma más eficiente y con menor riesgo de sobrecarga por el movimiento repetitivo — sin que esto sea una garantía médica individual, ya que cada cuerpo es distinto.</p>
+          <p>Un buen warm-up (calentamiento) consistente antes de una ronda o torneo — no solo golpear bolas al voleo, sino incluir movilidad y algunos golpes con distintos palos — es otra práctica común entre jugadores competitivos.</p>
+        `,
+        summary: 'Una pre-shot routine consistente ayuda a mantener la concentración y manejar la presión, un enfoque asociado a la psicología deportiva del golf. TPI enfatiza movilidad de cadera/columna torácica, estabilidad de core y equilibrio como áreas físicas clave para el golf, sin que esto sea una prescripción médica individual.',
+        quiz: [
+          { q: '¿Qué es una "pre-shot routine"?', options: ['Un tipo de estiramiento', 'Una secuencia de pasos consistente y repetible antes de cada golpe', 'Un formato de torneo', 'Una regla oficial de golf'], correct: 1, explain: 'Repetir siempre los mismos pasos antes de golpear ayuda a mantener concentración y manejar la presión.' },
+          { q: '¿Qué áreas físicas enfatiza consistentemente el Titleist Performance Institute (TPI) para golf?', options: ['Solo fuerza de brazos', 'Movilidad de cadera/torácica, estabilidad de core y equilibrio', 'Solo resistencia cardiovascular', 'Ninguna en particular'], correct: 1, explain: 'TPI enfatiza estas tres áreas como comúnmente relevantes para el swing de golf, sin ser una prescripción médica individual.' },
+          { q: '¿Con qué psicólogo deportivo se asocia frecuentemente el enfoque de rutina previa al golpe en golf?', options: ['Bob Rotella', 'Mark Broadie', 'Jim Hardy', 'Thomas Pagel'], correct: 0, explain: 'Bob Rotella es un psicólogo deportivo reconocido por su trabajo en el juego mental del golf.' },
+          { q: '¿El contenido de este módulo hace afirmaciones médicas definitivas sobre lesiones?', options: ['Sí, garantiza que evita lesiones', 'No, se presenta como consenso general de la industria del fitness golfístico, no como garantía médica'], correct: 1, explain: 'Se mantiene deliberadamente general, sin prescripciones específicas ni afirmaciones médicas definitivas.' },
+        ],
+      },
+      {
+        id: 'n4m5',
+        title: 'Torneos y formatos de competencia',
+        minutes: 7,
+        content: `
+          <p>Más allá de stroke play y match play (Nivel 2), estos son formatos y conceptos que aparecen en competencias más serias:</p>
+          <ul>
+            <li><span class="term">Stableford</span>: en vez de contar cada golpe, se otorgan puntos por hoyo según el resultado respecto al par (por ejemplo, más puntos por un birdie que por un par, cero por un doble bogey o peor) — gana quien suma más puntos, no quien hace menos golpes.</li>
+            <li><span class="term">Four-ball</span> (o <span class="term">best ball</span>): equipos de dos, cada jugador juega su propia bola durante todo el hoyo, y cuenta el mejor resultado del equipo en ese hoyo.</li>
+            <li><span class="term">Foursomes</span>: equipos de dos con una sola bola, alternando quién pega cada golpe.</li>
+            <li><span class="term">Scramble</span>: todo el equipo pega desde el mismo punto, se elige la mejor bola resultante y todos siguen desde ahí — muy común en golf recreativo/benéfico.</li>
+          </ul>
+          <p>En torneos profesionales de varias rondas existe el concepto de <span class="term">cut</span> ("corte"): después de un número fijo de rondas (habitualmente las dos primeras), se reduce el campo de jugadores para las rondas finales — quien no supera el corte ("missed the cut") no sigue jugando ni cobra premio de ese torneo.</p>
+          <p>Los cuatro <span class="term">majors</span> masculinos son: el Masters (Augusta National), el PGA Championship (organizado por la PGA of America), el U.S. Open (organizado por la USGA) y The Open Championship (organizado por The R&A). El golf femenino tiene su propio calendario de majors, organizado por sus propios circuitos (LPGA y otros).</p>
+        `,
+        summary: 'Stableford puntúa por hoyo en vez de contar golpes totales; four-ball, foursomes y scramble son formatos de equipo con distinta lógica cada uno. En torneos profesionales de varias rondas existe el "cut", que reduce el campo de jugadores. Los cuatro majors masculinos son Masters, PGA Championship, U.S. Open y The Open Championship, cada uno organizado por una entidad distinta.',
+        quiz: [
+          { q: 'En Stableford, ¿cómo se determina el ganador?', options: ['Menos golpes totales', 'Más puntos acumulados por hoyo', 'Quien gana más hoyos', 'Se decide por sorteo'], correct: 1, explain: 'Stableford asigna puntos por hoyo según el resultado respecto al par; gana quien suma más puntos, no quien hace menos golpes.' },
+          { q: 'En "foursomes", ¿cuántas bolas juega cada equipo?', options: ['Dos, una por jugador', 'Una sola, con golpes alternados', 'Depende del hoyo', 'Ninguna bola fija'], correct: 1, explain: 'A diferencia del four-ball, en foursomes el equipo comparte una sola bola, alternando quién pega.' },
+          { q: '¿Qué significa "missed the cut" en un torneo profesional?', options: ['Ganar el torneo', 'No superar el corte y quedar afuera de las rondas finales', 'Hacer un hole-in-one', 'Empatar en primer lugar'], correct: 1, explain: 'Después de las primeras rondas, quienes no superan el cut no juegan el resto del torneo ni cobran premio de ese evento.' },
+          { q: '¿Qué organización organiza The Open Championship?', options: ['La USGA', 'La PGA of America', 'The R&A', 'La LPGA'], correct: 2, explain: 'The Open Championship (a menudo llamado "British Open") es organizado por The R&A.' },
+        ],
+      },
+      {
+        id: 'n4m6',
+        title: 'Estadísticas de juego: cómo analizar tu rendimiento',
+        minutes: 8,
+        content: `
+          <p>El marco de <span class="term">strokes gained</span> ("golpes ganados") fue desarrollado por Mark Broadie, profesor de la Columbia Business School, y popularizado en su libro <em>Every Shot Counts</em>. El PGA Tour lo adoptó oficialmente, organizándolo en cuatro categorías: <span class="term">off-the-tee</span>, <span class="term">approach-the-green</span>, <span class="term">around-the-green</span> y <span class="term">putting</span>.</p>
+          <p>La idea central: en vez de mirar un golpe de forma aislada, se compara tu resultado contra un promedio de referencia según la distancia y posición de cada golpe — así se puede medir con precisión cuánto aporta (o resta) cada faceta del juego a tu puntaje final, algo que las estadísticas tradicionales no lograban capturar bien.</p>
+          <p>Un hallazgo ampliamente citado de esta investigación: el <strong>juego largo</strong> (tee shots + approach shots) explica una porción más grande de la diferencia de puntaje entre jugadores de distinto nivel que el juego corto o el putt — contradiciendo el dicho popular "se conduce para el show, se putea por el dinero". Ojo con la interpretación: esto es sobre la <em>contribución relativa</em> a las diferencias de puntaje entre jugadores de nivel similar, no una afirmación de que el juego corto o el putt "no importan" — de hecho, el propio marco de strokes gained permite valorar el putting con precisión, en vez de descartarlo.</p>
+          <div class="diagram">
+            <svg viewBox="0 0 300 120">
+              <line x1="16" y1="100" x2="16" y2="10" stroke="var(--line)" stroke-width="1"/>
+              <line x1="16" y1="100" x2="290" y2="100" stroke="var(--line)" stroke-width="1"/>
+              <rect x="34" y="34" width="40" height="66" fill="var(--grass)" stroke="var(--grass-line)" stroke-width="1.3"/>
+              <text x="54" y="112" text-anchor="middle">TEE</text>
+              <rect x="98" y="20" width="40" height="80" fill="var(--grass)" stroke="var(--grass-line)" stroke-width="1.3"/>
+              <text x="118" y="112" text-anchor="middle">APPROACH</text>
+              <rect x="162" y="66" width="40" height="34" fill="var(--sand)" stroke="var(--sand-line)" stroke-width="1.3"/>
+              <text x="182" y="112" text-anchor="middle">A-GREEN</text>
+              <rect x="226" y="72" width="40" height="28" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.3"/>
+              <text x="246" y="112" text-anchor="middle">PUTT</text>
+            </svg>
+            <div class="diagramCaption">Ilustración conceptual (no a escala exacta): tee shots y approach ("juego largo") tienden a explicar una porción mayor de la diferencia de puntaje entre niveles que around-the-green y putting — sin que esto signifique que el juego corto no importe.</div>
+          </div>
+        `,
+        summary: 'Strokes gained (Mark Broadie, adoptado por el PGA Tour en 4 categorías) permite medir con precisión cuánto aporta cada faceta del juego. El juego largo (tee + approach) explica una porción más grande de la diferencia de puntaje entre niveles que el juego corto o el putt, aunque esto no significa que estos últimos no importen.',
+        quiz: [
+          { q: '¿Quién desarrolló el marco de "strokes gained"?', options: ['Bob Rotella', 'Mark Broadie', 'Jim Hardy', 'Tiger Woods'], correct: 1, explain: 'Mark Broadie, profesor de Columbia Business School, desarrolló esta metodología, popularizada en su libro Every Shot Counts.' },
+          { q: '¿En cuántas categorías oficiales organiza el PGA Tour el strokes gained?', options: ['Dos', 'Tres', 'Cuatro', 'Seis'], correct: 2, explain: 'Las cuatro categorías son off-the-tee, approach-the-green, around-the-green y putting.' },
+          { q: 'Según esta investigación, ¿qué explica una porción más grande de la diferencia de puntaje entre niveles?', options: ['El putt únicamente', 'El juego largo (tee shots + approach)', 'La marca de la bola', 'El clima'], correct: 1, explain: 'El juego largo aporta más a la diferencia de puntaje entre niveles que el juego corto o el putt, según esta investigación.' },
+          { q: '¿Significa esto que el juego corto y el putt no importan?', options: ['Sí, se pueden ignorar', 'No — solo que aportan una porción relativamente menor a la diferencia entre niveles; siguen importando'], correct: 1, explain: 'Es un matiz importante: es sobre contribución relativa a la diferencia de puntaje, no una afirmación de que el short game no importe.' },
+        ],
+      },
     ],
   },
   {
-    id: 'n5', name: 'Nivel 5', subtitle: 'Pro — negocio y tecnología del golf', locked: true,
+    id: 'n5', name: 'Nivel 5', subtitle: 'Pro — negocio y tecnología del golf', locked: false,
     modules: [
-      { title: 'Conformidad y homologación de equipo (USGA/R&A)', minutes: 9 },
-      { title: 'El debate del "rollback" de la pelota', minutes: 7 },
-      { title: 'Fitting profesional y launch monitors', minutes: 9 },
-      { title: 'Reparación y mantenimiento de palos', minutes: 8 },
-      { title: 'Cómo dirigir una tienda de golf', minutes: 9 },
-      { title: 'El camino para ser profesional de golf (PGA)', minutes: 7 },
-      { title: 'Tendencias y el futuro del golf', minutes: 6 },
+      {
+        id: 'n5m1',
+        title: 'Conformidad y homologación de equipo (USGA/R&A)',
+        minutes: 9,
+        content: `
+          <p>Que un palo o una bola sean <span class="term">conforming</span> (conformes) significa que cumplen las <span class="term">Equipment Rules</span> publicadas conjuntamente por USGA y The R&A — y deben seguir siendo conformes no solo cuando son nuevos, sino también con el desgaste normal del uso.</p>
+          <p>La USGA mantiene dos listas públicas: la <strong>List of Conforming Driver Heads</strong> y la <strong>Conforming Golf Ball List</strong>. Antes de que un modelo nuevo pueda usarse en competición, el fabricante tiene que someterlo a pruebas de la USGA y conseguir que aparezca en la lista correspondiente.</p>
+          <p>Estas listas son de uso obligatorio en eventos profesionales, en todos los campeonatos de la USGA y en competiciones amateur reglamentadas seleccionadas — usar equipo que no está en la lista puede resultar en descalificación. En cambio, en una ronda social/recreativa sin comité de reglas verificando equipo, esta restricción no se aplica de la misma forma en la práctica.</p>
+          <p>Dentro de una competición reglamentada, tampoco podés modificar tu equipo a mitad de ronda de forma deliberada (por ejemplo, cambiar el loft de un palo o agregar peso a un putter) — hacerlo también puede costar la descalificación bajo la Regla 4 (El Equipo del Jugador).</p>
+        `,
+        summary: 'Ser "conforme" significa cumplir las Equipment Rules de USGA/The R&A, verificado mediante listas oficiales (drivers y bolas). Es obligatorio en competición reglamentada (donde el incumplimiento puede costar la descalificación), pero no se verifica de la misma forma en juego recreativo. Modificar equipo a mitad de ronda en competición también está prohibido.',
+        quiz: [
+          { q: '¿Qué listas mantiene la USGA para verificar equipo conforme?', options: ['Solo una lista general', 'List of Conforming Driver Heads y Conforming Golf Ball List', 'Una lista por país', 'No existen listas oficiales'], correct: 1, explain: 'Los fabricantes deben someter cada modelo nuevo a pruebas y conseguir que aparezca en la lista correspondiente antes de usarse en competición.' },
+          { q: '¿Dónde es obligatorio usar equipo de la lista de conformes?', options: ['En cualquier ronda social', 'En eventos profesionales y campeonatos reglamentados de USGA/competiciones seleccionadas', 'En ningún caso', 'Solo en torneos benéficos'], correct: 1, explain: 'La obligatoriedad aplica a competición reglamentada; en juego recreativo no hay verificación formal.' },
+          { q: '¿Se puede cambiar el loft de un palo a mitad de una ronda de competición?', options: ['Sí, sin problema', 'No, puede costar la descalificación bajo la Regla 4', 'Solo si lo autoriza otro jugador', 'Solo en el green'], correct: 1, explain: 'Modificar el equipo deliberadamente durante la ronda está prohibido en competición reglamentada.' },
+          { q: '¿Qué pasa si un equipo deja de ser conforme por el desgaste normal del uso?', options: ['No importa, sigue siendo conforme para siempre', 'Debe seguir cumpliendo las Equipment Rules incluso con el desgaste normal', 'Se vuelve automáticamente ilegal en cualquier contexto', 'Solo importa si es nuevo'], correct: 1, explain: 'La conformidad debe mantenerse también con el uso normal, no solo al momento de comprar el equipo.' },
+        ],
+      },
+      {
+        id: 'n5m2',
+        title: 'El debate del "rollback" de la pelota',
+        minutes: 7,
+        content: `
+          <p>Este es un tema regulatorio en desarrollo activo — la situación descrita acá es la más actual disponible a <strong>agosto de 2026</strong>, y puede seguir cambiando.</p>
+          <p>En 2023, USGA y The R&A propusieron primero una regla local opcional solo para competiciones de élite, y en diciembre de ese año la reemplazaron por un plan de <span class="term">rollback</span> universal: cambiar las condiciones de prueba de la <span class="term">Overall Distance Standard</span> (la norma que limita cuánto puede volar+rodar una bola bajo condiciones estandarizadas) para reducir la distancia, aplicándolo en principio a todos los niveles de juego con fechas escalonadas (2028 para golf de élite, 2030 para recreativo). El PGA Tour y la PGA of America se opusieron públicamente, argumentando que el cambio era excesivo y afectaba de forma desproporcionada a jugadores recreativos.</p>
+          <p>En marzo de 2026, la USGA propuso unificar todo en una sola fecha: <strong>1 de enero de 2030</strong>, para golf de élite y recreativo a la vez. Pero el <strong>17 de junio de 2026</strong>, en un giro importante, USGA, The R&A, el PGA Tour y el DP World Tour emitieron un comunicado conjunto anunciando que <strong>reevaluarán su enfoque</strong> en conjunto, en vez de que USGA/R&A decidan unilateralmente — sin una nueva fecha confirmada al momento de este módulo.</p>
+          <p><strong>Estado a agosto de 2026:</strong> no hay ninguna Model Local Rule ni cambio de regla en vigor todavía. La fecha de 2030 que se había propuesto está "en revisión", y los organismos rectores ahora trabajan junto con los tours profesionales para definir un nuevo camino — que podría incluir cambios más allá de la pelota (por ejemplo, en el driver). Como este es un tema que sigue moviéndose, conviene tratarlo como "situación en desarrollo", no como algo ya decidido.</p>
+        `,
+        summary: 'El rollback de la pelota es un tema regulatorio activo, no decidido: pasó de una regla local para élite (2023) a un plan universal con fecha 2028/2030, luego a una fecha única 2030, y en junio de 2026 USGA/The R&A anunciaron que lo reevaluarán junto con el PGA Tour y el DP World Tour, sin nueva fecha confirmada. A agosto de 2026, no hay ningún cambio de regla en vigor.',
+        quiz: [
+          { q: '¿Hay actualmente (agosto 2026) algún cambio de regla de rollback ya implementado?', options: ['Sí, ya está en vigor desde 2023', 'No, sigue en desarrollo/revisión, sin fecha final confirmada', 'Sí, pero solo en el PGA Tour', 'Fue cancelado definitivamente'], correct: 1, explain: 'A agosto de 2026 no hay ninguna Model Local Rule ni cambio de regla de equipo en vigor sobre este tema — sigue en revisión activa.' },
+          { q: '¿Qué pasó el 17 de junio de 2026?', options: ['Se confirmó la fecha final de 2030', 'USGA, The R&A, PGA Tour y DP World Tour anunciaron que reevaluarán el enfoque juntos', 'Se canceló el proyecto para siempre', 'No pasó nada relevante'], correct: 1, explain: 'Fue un giro importante: los organismos rectores decidieron reevaluar el camino a seguir en conjunto con los tours profesionales, en vez de decidir unilateralmente.' },
+          { q: '¿Qué norma técnica es la que se busca modificar con el "rollback"?', options: ['El Handicap Index', 'La Overall Distance Standard (condiciones de prueba de distancia de la bola)', 'El código de vestimenta', 'El límite de 14 palos'], correct: 1, explain: 'El rollback apunta a cambiar las condiciones de prueba bajo las que se mide la distancia máxima permitida de una bola.' },
+          { q: '¿Por qué se recomienda tratar este tema como "situación en desarrollo"?', options: ['Porque no le importa a nadie', 'Porque cambió de postura varias veces entre 2023 y 2026 y sigue sin fecha final', 'Porque ya se decidió hace años', 'Porque es un tema sin fuentes oficiales'], correct: 1, explain: 'Hubo al menos tres cambios de enfoque documentados entre 2023 y junio de 2026, así que conviene no presentar una fecha como definitiva.' },
+        ],
+      },
+      {
+        id: 'n5m3',
+        title: 'Fitting profesional y launch monitors',
+        minutes: 9,
+        content: `
+          <p>Un <span class="term">fitting</span> profesional conecta todo lo visto en Nivel 3 (cabeza, bola, shaft, driver) con las características reales del swing de un jugador, en vez de dar recomendaciones genéricas.</p>
+          <p>Los <span class="term">launch monitors</span> capturan datos objetivos durante el fitting: <span class="term">ball speed</span> (velocidad de la bola tras el impacto), <span class="term">launch angle</span> (ángulo inicial de salida), <span class="term">spin rate</span> (velocidad de rotación) y las distancias de <span class="term">carry</span> (vuelo) y total. Las dos marcas más citadas de la industria son <strong>TrackMan</strong> y <strong>Foresight Sports</strong> (con sus modelos GCQuad y GC3) — usadas tanto por jugadores de gira como por fitters en tiendas especializadas.</p>
+          <p>Con esos datos, un fitter traduce números objetivos en decisiones concretas: qué loft de driver, qué flex y kick point de shaft, y qué diseño de cabeza (más o menos forgiveness) le conviene realmente a ese jugador — no al jugador "promedio". Un ejemplo real de la industria (mayo 2026): TaylorMade señaló que su driver más reciente ofrece 128 combinaciones de ajuste distintas, lo cual requiere que el fitter esté bien entrenado para aprovecharlas — el acceso del consumidor final a tecnología de fitting, antes reservada casi solo a profesionales, es una tendencia real y creciente.</p>
+        `,
+        summary: 'Un fitting profesional usa datos objetivos de launch monitors (ball speed, launch angle, spin rate, carry) — TrackMan y Foresight Sports son las marcas más citadas — para elegir loft, shaft y cabeza según el swing real de cada jugador, en vez de recomendaciones genéricas.',
+        quiz: [
+          { q: '¿Qué datos captura típicamente un launch monitor durante un fitting?', options: ['Solo el color de la bola', 'Ball speed, launch angle, spin rate y distancias de carry/total', 'Solo el peso del jugador', 'La marca del palo únicamente'], correct: 1, explain: 'Estos son los datos objetivos centrales que un fitter usa para tomar decisiones de equipo.' },
+          { q: '¿Cuáles son dos marcas de launch monitor citadas frecuentemente en la industria?', options: ['TrackMan y Foresight Sports', 'Titleist y Callaway únicamente', 'USGA y The R&A', 'PGA Tour y LPGA'], correct: 0, explain: 'TrackMan y Foresight Sports (GCQuad/GC3) son las marcas más citadas por jugadores de gira y fitters.' },
+          { q: '¿Qué hace un fitting profesional que una recomendación genérica no hace?', options: ['Ignora los datos del jugador', 'Traduce datos objetivos del swing real de ESE jugador en decisiones concretas de equipo', 'Solo vende el palo más caro', 'Recomienda siempre lo mismo a todos'], correct: 1, explain: 'El fitting personaliza loft, shaft y diseño de cabeza según el swing real medido, no según un promedio genérico.' },
+          { q: '¿Qué tendencia de la industria se menciona sobre el acceso del consumidor a la tecnología de fitting?', options: ['Está desapareciendo', 'Es cada vez más accesible para el consumidor final, no solo para profesionales', 'Nunca estuvo disponible para consumidores', 'Solo existe en simuladores'], correct: 1, explain: 'El acceso a tecnología de fitting, antes casi exclusiva de profesionales, se está volviendo más común entre consumidores.' },
+        ],
+      },
+      {
+        id: 'n5m4',
+        title: 'Reparación y mantenimiento de palos',
+        minutes: 8,
+        content: `
+          <p>Una tienda de golf suele ofrecer varios servicios de reparación y mantenimiento, más allá de la venta de equipo nuevo:</p>
+          <ul>
+            <li><span class="term">Regripping</span>: se recomienda en general una vez al año para jugadores habituales (más seguido si jugás varias veces por semana, más espaciado si jugás poco). Señales de que un grip necesita cambiarse: se siente resbaladizo aunque tengas las manos secas, tiene grietas o zonas deshilachadas, se endureció y perdió capacidad de absorber el impacto, o necesitás apretar más la mano de lo normal para sostener el palo.</li>
+            <li><span class="term">Reshafting</span>: cambiar el shaft de una cabeza existente, típico cuando un jugador quiere probar un flex, peso o material distinto sin comprar un palo nuevo entero.</li>
+            <li><strong>Ajuste de loft/lie (bending):</strong> solo es posible en cabezas fabricadas con materiales aptos para doblarse — no todas las cabezas lo permiten, así que hay que confirmarlo antes de prometer el servicio.</li>
+            <li><span class="term">Swingweight</span>: describe cómo se distribuye el peso a lo largo de todo el palo (no solo cuánto pesa), medido con una báscula especializada. Se expresa en una escala de letra + número (por ejemplo, de A0 a F9); los palos de swing completo suelen estar entre C8 y D5. Un swingweight mal ajustado puede hacer que el jugador compense con el movimiento, afectando la consistencia.</li>
+          </ul>
+        `,
+        summary: 'Los servicios típicos de reparación incluyen regripping (recomendado ~anualmente), reshafting, ajuste de loft/lie (solo en cabezas "bendable") y control de swingweight (distribución del peso a lo largo del palo, medida en una escala de letra + número).',
+        quiz: [
+          { q: '¿Cada cuánto se recomienda en general regripar los palos de un jugador habitual?', options: ['Cada semana', 'Aproximadamente una vez al año', 'Nunca hace falta', 'Cada 10 años'], correct: 1, explain: 'La recomendación general para jugadores habituales es una vez al año, ajustable según la frecuencia de juego.' },
+          { q: '¿Se puede ajustar el loft/lie de CUALQUIER cabeza de hierro?', options: ['Sí, siempre', 'No, solo si la cabeza está hecha de un material apto para doblarse (bendable)'], correct: 1, explain: 'No todas las cabezas permiten este ajuste — depende del material y diseño de la cabeza.' },
+          { q: '¿Qué describe el "swingweight"?', options: ['Solo el peso total del palo', 'Cómo se distribuye el peso a lo largo de todo el palo', 'El precio del palo', 'El color del grip'], correct: 1, explain: 'El swingweight mide la distribución del peso, no simplemente el peso total, usando una báscula especializada.' },
+          { q: '¿Cuál es una señal de que un grip necesita cambiarse?', options: ['Se siente resbaladizo aunque las manos estén secas', 'Es nuevo', 'Combina con el color del palo', 'Es más liviano que el promedio'], correct: 0, explain: 'La pérdida de adherencia con manos secas es una de las señales típicas de desgaste del grip.' },
+        ],
+      },
+      {
+        id: 'n5m5',
+        title: 'Cómo dirigir una tienda de golf',
+        minutes: 9,
+        content: `
+          <p>Dirigir una tienda de golf combina principios generales de retail especializado con algunas particularidades propias del negocio:</p>
+          <ul>
+            <li><strong>Inventario estacional:</strong> la demanda de golf es marcadamente estacional en climas templados (alta en primavera-verano), lo que exige planificar compras y liquidaciones fuera de temporada con cuidado.</li>
+            <li><strong>Ciclos de producto del fabricante:</strong> tradicionalmente los grandes fabricantes (OEMs) lanzaban drivers nuevos cada año, pero esto está cambiando — varias marcas grandes (Ping, Srixon, Titleist, y desde 2026 también TaylorMade) pasaron a ciclos de 2 años, mientras que otras mantienen el ritmo anual. Conocer el calendario específico de cada marca ayuda a planificar mejor el inventario en vez de asumir un ciclo único para todas.</li>
+            <li><strong>El fitting como diferenciador:</strong> ofrecer sesiones de fitting con launch monitor (ver módulo anterior) es un servicio que el retail genérico de gran superficie rara vez iguala con la misma profundidad — funciona tanto como diferenciador competitivo como fuente de ingresos por servicio, no solo por venta de producto.</li>
+            <li><strong>Relación con el cliente:</strong> en un deporte de nicho, la fidelización mediante servicio postventa (regripping, ajustes, asesoría) suele generar negocio recurrente de mejor margen que la venta puntual de equipo.</li>
+          </ul>
+          <p>Estos son principios generales de negocio de retail especializado — no estadísticas específicas de rentabilidad, que varían mucho según la ubicación y el tamaño de cada tienda.</p>
+        `,
+        summary: 'Una tienda de golf combina inventario estacional, atención a los ciclos de producto variables de cada fabricante, el fitting como diferenciador frente al retail genérico, y fidelización mediante servicio postventa — principios generales de retail especializado aplicados al golf.',
+        quiz: [
+          { q: '¿Por qué es importante conocer el ciclo de producto de cada fabricante (OEM) al planificar inventario?', options: ['Todos los fabricantes lanzan en la misma fecha', 'Los ciclos varían — algunas marcas pasaron a 2 años, otras siguen siendo anuales', 'No influye en el inventario', 'Solo importa para bolas de golf'], correct: 1, explain: 'Con ciclos de producto ya no uniformes entre marcas, asumir un calendario único para todas puede llevar a errores de inventario.' },
+          { q: '¿Qué servicio se menciona como diferenciador frente al retail de gran superficie?', options: ['Vender más barato siempre', 'El fitting con launch monitor', 'No ofrecer servicios adicionales', 'Vender solo ropa'], correct: 1, explain: 'El fitting profundo con datos de launch monitor es difícil de igualar para el retail genérico.' },
+          { q: '¿Qué suele generar negocio recurrente de mejor margen en una tienda de golf?', options: ['Solo la venta de equipo nuevo', 'El servicio postventa (regripping, ajustes, asesoría)', 'Bajar los precios constantemente', 'No tiene relación con el margen'], correct: 1, explain: 'La fidelización a través de servicios postventa tiende a generar negocio recurrente de mejor margen que la venta puntual.' },
+          { q: '¿Por qué es importante la planificación estacional del inventario?', options: ['Porque la demanda de golf es marcadamente estacional en climas templados', 'Porque el golf se juega igual todo el año en todas partes', 'No es relevante', 'Solo aplica a la venta de bolas'], correct: 0, explain: 'La demanda estacional exige planificar compras y liquidaciones con cuidado según la época del año.' },
+        ],
+      },
+      {
+        id: 'n5m6',
+        title: 'El camino para ser profesional de golf (PGA)',
+        minutes: 7,
+        content: `
+          <p>"Profesional de la PGA" y "jugador del PGA Tour" son <strong>dos carreras completamente distintas</strong>, con procesos separados — una fuente común de confusión, aunque ambas compartan la sigla "PGA".</p>
+          <p><strong>Camino A — Profesional de Clase A de la PGA of America</strong> (profesor de club/gestión, el perfil más relacionado con dirigir una tienda de golf): hay dos rutas oficiales. El <span class="term">Associate Program</span> combina empleo en una instalación de golf aprobada con cursos en línea, un <span class="term">Playing Ability Test</span> (PAT — dos rondas de 18 hoyos con un puntaje límite específico) y tres niveles de educación (seminarios presenciales + trabajo de portafolio). Alternativamente, el <span class="term">PGA Golf Management University Program</span> es una carrera universitaria de 4.5-5 años que combina una licenciatura con ~16 meses de pasantías en instalaciones de golf, en universidades acreditadas específicamente para este programa.</p>
+          <p><strong>Camino B — Jugador de gira (PGA Tour):</strong> totalmente independiente del camino anterior, sin requerir ninguna certificación de la PGA of America. El sistema actual pasa por el <span class="term">Korn Ferry Tour</span> (la vía principal hacia el PGA Tour) y por el <span class="term">Q-School</span> (PGA TOUR Q-School), que hoy es un proceso de cuatro etapas donde solo los primeros 5 de la etapa final consiguen tarjeta directa del PGA Tour, y otro grupo más amplio consigue estatus en el Korn Ferry Tour. También existe el programa <span class="term">PGA Tour University</span>, que da acceso directo a giras profesionales a los mejores jugadores universitarios (NCAA) según su ranking.</p>
+        `,
+        summary: '"PGA Professional" (club/teaching pro, vía Associate Program o PGA Golf Management University Program) y "jugador del PGA Tour" (vía Korn Ferry Tour, Q-School o PGA Tour University) son caminos separados con distintas certificaciones, aunque comparten la sigla PGA — la raíz habitual de la confusión.',
+        quiz: [
+          { q: '¿Son lo mismo un "PGA Professional" y un "jugador del PGA Tour"?', options: ['Sí, es el mismo camino', 'No, son dos carreras completamente distintas con procesos separados'], correct: 1, explain: 'Comparten la sigla PGA pero son caminos y organizaciones distintas: PGA of America (profesionales de club) vs. PGA Tour (jugadores de gira).' },
+          { q: '¿Qué es el Playing Ability Test (PAT)?', options: ['Un examen para ser miembro del PGA Tour', 'Una prueba de dos rondas dentro del camino para ser PGA Professional de Clase A', 'Un tipo de fitting', 'Una regla de equipamiento'], correct: 1, explain: 'El PAT es parte del proceso del Associate Program hacia la certificación de Clase A de la PGA of America.' },
+          { q: '¿Cuál es hoy la "vía principal" hacia el PGA Tour para un jugador competitivo?', options: ['El Korn Ferry Tour', 'Solo el Q-School directo', 'No hay ninguna vía definida', 'La PGA Golf Management University'], correct: 0, explain: 'El Korn Ferry Tour es la vía principal de ascenso al PGA Tour, complementada por el Q-School y el PGA Tour University.' },
+          { q: '¿Qué otorga el PGA Tour University a los mejores jugadores universitarios?', options: ['Un descuento en equipo', 'Acceso directo a giras profesionales según su ranking', 'Nada, es solo un ranking informativo', 'Una membresía honoraria sin beneficios'], correct: 1, explain: 'El PGA Tour University usa un sistema de puntos para dar acceso directo a giras profesionales a los mejores jugadores NCAA.' },
+        ],
+      },
+      {
+        id: 'n5m7',
+        title: 'Tendencias y el futuro del golf',
+        minutes: 6,
+        content: `
+          <p>Algunos datos verificados y recientes sobre hacia dónde va el golf como industria:</p>
+          <ul>
+            <li><strong>Crecimiento de participación:</strong> según la National Golf Foundation, la participación en golf en Estados Unidos creció un 41% entre 2019 y 2025, acercándose a los 50 millones de participantes al combinar campos tradicionales y sedes fuera de campo (simuladores, golf de entretenimiento). El golf en campo tradicional también creció, acercándose a niveles no vistos desde el pico histórico de 2003.</li>
+            <li><strong>Golf fuera de campo:</strong> simuladores, sedes de entretenimiento tipo Topgolf y rangos de práctica con tecnología integrada son citados como motores importantes de este crecimiento, sumando gente nueva al deporte de una forma más accesible que el campo tradicional.</li>
+            <li><strong>Sostenibilidad:</strong> una encuesta nacional de la GCSAA (asociación de superintendentes de campos de golf) a casi 1,700 instalaciones encontró una reducción del 31% en el uso de agua entre 2005 y 2024, gracias a sensores de humedad, riego basado en datos climáticos y otras prácticas de manejo más eficientes.</li>
+            <li><strong>Tecnología de consumo:</strong> el acceso de jugadores comunes a datos de launch monitor (antes solo para profesionales) está creciendo, y los fabricantes lo citan como una razón real detrás de decisiones de negocio como extender los ciclos de producto (ver módulos anteriores).</li>
+          </ul>
+          <p>Vale aclarar: existen estimaciones de tamaño de mercado (en dólares) para simuladores y launch monitors de consumo que circulan en la industria, pero no están verificadas de forma independiente con la misma solidez que los datos de participación (NGF) y agua (GCSAA) — por eso este módulo se enfoca en los datos con fuente primaria confirmada.</p>
+        `,
+        summary: 'La participación en golf en EE. UU. creció 41% entre 2019 y 2025 (NGF), impulsada en parte por golf fuera de campo (simuladores, entretenimiento). Los campos redujeron su uso de agua un 31% entre 2005 y 2024 (GCSAA). El acceso del consumidor a tecnología de fitting está creciendo. Las cifras de mercado en dólares de simuladores no están verificadas con la misma solidez y se omiten deliberadamente.',
+        quiz: [
+          { q: 'Según la National Golf Foundation, ¿cuánto creció la participación en golf en EE. UU. entre 2019 y 2025?', options: ['Se mantuvo igual', 'Creció un 41%', 'Cayó un 20%', 'Creció un 5%'], correct: 1, explain: 'La NGF reportó un crecimiento del 41% en seis años, acercándose a los 50 millones de participantes combinando campo y fuera de campo.' },
+          { q: '¿Qué se cita como un motor importante de este crecimiento?', options: ['Solo los campos tradicionales', 'Simuladores y sedes de golf de entretenimiento fuera de campo', 'La reducción de torneos', 'Nada en particular'], correct: 1, explain: 'El golf fuera de campo (simuladores, entretenimiento) es citado como un motor real del crecimiento reciente.' },
+          { q: 'Según la encuesta de la GCSAA, ¿cuánto redujeron su uso de agua los campos entre 2005 y 2024?', options: ['0%, no hubo cambios', '31%', '90%', 'Aumentó un 31%'], correct: 1, explain: 'La reducción confirmada por la encuesta de GCSAA a casi 1,700 instalaciones fue del 31%.' },
+          { q: '¿Por qué este módulo evita citar cifras de mercado en dólares de simuladores de golf?', options: ['Porque no existen esas estimaciones', 'Porque no están verificadas de forma independiente con la misma solidez que los datos de NGF/GCSAA', 'Porque son secretas', 'Porque no son relevantes para nada'], correct: 1, explain: 'Se prioriza reportar solo datos con fuente primaria confirmada, evitando cifras de mercado no verificadas de forma independiente.' },
+        ],
+      },
     ],
   },
 ];
