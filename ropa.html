@@ -51,6 +51,19 @@
   .view.active { display: flex; }
 
   /* ---- Combinar ---- */
+  .weatherBar {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+  }
+  .weatherBar.pending { cursor: pointer; }
+
   .occasionRow {
     display: flex;
     gap: 10px;
@@ -375,6 +388,7 @@
 
     <!-- COMBINAR -->
     <div class="view active fade-in" id="view-combinar">
+      <div class="weatherBar pending" id="weatherBar">toca para ajustar por el clima de hoy</div>
       <div class="occasionRow">
         <input id="occasionInput" type="text" placeholder="¿qué vas a hacer hoy?" maxlength="80" />
         <button class="goBtn" id="occasionGo">
@@ -551,6 +565,115 @@ function guessTags(text) {
   }
   return found.length ? found : ['casual'];
 }
+
+/* ---------------- Clima (para ajustar el outfit al día) ----------------
+   Open-Meteo: gratis, sin API key, funciona directo desde el navegador.
+   Se usa la ubicación del dispositivo (con permiso) para pedir la
+   temperatura de hoy y así preferir manga larga/pantalón y abrigo si hace
+   frío, o manga corta/short y sin abrigo si hace calor. */
+const WEATHER_CACHE_KEY = 'ropa_weather_cache_v1';
+const WEATHER_CACHE_MS = 60 * 60 * 1000; // 1 hora
+
+let weatherInfo = null;
+
+const WEATHER_CODE_LABELS = {
+  0: 'despejado', 1: 'mayormente despejado', 2: 'parcialmente nublado', 3: 'nublado',
+  45: 'neblina', 48: 'neblina con escarcha',
+  51: 'llovizna', 53: 'llovizna', 55: 'llovizna fuerte',
+  61: 'lluvia', 63: 'lluvia', 65: 'lluvia fuerte',
+  71: 'nieve', 73: 'nieve', 75: 'nieve fuerte',
+  80: 'chubascos', 81: 'chubascos', 82: 'chubascos fuertes',
+  95: 'tormenta', 96: 'tormenta con granizo', 99: 'tormenta con granizo'
+};
+
+function loadWeatherCache() {
+  try {
+    const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || Date.now() - parsed.ts > WEATHER_CACHE_MS) return null;
+    return parsed.data;
+  } catch (e) {
+    return null;
+  }
+}
+function saveWeatherCache(data) {
+  try {
+    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+  } catch (e) { /* almacenamiento lleno o bloqueado — no es crítico */ }
+}
+
+async function fetchWeather(lat, lon) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=1`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('clima: HTTP ' + res.status);
+  const data = await res.json();
+  const tempMax = data.daily.temperature_2m_max[0];
+  const tempMin = data.daily.temperature_2m_min[0];
+  const code = data.daily.weathercode[0];
+  return {
+    tempMax, tempMin, code,
+    isCold: tempMax < 16,
+    isHot: tempMax > 26,
+    label: WEATHER_CODE_LABELS[code] || ''
+  };
+}
+
+function renderWeatherBar(msg) {
+  const el = document.getElementById('weatherBar');
+  if (!el) return;
+  if (weatherInfo) {
+    const tag = weatherInfo.label ? ' · ' + weatherInfo.label : '';
+    el.textContent = `hoy: ${Math.round(weatherInfo.tempMin)}°–${Math.round(weatherInfo.tempMax)}°C${tag}`;
+    el.classList.remove('pending');
+  } else {
+    el.textContent = msg || 'toca para ajustar por el clima de hoy';
+    el.classList.add('pending');
+  }
+}
+
+function getCurrentPositionOnce() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+  });
+}
+
+async function initWeather(forceLocate) {
+  if (!forceLocate) {
+    const cached = loadWeatherCache();
+    if (cached) { weatherInfo = cached; renderWeatherBar(); return; }
+  }
+  if (!navigator.geolocation) {
+    renderWeatherBar('este navegador no puede darme tu ubicación');
+    return;
+  }
+  renderWeatherBar('obteniendo tu ubicación…');
+  let pos;
+  try {
+    /* El "timeout" nativo de getCurrentPosition no siempre dispara el
+       callback de error (se ha visto quedarse colgado indefinidamente en
+       algunos navegadores/dispositivos), así que además se pone un límite
+       manual para no dejar el botón atascado en "obteniendo ubicación…". */
+    pos = await withTimeout(getCurrentPositionOnce(), 12000);
+  } catch (err) {
+    renderWeatherBar('activa la ubicación para ajustar por el clima de hoy');
+    return;
+  }
+  try {
+    renderWeatherBar('consultando el clima…');
+    const w = await withTimeout(fetchWeather(pos.coords.latitude, pos.coords.longitude), 10000);
+    weatherInfo = w;
+    saveWeatherCache(w);
+    renderWeatherBar();
+    buildOutfit();
+  } catch (err) {
+    renderWeatherBar('no se pudo obtener el clima (' + (err && err.message ? err.message : err) + ')');
+  }
+}
+
+document.getElementById('weatherBar').addEventListener('click', () => {
+  if (!weatherInfo) initWeather(true);
+});
 
 /* ---------------- Tabs ---------------- */
 document.querySelectorAll('.tab').forEach(t => {
@@ -982,8 +1105,27 @@ async function renderCloset() {
 
 /* ---------------- Combinar ---------------- */
 function pickForCategory(items, category, tags) {
-  const inCat = items.filter(i => i.category === category);
+  let inCat = items.filter(i => i.category === category);
   if (!inCat.length) return null;
+
+  /* Si sabemos el clima de hoy, entre las prendas que ya calzan la
+     categoría se prefieren las de manga/largo adecuados (sin descartar
+     el resto si no hay ninguna así). */
+  if (weatherInfo && category === 'top') {
+    const wantSleeve = weatherInfo.isCold ? 'larga' : (weatherInfo.isHot ? 'corta' : null);
+    if (wantSleeve) {
+      const bySleeve = inCat.filter(i => (i.sleeve || 'corta') === wantSleeve);
+      if (bySleeve.length) inCat = bySleeve;
+    }
+  }
+  if (weatherInfo && category === 'bottom') {
+    const wantLength = weatherInfo.isHot ? 'corto' : (weatherInfo.isCold ? 'largo' : null);
+    if (wantLength) {
+      const byLength = inCat.filter(i => (i.length || 'largo') === wantLength);
+      if (byLength.length) inCat = byLength;
+    }
+  }
+
   const matching = inCat.filter(i => i.tags.some(t => tags.includes(t)));
   const pool = matching.length ? matching : inCat;
   return pool[Math.floor(Math.random() * pool.length)];
@@ -1202,7 +1344,9 @@ async function buildOutfit() {
   const shoes = pickForCategory(items, 'shoes', tags);
   if (shoes) pieces.push(['calzado', shoes]);
 
-  if (Math.random() < 0.5) {
+  /* Con frío casi siempre suma abrigo; con calor casi nunca. */
+  const abrigoChance = weatherInfo ? (weatherInfo.isCold ? 0.9 : (weatherInfo.isHot ? 0.05 : 0.5)) : 0.5;
+  if (Math.random() < abrigoChance) {
     const outer = pickForCategory(items, 'outerwear', tags);
     if (outer) pieces.push(['abrigo', outer]);
   }
@@ -1272,6 +1416,7 @@ document.getElementById('shuffleBtn').addEventListener('click', buildOutfit);
 
 /* ---------------- Init ---------------- */
 buildOutfit();
+initWeather();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(function(){});
