@@ -34,6 +34,19 @@
     flex-direction: column;
   }
 
+  /* ---- Selector de usuario ---- */
+  .userSwitch { display: flex; gap: 8px; margin-bottom: 20px; }
+  .userPill {
+    flex: 1;
+    text-align: center;
+    padding: 11px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+  .userPill.active { border-color: var(--text); color: var(--text); font-weight: 600; }
+
   /* ---- Botón de repaso ---- */
   .reviewBtn {
     display: flex;
@@ -199,11 +212,16 @@
     max-width: 160px;
   }
 
-  /* ---- Diagramas ---- */
+  /* ---- Diagramas ----
+     Ilustraciones propias en SVG (no son fotos ni diagramas bajados de
+     internet): así no dependen de conexión ni de derechos de terceros.
+     Se les da un toque de color muy sutil sobre el tema oscuro para que
+     se lean más como una ilustración real y menos como un boceto. */
   .diagram { margin: 4px 0 20px; color: var(--text); }
   .diagram svg { display: block; width: 100%; height: auto; }
   .diagram svg text { font-size: 9px; fill: var(--text-dim); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
   .diagramCaption { font-size: 11.5px; color: var(--text-dim); margin-top: 8px; line-height: 1.45; }
+  :root { --grass: rgba(120,190,130,0.16); --grass-line: rgba(120,190,130,0.55); --sand: rgba(214,181,124,0.28); --sand-line: rgba(214,181,124,0.7); --flag: #d97070; }
 
   /* ---- Pronóstico ---- */
   .forecastCard {
@@ -251,18 +269,40 @@
    sin traducir. Sin backend: todo vive en este archivo + localStorage.
    ============================================================ */
 
-const PROGRESS_KEY = 'golf_progress_v1';
+/* Dos usuarios, cada uno con su propio progreso guardado por separado
+   (cada uno lleva su propio ritmo, sus propios módulos completados y
+   su propio pronóstico). */
+const USERS = ['Sebas', 'Majo'];
+const ACTIVE_USER_KEY = 'golf_active_user';
 
-function loadProgress() {
+function getActiveUser() {
+  try { return localStorage.getItem(ACTIVE_USER_KEY) || USERS[0]; } catch (e) { return USERS[0]; }
+}
+function setActiveUser(name) {
+  try { localStorage.setItem(ACTIVE_USER_KEY, name); } catch (e) {}
+}
+let activeUser = getActiveUser();
+
+function progressKey(user) { return 'golf_progress_v1__' + user; }
+
+function loadProgress(user) {
   try {
-    const raw = localStorage.getItem(PROGRESS_KEY);
+    const raw = localStorage.getItem(progressKey(user));
     return raw ? JSON.parse(raw) : { completed: {} };
   } catch (e) { return { completed: {} }; }
 }
 function saveProgress(p) {
-  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch (e) {}
+  try { localStorage.setItem(progressKey(activeUser), JSON.stringify(p)); } catch (e) {}
 }
-let progress = loadProgress();
+let progress = loadProgress(activeUser);
+
+function switchUser(name) {
+  if (name === activeUser) return;
+  activeUser = name;
+  setActiveUser(name);
+  progress = loadProgress(activeUser);
+  render();
+}
 
 /* ================= CURRICULUM ================= */
 // Cada módulo: id, title, minutes, content (HTML), summary (texto para
@@ -324,19 +364,19 @@ const CURRICULUM = [
           </ul>
           <div class="diagram">
             <svg viewBox="0 0 320 130">
-              <rect x="4" y="14" width="312" height="102" rx="14" fill="none" stroke="var(--line)" stroke-width="1.2"/>
-              <rect x="20" y="46" width="260" height="38" rx="18" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <rect x="18" y="50" width="26" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <ellipse cx="205" cy="80" rx="16" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <circle cx="258" cy="65" r="20" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <circle cx="258" cy="65" r="2" fill="currentColor" stroke="none"/>
-              <line x1="258" y1="65" x2="258" y2="42" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M258 42 L270 47 L258 52 Z" fill="currentColor" stroke="none"/>
+              <rect x="4" y="14" width="312" height="102" rx="16" fill="var(--grass)" fill-opacity="0.35" stroke="var(--line)" stroke-width="1.2"/>
+              <path d="M22 65 Q 60 42 150 50 Q 220 55 278 65 Q 220 92 150 82 Q 60 78 22 65 Z" fill="var(--grass)" stroke="var(--grass-line)" stroke-width="1.4"/>
+              <rect x="17" y="50" width="27" height="30" rx="4" fill="var(--bg-soft)" stroke="currentColor" stroke-width="1.4"/>
+              <ellipse cx="205" cy="80" rx="17" ry="10" fill="var(--sand)" stroke="var(--sand-line)" stroke-width="1.4"/>
+              <circle cx="258" cy="63" r="21" fill="var(--grass)" fill-opacity="0.6" stroke="currentColor" stroke-width="1.4"/>
+              <circle cx="258" cy="63" r="2.2" fill="var(--bg)" stroke="currentColor" stroke-width="1.2"/>
+              <line x1="258" y1="63" x2="258" y2="38" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M258 38 L271 43.5 L258 49 Z" fill="var(--flag)" stroke="none"/>
               <text x="31" y="100" text-anchor="middle">TEE</text>
-              <text x="150" y="40" text-anchor="middle">FAIRWAY</text>
+              <text x="130" y="36" text-anchor="middle">FAIRWAY</text>
               <text x="150" y="124" text-anchor="middle">ROUGH</text>
               <text x="205" y="98" text-anchor="middle">BUNKER</text>
-              <text x="258" y="30" text-anchor="middle">GREEN</text>
+              <text x="258" y="26" text-anchor="middle">GREEN</text>
             </svg>
             <div class="diagramCaption">Vista simplificada de un hoyo: del tee al green, pasando por el fairway (con el rough alrededor y un bunker cerca del green).</div>
           </div>
@@ -366,23 +406,24 @@ const CURRICULUM = [
           <p>No hace falta comprar un set completo de 14 palos para arrancar: muchos principiantes empiezan con un <span class="term">half set</span> (medio set) de 7 u 8 palos.</p>
           <div class="diagram">
             <svg viewBox="0 0 320 150">
-              <line x1="40" y1="10" x2="55" y2="110" stroke="currentColor" stroke-width="1.4"/>
-              <ellipse cx="58" cy="118" rx="16" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <text x="55" y="140" text-anchor="middle">DRIVER</text>
+              <line x1="42" y1="8" x2="55" y2="108" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M55 108 Q 40 106 38 120 Q 38 134 58 134 Q 78 132 76 116 Q 74 106 55 108 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.4"/>
+              <text x="57" y="146" text-anchor="middle">DRIVER</text>
 
-              <line x1="130" y1="20" x2="140" y2="112" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M132 112 L156 108 L152 122 L132 120 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <text x="142" y="140" text-anchor="middle">IRON</text>
+              <line x1="128" y1="18" x2="140" y2="110" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M140 110 L166 104 L160 124 L138 122 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.4"/>
+              <text x="149" y="146" text-anchor="middle">IRON</text>
 
-              <line x1="205" y1="28" x2="212" y2="112" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M204 112 L226 110 L222 124 L204 122 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <text x="214" y="140" text-anchor="middle">WEDGE</text>
+              <line x1="202" y1="26" x2="211" y2="110" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M211 110 L234 106 L230 126 L209 124 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.4"/>
+              <text x="220" y="146" text-anchor="middle">WEDGE</text>
 
-              <line x1="278" y1="34" x2="282" y2="112" stroke="currentColor" stroke-width="1.4"/>
-              <rect x="266" y="110" width="30" height="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <text x="281" y="140" text-anchor="middle">PUTTER</text>
+              <line x1="276" y1="32" x2="281" y2="110" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="264" y="108" width="34" height="10" rx="2" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.4"/>
+              <line x1="281" y1="108" x2="281" y2="118" stroke="var(--bg)" stroke-width="1.2"/>
+              <text x="281" y="146" text-anchor="middle">PUTTER</text>
             </svg>
-            <div class="diagramCaption">Comparación simplificada de largo y forma: el driver tiene el palo más largo y la cabeza más grande; irons y wedges son más cortos con caras más angulosas; el putter es el más corto y vertical.</div>
+            <div class="diagramCaption">Comparación simplificada de largo y forma: el driver tiene el palo más largo y la cabeza más grande y redondeada; irons y wedges son más cortos con caras angulosas (la del wedge, más abierta); el putter es el más corto y vertical, con la cabeza tipo mazo.</div>
           </div>
         `,
         summary: 'El máximo permitido son 14 palos, divididos en woods, irons, wedges y putter. Para arrancar no hace falta el set completo: muchos principiantes usan un medio set.',
@@ -431,14 +472,20 @@ const CURRICULUM = [
           <p><strong>Stance (postura):</strong> los pies separados aproximadamente al ancho de los hombros, rodillas ligeramente flexionadas, peso distribuido de forma pareja, e inclinado levemente desde la cadera (no desde la espalda).</p>
           <p><strong>Alignment (alineación):</strong> los hombros, caderas y pies deben apuntar en una línea paralela a la línea objetivo (hacia donde querés que vaya la bola) — no directamente hacia el objetivo.</p>
           <div class="diagram">
-            <svg viewBox="0 0 300 100">
-              <line x1="20" y1="30" x2="280" y2="30" stroke="currentColor" stroke-width="1.4"/>
-              <line x1="20" y1="70" x2="280" y2="70" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 4"/>
-              <circle cx="150" cy="70" r="4" fill="currentColor" stroke="none"/>
-              <text x="150" y="18" text-anchor="middle">LÍNEA OBJETIVO (hacia la bandera)</text>
-              <text x="150" y="90" text-anchor="middle">LÍNEA DE PIES / HOMBROS (paralela)</text>
+            <svg viewBox="0 0 300 105">
+              <line x1="20" y1="28" x2="270" y2="28" stroke="currentColor" stroke-width="1.4"/>
+              <circle cx="270" cy="28" r="4" fill="none" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="270" cy="28" r="1.4" fill="currentColor" stroke="none"/>
+              <line x1="20" y1="68" x2="270" y2="68" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 4"/>
+              <circle cx="150" cy="68" r="8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="147" cy="65" r="1.5" fill="currentColor" stroke="none"/>
+              <circle cx="153" cy="66" r="1.1" fill="currentColor" stroke="none"/>
+              <circle cx="148" cy="70" r="1.1" fill="currentColor" stroke="none"/>
+              <circle cx="153" cy="71" r="1.3" fill="currentColor" stroke="none"/>
+              <text x="145" y="16" text-anchor="middle">LÍNEA OBJETIVO (hacia la bandera)</text>
+              <text x="145" y="90" text-anchor="middle">LÍNEA DE PIES / HOMBROS (paralela)</text>
             </svg>
-            <div class="diagramCaption">La analogía clásica: tu cuerpo se alinea paralelo a la línea objetivo, como los rieles de una vía — no apuntando directo a ella.</div>
+            <div class="diagramCaption">La analogía clásica: tu cuerpo (línea de pies y hombros) se alinea paralelo a la línea objetivo hacia la bandera, como los rieles de una vía — no apuntando directo a ella.</div>
           </div>
         `,
         summary: 'Hay tres grips estándar: overlap, interlock y ten-finger. El stance va al ancho de hombros con las rodillas flexionadas, y en el alignment el cuerpo apunta paralelo a la línea objetivo, no directo a ella.',
@@ -465,30 +512,61 @@ const CURRICULUM = [
           <p>Para principiantes, lo más importante no es la velocidad sino el <span class="term">tempo</span> (el ritmo): un swing lento y controlado, con buen contacto, va a dar mejores resultados que un swing rápido y descontrolado.</p>
           <p>Un buen ejercicio para arrancar es practicar el movimiento completo sin bola (<span class="term">practice swing</span>), enfocándote en sentir cada una de las 5 etapas antes de agregar la bola.</p>
           <div class="diagram">
-            <svg viewBox="0 0 340 110">
-              <line x1="30" y1="20" x2="30" y2="80" stroke="var(--line)" stroke-width="1.4"/>
-              <line x1="30" y1="80" x2="30" y2="100" stroke="currentColor" stroke-width="1.6"/>
-              <text x="30" y="14" text-anchor="middle">ADDRESS</text>
-
-              <line x1="98" y1="20" x2="98" y2="80" stroke="var(--line)" stroke-width="1.4"/>
-              <line x1="98" y1="80" x2="72" y2="35" stroke="currentColor" stroke-width="1.6"/>
-              <text x="90" y="14" text-anchor="middle">BACKSWING</text>
-
-              <line x1="170" y1="20" x2="170" y2="80" stroke="var(--line)" stroke-width="1.4"/>
-              <line x1="170" y1="80" x2="150" y2="50" stroke="currentColor" stroke-width="1.6"/>
-              <text x="166" y="14" text-anchor="middle">DOWNSWING</text>
-
-              <line x1="240" y1="20" x2="240" y2="80" stroke="var(--line)" stroke-width="1.4"/>
-              <line x1="240" y1="80" x2="240" y2="100" stroke="currentColor" stroke-width="1.6"/>
-              <circle cx="240" cy="102" r="2.4" fill="currentColor" stroke="none"/>
-              <text x="240" y="14" text-anchor="middle">IMPACT</text>
-
-              <line x1="308" y1="20" x2="308" y2="80" stroke="var(--line)" stroke-width="1.4"/>
-              <line x1="308" y1="80" x2="330" y2="32" stroke="currentColor" stroke-width="1.6"/>
-              <text x="308" y="14" text-anchor="middle">FOLLOW-</text>
-              <text x="308" y="24" text-anchor="middle">THROUGH</text>
+            <svg viewBox="0 0 340 130">
+              <!-- Address -->
+              <g>
+                <line x1="18" y1="108" x2="42" y2="108" stroke="var(--line)" stroke-width="1.2"/>
+                <circle cx="30" cy="45" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <line x1="30" y1="51.5" x2="30" y2="82" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="30" y1="82" x2="21" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="30" y1="82" x2="39" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="30" y1="60" x2="30" y2="112" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="30" cy="114" r="1.6" fill="currentColor" stroke="none"/>
+                <text x="30" y="126" text-anchor="middle">ADDRESS</text>
+              </g>
+              <!-- Backswing -->
+              <g>
+                <line x1="82" y1="108" x2="106" y2="108" stroke="var(--line)" stroke-width="1.2"/>
+                <circle cx="94" cy="45" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <line x1="94" y1="51.5" x2="94" y2="82" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="94" y1="82" x2="85" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="94" y1="82" x2="103" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="94" y1="60" x2="70" y2="32" stroke="currentColor" stroke-width="1.5"/>
+                <text x="94" y="126" text-anchor="middle">BACKSWING</text>
+              </g>
+              <!-- Downswing -->
+              <g>
+                <line x1="150" y1="108" x2="174" y2="108" stroke="var(--line)" stroke-width="1.2"/>
+                <circle cx="162" cy="45" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <line x1="162" y1="51.5" x2="162" y2="82" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="162" y1="82" x2="153" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="162" y1="82" x2="171" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="162" y1="62" x2="140" y2="90" stroke="currentColor" stroke-width="1.5"/>
+                <text x="162" y="126" text-anchor="middle">DOWNSWING</text>
+              </g>
+              <!-- Impact -->
+              <g>
+                <line x1="222" y1="108" x2="246" y2="108" stroke="var(--line)" stroke-width="1.2"/>
+                <circle cx="234" cy="45" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <line x1="234" y1="51.5" x2="234" y2="82" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="234" y1="82" x2="225" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="234" y1="82" x2="243" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="234" y1="60" x2="234" y2="112" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="234" cy="114" r="1.6" fill="currentColor" stroke="none"/>
+                <text x="234" y="126" text-anchor="middle">IMPACT</text>
+              </g>
+              <!-- Follow-through -->
+              <g>
+                <line x1="288" y1="108" x2="312" y2="108" stroke="var(--line)" stroke-width="1.2"/>
+                <circle cx="304" cy="45" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <line x1="304" y1="51.5" x2="304" y2="82" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="304" y1="82" x2="295" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="304" y1="82" x2="313" y2="108" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="304" y1="58" x2="326" y2="30" stroke="currentColor" stroke-width="1.5"/>
+                <text x="304" y="126" text-anchor="middle">FOLLOW-THR.</text>
+              </g>
             </svg>
-            <div class="diagramCaption">Posición aproximada del palo en cada una de las 5 etapas del swing, vistas en secuencia.</div>
+            <div class="diagramCaption">Posición aproximada del cuerpo y el palo en cada una de las 5 etapas del swing, vistas en secuencia.</div>
           </div>
         `,
         summary: 'El swing tiene 5 etapas: address, backswing, downswing, impact y follow-through. Para principiantes, el tempo controlado importa más que la velocidad.',
@@ -825,6 +903,17 @@ function render() {
 }
 
 function renderNiveles(app) {
+  const userSwitch = document.createElement('div');
+  userSwitch.className = 'userSwitch';
+  USERS.forEach(name => {
+    const pill = document.createElement('div');
+    pill.className = 'userPill' + (name === activeUser ? ' active' : '');
+    pill.textContent = name;
+    pill.addEventListener('click', () => switchUser(name));
+    userSwitch.appendChild(pill);
+  });
+  app.appendChild(userSwitch);
+
   const totalDone = Object.keys(progress.completed).length;
 
   const reviewBtn = document.createElement('div');
@@ -875,6 +964,13 @@ function renderNiveles(app) {
 
 function renderNivel(app, data) {
   const level = CURRICULUM.find(l => l.id === data.levelId);
+
+  const hint = document.createElement('div');
+  hint.className = 'modMeta';
+  hint.style.marginBottom = '10px';
+  hint.textContent = 'Tocá el círculo para marcar o desmarcar un módulo como completado.';
+  app.appendChild(hint);
+
   level.modules.forEach(m => {
     const done = !!progress.completed[m.id];
     const row = document.createElement('div');
@@ -887,6 +983,16 @@ function renderNivel(app, data) {
       </div>
       <svg class="chev" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></svg>
     `;
+    row.querySelector('.modCheck').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (progress.completed[m.id]) {
+        delete progress.completed[m.id];
+      } else {
+        progress.completed[m.id] = { at: Date.now(), score: null, manual: true };
+      }
+      saveProgress(progress);
+      render();
+    });
     row.addEventListener('click', () => push('leccion', { moduleId: m.id }));
     app.appendChild(row);
   });
@@ -931,6 +1037,13 @@ function renderLeccion(app, data) {
     listenRow.appendChild(select);
   }
   app.appendChild(listenRow);
+
+  const voiceHint = document.createElement('div');
+  voiceHint.className = 'modMeta';
+  voiceHint.style.marginTop = '-14px';
+  voiceHint.style.marginBottom = '18px';
+  voiceHint.textContent = '¿No aparece "Siri Voice"? Es una limitación de iOS: Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, no la voz de Siri en sí. Si la descargás ahí y volvés a esta página, a veces sí aparece — pero no depende de la app.';
+  app.appendChild(voiceHint);
 
   const body = document.createElement('div');
   body.className = 'lessonBody';
