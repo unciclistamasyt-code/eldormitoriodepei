@@ -628,7 +628,7 @@ function guessTags(text) {
    Se usa la ubicación del dispositivo (con permiso) para pedir la
    temperatura de hoy y así preferir manga larga/pantalón y abrigo si hace
    frío, o manga corta/short y sin abrigo si hace calor. */
-const WEATHER_CACHE_KEY = 'ropa_weather_cache_v1';
+const WEATHER_CACHE_KEY = 'ropa_weather_cache_v2';
 const WEATHER_CACHE_MS = 60 * 60 * 1000; // 1 hora
 
 let weatherInfo = null;
@@ -676,12 +676,29 @@ async function fetchWeather(lat, lon) {
   };
 }
 
+/* Geocodificación inversa (lat/lon -> nombre de lugar) para que el usuario
+   pueda ver junto al clima qué ubicación detectó la app y así confirmar
+   que es la correcta. BigDataCloud: gratis, sin API key, con CORS. Si
+   falla no es grave — el clima igual se muestra, solo sin el nombre del
+   lugar. */
+async function fetchLocationLabel(lat, lon) {
+  const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('ubicación: HTTP ' + res.status);
+  const data = await res.json();
+  const city = data.city || data.locality || '';
+  const region = data.principalSubdivision && data.principalSubdivision !== city ? data.principalSubdivision : '';
+  const country = data.countryName || '';
+  return [city, region || country].filter(Boolean).join(', ');
+}
+
 function renderWeatherBar(msg) {
   const el = document.getElementById('weatherBar');
   if (!el) return;
   if (weatherInfo) {
     const tag = weatherInfo.label ? ' · ' + weatherInfo.label : '';
-    el.textContent = `hoy: ${Math.round(weatherInfo.tempMin)}°–${Math.round(weatherInfo.tempMax)}°C${tag}`;
+    const loc = weatherInfo.locationLabel ? ' · ' + weatherInfo.locationLabel : '';
+    el.textContent = `hoy: ${Math.round(weatherInfo.tempMin)}°–${Math.round(weatherInfo.tempMax)}°C${tag}${loc}`;
     el.classList.remove('pending');
   } else {
     el.textContent = msg || 'toca para ajustar por el clima de hoy';
@@ -718,7 +735,13 @@ async function initWeather(forceLocate) {
   }
   try {
     renderWeatherBar('consultando el clima…');
-    const w = await withTimeout(fetchWeather(pos.coords.latitude, pos.coords.longitude), 10000);
+    const [wResult, locResult] = await Promise.allSettled([
+      withTimeout(fetchWeather(pos.coords.latitude, pos.coords.longitude), 10000),
+      withTimeout(fetchLocationLabel(pos.coords.latitude, pos.coords.longitude), 8000)
+    ]);
+    if (wResult.status !== 'fulfilled') throw wResult.reason;
+    const w = wResult.value;
+    w.locationLabel = locResult.status === 'fulfilled' ? locResult.value : null;
     weatherInfo = w;
     saveWeatherCache(w);
     renderWeatherBar();
@@ -1479,44 +1502,50 @@ function describeOutfit(pieces, tags) {
   return sentence;
 }
 
-const CHAT_NO_ABRIGO = ['sin abrigo', 'sin chaqueta', 'sin saco', 'quita el abrigo', 'quitar el abrigo', 'no quiero abrigo', 'no abrigo'];
-const CHAT_SI_ABRIGO = ['con abrigo', 'mas abrigador', 'tengo frio', 'hace frio', 'agrega abrigo', 'agregale abrigo', 'pon abrigo', 'quiero abrigo', 'sumale abrigo'];
-const CHAT_NO_ACC = ['sin bolso', 'sin accesorio', 'quita el bolso', 'quitar el bolso', 'no quiero bolso'];
-const CHAT_SI_ACC = ['con bolso', 'agrega un bolso', 'agrega bolso', 'pon un bolso', 'quiero un bolso', 'agrega accesorio', 'quiero un accesorio'];
-const CHAT_CHANGE = {
-  top: ['cambia el top', 'otro top', 'cambia la playera', 'otra playera', 'cambia la camisa', 'otra camisa', 'cambia la blusa', 'otra blusa'],
-  bottom: ['cambia el pantalon', 'otro pantalon', 'cambia el bottom', 'otro bottom', 'cambia el short', 'otro short'],
-  calzado: ['cambia los zapatos', 'otros zapatos', 'cambia el calzado', 'otro calzado', 'cambia los tenis', 'otros tenis'],
-  abrigo: ['cambia el abrigo', 'otro abrigo'],
-  accesorio: ['cambia el bolso', 'otro bolso', 'cambia el accesorio', 'otro accesorio'],
-  vestido: ['cambia el vestido', 'otro vestido']
+/* Antes esto exigía que el usuario escribiera una de estas frases EXACTAS
+   ("sin abrigo" tal cual, "cambia los zapatos" tal cual) — cualquier otra
+   forma de decir lo mismo ("quítale el abrigo", "puedes cambiar mis
+   zapatos") no calzaba con nada, así que la app no cambiaba nada y volvía
+   a mostrar básicamente la misma frase genérica de siempre. Ahora se busca
+   por palabras sueltas con expresiones regulares, mucho más tolerante al
+   orden y a palabras de relleno. */
+const ABRIGO_REMOVE_RE = /sin (el )?(abrigo|chaqueta|saco|sueter)|quita\w*.*abrigo|quitar\w*.*abrigo|no quiero abrigo|no abrigo|hace calor|mucho calor|tengo calor/;
+const ABRIGO_ADD_RE = /con (el )?abrigo|mas abrigador|tengo frio|hace frio|mucho frio|agrega\w*.*abrigo|pon\w*.*abrigo|quiero.*abrigo|necesito.*abrigo|sumale abrigo/;
+const ACC_REMOVE_RE = /sin (el |la )?(bolso|bolsa|accesorio|cartera)|quita\w*.*bolso|quitar\w*.*bolso|no quiero bolso|no bolso/;
+const ACC_ADD_RE = /con (el |la )?(bolso|bolsa)|agrega\w*.*bolso|agrega\w*.*accesorio|pon\w*.*bolso|quiero.*bolso|quiero.*accesorio|necesito.*bolso/;
+const CHANGE_VERB_RE = /\b(cambia\w*|otro|otra|diferente|distinto|distinta)\b/;
+const CATEGORY_WORDS = {
+  top: ['top', 'playera', 'camisa', 'camiseta', 'blusa'],
+  bottom: ['pantalon', 'pantalones', 'bottom', 'short', 'shorts'],
+  calzado: ['zapatos', 'zapato', 'tenis', 'calzado', 'botas', 'sandalias'],
+  abrigo: ['abrigo', 'saco', 'chaqueta', 'chamarra', 'sueter'],
+  accesorio: ['bolso', 'bolsa', 'accesorio', 'cartera'],
+  vestido: ['vestido']
 };
 
-function matchAny(text, list) {
-  return list.some(k => text.includes(k));
-}
-
 /* Lee lo que escribió el usuario y ajusta chatState en consecuencia.
-   Devuelve una lista de notas cortas (para explicar qué se cambió) — si
-   no reconoce nada, la lista queda vacía y igual se vuelve a armar el
-   outfit con la ocasión actual. */
+   Devuelve { handled, notes }: handled=false cuando no se reconoció nada
+   en el mensaje, para que sendChatReply avise en vez de fingir un cambio
+   y repetir la explicación genérica de siempre. */
 function interpretChatReply(rawText) {
   const text = normalizeText(rawText);
   const notes = [];
+  let handled = false;
 
-  if (matchAny(text, CHAT_NO_ABRIGO)) { chatState.forcedAbrigo = false; notes.push('quité el abrigo'); }
-  else if (matchAny(text, CHAT_SI_ABRIGO)) { chatState.forcedAbrigo = true; notes.push('agregué abrigo'); }
+  if (ABRIGO_REMOVE_RE.test(text)) { chatState.forcedAbrigo = false; notes.push('quité el abrigo'); handled = true; }
+  else if (ABRIGO_ADD_RE.test(text)) { chatState.forcedAbrigo = true; notes.push('agregué abrigo'); handled = true; }
 
-  if (matchAny(text, CHAT_NO_ACC)) { chatState.forcedAccesorio = false; notes.push('quité el accesorio'); }
-  else if (matchAny(text, CHAT_SI_ACC)) { chatState.forcedAccesorio = true; notes.push('agregué un accesorio'); }
+  if (ACC_REMOVE_RE.test(text)) { chatState.forcedAccesorio = false; notes.push('quité el accesorio'); handled = true; }
+  else if (ACC_ADD_RE.test(text)) { chatState.forcedAccesorio = true; notes.push('agregué un accesorio'); handled = true; }
 
-  if (lastOutfitPieces) {
-    for (const cat in CHAT_CHANGE) {
-      if (matchAny(text, CHAT_CHANGE[cat])) {
+  if (lastOutfitPieces && CHANGE_VERB_RE.test(text)) {
+    for (const cat in CATEGORY_WORDS) {
+      if (CATEGORY_WORDS[cat].some(w => text.includes(w))) {
         const current = lastOutfitPieces.find(([label]) => label === cat);
         if (current) {
           chatState.excludedIds[cat] = current[1].id;
           pendingChangeCategories.push(cat);
+          handled = true;
         }
       }
     }
@@ -1531,9 +1560,10 @@ function interpretChatReply(rawText) {
   if (extraTags.length) {
     chatState.extraTags = [...new Set([...chatState.extraTags, ...extraTags])];
     notes.push('tomé en cuenta que quieres algo más ' + extraTags.join('/'));
+    handled = true;
   }
 
-  return notes;
+  return { handled, notes };
 }
 
 document.getElementById('chatSend').addEventListener('click', sendChatReply);
@@ -1547,8 +1577,12 @@ function sendChatReply() {
   if (!text) return;
   addChatMessage('user', text);
   input.value = '';
-  const notes = interpretChatReply(text);
-  pendingChangeNotes = notes;
+  const result = interpretChatReply(text);
+  if (!result.handled) {
+    addChatMessage('assistant', 'No estoy segura de qué cambiar con eso. Prueba con algo como: "sin abrigo", "con bolso", "cambia los zapatos", "más formal" o "más deportivo".');
+    return;
+  }
+  pendingChangeNotes = result.notes;
   buildOutfit();
 }
 
