@@ -186,6 +186,50 @@
   .resultLabel { font-size: 13px; color: var(--text-dim); text-align: center; margin-bottom: 30px; }
 
   .emptyHint { color: var(--text-dim); font-size: 13.5px; line-height: 1.5; text-align: center; margin-top: 60px; padding: 0 10px; }
+
+  /* ---- Voz ---- */
+  .listenRow { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
+  .voiceSelect {
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    background: none;
+    max-width: 160px;
+  }
+
+  /* ---- Diagramas ---- */
+  .diagram { margin: 4px 0 20px; color: var(--text); }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .diagram svg text { font-size: 9px; fill: var(--text-dim); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+  .diagramCaption { font-size: 11.5px; color: var(--text-dim); margin-top: 8px; line-height: 1.45; }
+
+  /* ---- Pronóstico ---- */
+  .forecastCard {
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 22px;
+  }
+  .forecastTitle { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+  .forecastRow { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .forecastRow span:last-child { color: var(--text-dim); }
+  .forecastEta { font-size: 13.5px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); line-height: 1.5; }
+
+  /* ---- Feedback del quiz ---- */
+  .feedbackBox {
+    margin-top: 4px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .feedbackBox.good { background: rgba(95,191,122,0.1); border: 1px solid #5fbf7a; }
+  .feedbackBox.bad { background: rgba(217,112,112,0.1); border: 1px solid #d97070; }
+  .feedbackHead { font-weight: 700; margin-bottom: 4px; }
+
+  .resultGrade { font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -246,10 +290,10 @@ const CURRICULUM = [
         `,
         summary: 'El golf consiste en meter una bola en 18 hoyos con la menor cantidad de golpes posible. Cada hoyo tiene un par, y las reglas oficiales las publican juntas la USGA y The R&A, en la edición vigente de 2023.',
         quiz: [
-          { q: '¿Cuántos hoyos tiene una ronda estándar de golf?', options: ['9', '18', '24', '36'], correct: 1 },
-          { q: '¿Qué organizaciones publican juntas el reglamento oficial del golf?', options: ['FIFA y COI', 'USGA y The R&A', 'PGA Tour y LPGA', 'Augusta National y St Andrews'], correct: 1 },
-          { q: '¿Cómo se le llama a cada golpe en golf?', options: ['Par', 'Stroke', 'Birdie', 'Round'], correct: 1 },
-          { q: '¿Qué significa "front nine"?', options: ['Los últimos 9 hoyos', 'Los primeros 9 hoyos', 'Un tipo de palo', 'Un formato de torneo'], correct: 1 },
+          { q: '¿Cuántos hoyos tiene una ronda estándar de golf?', options: ['9', '18', '24', '36'], correct: 1, explain: 'Una ronda completa son 18 hoyos, aunque muchos campos también ofrecen rondas cortas de 9.' },
+          { q: '¿Qué organizaciones publican juntas el reglamento oficial del golf?', options: ['FIFA y COI', 'USGA y The R&A', 'PGA Tour y LPGA', 'Augusta National y St Andrews'], correct: 1, explain: 'La USGA rige en Estados Unidos y México, y The R&A en el resto del mundo; juntas publican las Rules of Golf.' },
+          { q: '¿Cómo se le llama a cada golpe en golf?', options: ['Par', 'Stroke', 'Birdie', 'Round'], correct: 1, explain: 'Cada golpe que le das a la bola cuenta como un stroke, sin importar el resultado.' },
+          { q: '¿Qué significa "front nine"?', options: ['Los últimos 9 hoyos', 'Los primeros 9 hoyos', 'Un tipo de palo', 'Un formato de torneo'], correct: 1, explain: 'El campo se divide en dos mitades de 9 hoyos: front nine (los primeros) y back nine (los últimos).' },
         ],
       },
       {
@@ -278,13 +322,31 @@ const CURRICULUM = [
             <li><span class="term">Double bogey</span>: 2 golpes sobre par.</li>
             <li><span class="term">Hole-in-one</span> (o <span class="term">ace</span>): meter la bola de un solo golpe desde el tee.</li>
           </ul>
+          <div class="diagram">
+            <svg viewBox="0 0 320 130">
+              <rect x="4" y="14" width="312" height="102" rx="14" fill="none" stroke="var(--line)" stroke-width="1.2"/>
+              <rect x="20" y="46" width="260" height="38" rx="18" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <rect x="18" y="50" width="26" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <ellipse cx="205" cy="80" rx="16" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <circle cx="258" cy="65" r="20" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <circle cx="258" cy="65" r="2" fill="currentColor" stroke="none"/>
+              <line x1="258" y1="65" x2="258" y2="42" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M258 42 L270 47 L258 52 Z" fill="currentColor" stroke="none"/>
+              <text x="31" y="100" text-anchor="middle">TEE</text>
+              <text x="150" y="40" text-anchor="middle">FAIRWAY</text>
+              <text x="150" y="124" text-anchor="middle">ROUGH</text>
+              <text x="205" y="98" text-anchor="middle">BUNKER</text>
+              <text x="258" y="30" text-anchor="middle">GREEN</text>
+            </svg>
+            <div class="diagramCaption">Vista simplificada de un hoyo: del tee al green, pasando por el fairway (con el rough alrededor y un bunker cerca del green).</div>
+          </div>
         `,
         summary: 'El campo se divide en tee, fairway, rough, bunker y green, entre otras zonas. El puntaje de cada hoyo se mide contra el par: birdie es un golpe menos, bogey un golpe más, y así.',
         quiz: [
-          { q: '¿Qué es el "fairway"?', options: ['El pasto alto a los costados', 'La franja de pasto corto entre el tee y el green', 'La trampa de arena', 'El agujero final'], correct: 1 },
-          { q: '¿Cómo se llama meter la bola de un solo golpe desde el tee?', options: ['Birdie', 'Eagle', 'Hole-in-one', 'Par'], correct: 2 },
-          { q: 'Si hacés 1 golpe menos que el par de un hoyo, ¿cómo se llama tu resultado?', options: ['Bogey', 'Birdie', 'Eagle', 'Double bogey'], correct: 1 },
-          { q: '¿Qué es un "dogleg"?', options: ['Un tipo de bunker', 'Un hoyo que se curva en vez de ir recto', 'Un palo de golf', 'Un formato de torneo'], correct: 1 },
+          { q: '¿Qué es el "fairway"?', options: ['El pasto alto a los costados', 'La franja de pasto corto entre el tee y el green', 'La trampa de arena', 'El agujero final'], correct: 1, explain: 'El fairway es la franja de pasto corto y cuidado que conecta el tee con el green.' },
+          { q: '¿Cómo se llama meter la bola de un solo golpe desde el tee?', options: ['Birdie', 'Eagle', 'Hole-in-one', 'Par'], correct: 2, explain: 'Un hole-in-one (o ace) es meter la bola desde el tee en un solo golpe — algo muy poco común.' },
+          { q: 'Si hacés 1 golpe menos que el par de un hoyo, ¿cómo se llama tu resultado?', options: ['Bogey', 'Birdie', 'Eagle', 'Double bogey'], correct: 1, explain: 'Un golpe menos que el par se llama birdie; dos golpes menos es eagle.' },
+          { q: '¿Qué es un "dogleg"?', options: ['Un tipo de bunker', 'Un hoyo que se curva en vez de ir recto', 'Un palo de golf', 'Un formato de torneo'], correct: 1, explain: 'Un dogleg es un hoyo que se curva en su recorrido en vez de ir en línea recta hacia el green.' },
         ],
       },
       {
@@ -302,13 +364,33 @@ const CURRICULUM = [
           </ul>
           <p>Además de los palos, para empezar necesitás: una <span class="term">golf bag</span> (bolsa), <span class="term">golf balls</span> (bolas), <span class="term">tees</span> (los soportes donde apoyás la bola en el tee) y, opcionalmente, un <span class="term">glove</span> (guante) para mejorar el agarre.</p>
           <p>No hace falta comprar un set completo de 14 palos para arrancar: muchos principiantes empiezan con un <span class="term">half set</span> (medio set) de 7 u 8 palos.</p>
+          <div class="diagram">
+            <svg viewBox="0 0 320 150">
+              <line x1="40" y1="10" x2="55" y2="110" stroke="currentColor" stroke-width="1.4"/>
+              <ellipse cx="58" cy="118" rx="16" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <text x="55" y="140" text-anchor="middle">DRIVER</text>
+
+              <line x1="130" y1="20" x2="140" y2="112" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M132 112 L156 108 L152 122 L132 120 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <text x="142" y="140" text-anchor="middle">IRON</text>
+
+              <line x1="205" y1="28" x2="212" y2="112" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M204 112 L226 110 L222 124 L204 122 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <text x="214" y="140" text-anchor="middle">WEDGE</text>
+
+              <line x1="278" y1="34" x2="282" y2="112" stroke="currentColor" stroke-width="1.4"/>
+              <rect x="266" y="110" width="30" height="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <text x="281" y="140" text-anchor="middle">PUTTER</text>
+            </svg>
+            <div class="diagramCaption">Comparación simplificada de largo y forma: el driver tiene el palo más largo y la cabeza más grande; irons y wedges son más cortos con caras más angulosas; el putter es el más corto y vertical.</div>
+          </div>
         `,
         summary: 'El máximo permitido son 14 palos, divididos en woods, irons, wedges y putter. Para arrancar no hace falta el set completo: muchos principiantes usan un medio set.',
         quiz: [
-          { q: '¿Cuál es el máximo de palos permitidos en la bolsa durante una ronda?', options: ['10', '12', '14', '16'], correct: 2 },
-          { q: '¿Qué palo se usa para putear en el green?', options: ['Driver', 'Wedge', 'Putter', 'Iron'], correct: 2 },
-          { q: '¿Qué familia de palos se usa típicamente para los golpes más largos?', options: ['Wedges', 'Woods', 'Putter', 'Irons cortos'], correct: 1 },
-          { q: '¿Es obligatorio empezar a jugar con el set completo de 14 palos?', options: ['Sí, es una regla', 'No, muchos principiantes usan un medio set'], correct: 1 },
+          { q: '¿Cuál es el máximo de palos permitidos en la bolsa durante una ronda?', options: ['10', '12', '14', '16'], correct: 2, explain: 'La Rule 4.1b limita la bolsa a 14 palos como máximo durante una ronda.' },
+          { q: '¿Qué palo se usa para putear en el green?', options: ['Driver', 'Wedge', 'Putter', 'Iron'], correct: 2, explain: 'El putter se usa específicamente para putear una vez que estás en el green.' },
+          { q: '¿Qué familia de palos se usa típicamente para los golpes más largos?', options: ['Wedges', 'Woods', 'Putter', 'Irons cortos'], correct: 1, explain: 'Los woods (incluido el driver) están pensados para los golpes de mayor distancia.' },
+          { q: '¿Es obligatorio empezar a jugar con el set completo de 14 palos?', options: ['Sí, es una regla', 'No, muchos principiantes usan un medio set'], correct: 1, explain: 'Muchos principiantes arrancan con un half set de 7 u 8 palos y van completando el set con el tiempo.' },
         ],
       },
       {
@@ -328,10 +410,10 @@ const CURRICULUM = [
         `,
         summary: 'El código de vestimenta varía por campo, pero lo más común es camisa con cuello, sin jean, y zapatos de golf. Conviene confirmar el dress code antes de visitar un club nuevo.',
         quiz: [
-          { q: '¿Qué tipo de camisa se suele exigir en la mayoría de los clubes?', options: ['Sin cuello', 'Con cuello (collared)', 'Mangas largas obligatorias', 'No hay ninguna regla'], correct: 1 },
-          { q: '¿El código de vestimenta es igual en todos los campos?', options: ['Sí, siempre igual', 'No, varía según el campo'], correct: 1 },
-          { q: '¿Qué son los "soft spikes"?', options: ['Tacos suaves en los zapatos de golf', 'Un tipo de guante', 'Una parte de la bolsa', 'Un tipo de palo'], correct: 0 },
-          { q: '¿Qué conviene hacer antes de visitar un club nuevo?', options: ['Nada, todos los clubes son iguales', 'Confirmar el dress code del campo'], correct: 1 },
+          { q: '¿Qué tipo de camisa se suele exigir en la mayoría de los clubes?', options: ['Sin cuello', 'Con cuello (collared)', 'Mangas largas obligatorias', 'No hay ninguna regla'], correct: 1, explain: 'La mayoría de los clubes piden camisa con cuello (collared shirt) o polo.' },
+          { q: '¿El código de vestimenta es igual en todos los campos?', options: ['Sí, siempre igual', 'No, varía según el campo'], correct: 1, explain: 'Cada club fija su propio dress code; lo que se permite en uno puede no permitirse en otro.' },
+          { q: '¿Qué son los "soft spikes"?', options: ['Tacos suaves en los zapatos de golf', 'Un tipo de guante', 'Una parte de la bolsa', 'Un tipo de palo'], correct: 0, explain: 'Los soft spikes son los tacos suaves de los zapatos de golf, pensados para no dañar el green.' },
+          { q: '¿Qué conviene hacer antes de visitar un club nuevo?', options: ['Nada, todos los clubes son iguales', 'Confirmar el dress code del campo'], correct: 1, explain: 'Como el código varía de campo en campo, conviene chequear las reglas antes de ir, sobre todo la primera vez.' },
         ],
       },
       {
@@ -348,13 +430,23 @@ const CURRICULUM = [
           </ul>
           <p><strong>Stance (postura):</strong> los pies separados aproximadamente al ancho de los hombros, rodillas ligeramente flexionadas, peso distribuido de forma pareja, e inclinado levemente desde la cadera (no desde la espalda).</p>
           <p><strong>Alignment (alineación):</strong> los hombros, caderas y pies deben apuntar en una línea paralela a la línea objetivo (hacia donde querés que vaya la bola) — no directamente hacia el objetivo.</p>
+          <div class="diagram">
+            <svg viewBox="0 0 300 100">
+              <line x1="20" y1="30" x2="280" y2="30" stroke="currentColor" stroke-width="1.4"/>
+              <line x1="20" y1="70" x2="280" y2="70" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 4"/>
+              <circle cx="150" cy="70" r="4" fill="currentColor" stroke="none"/>
+              <text x="150" y="18" text-anchor="middle">LÍNEA OBJETIVO (hacia la bandera)</text>
+              <text x="150" y="90" text-anchor="middle">LÍNEA DE PIES / HOMBROS (paralela)</text>
+            </svg>
+            <div class="diagramCaption">La analogía clásica: tu cuerpo se alinea paralelo a la línea objetivo, como los rieles de una vía — no apuntando directo a ella.</div>
+          </div>
         `,
         summary: 'Hay tres grips estándar: overlap, interlock y ten-finger. El stance va al ancho de hombros con las rodillas flexionadas, y en el alignment el cuerpo apunta paralelo a la línea objetivo, no directo a ella.',
         quiz: [
-          { q: '¿Cómo se llama el grip donde el meñique se apoya sobre el índice de la otra mano?', options: ['Interlock', 'Overlap (Vardon)', 'Ten-finger', 'Baseball'], correct: 1 },
-          { q: '¿Qué grip se parece a agarrar un bate de béisbol?', options: ['Overlap', 'Interlock', 'Ten-finger', 'Vardon'], correct: 2 },
-          { q: 'En el stance, ¿qué tan separados deben estar los pies aproximadamente?', options: ['Juntos', 'Ancho de hombros', 'El doble del ancho de hombros', 'No importa'], correct: 1 },
-          { q: 'En el alignment, el cuerpo debe apuntar...', options: ['Directo al objetivo', 'Paralelo a la línea objetivo', 'Hacia la derecha del objetivo siempre', 'No tiene relación con el objetivo'], correct: 1 },
+          { q: '¿Cómo se llama el grip donde el meñique se apoya sobre el índice de la otra mano?', options: ['Interlock', 'Overlap (Vardon)', 'Ten-finger', 'Baseball'], correct: 1, explain: 'En el overlap (o Vardon) grip, el meñique de la mano trasera se apoya sobre el índice de la delantera.' },
+          { q: '¿Qué grip se parece a agarrar un bate de béisbol?', options: ['Overlap', 'Interlock', 'Ten-finger', 'Vardon'], correct: 2, explain: 'El ten-finger grip (o baseball grip) no entrelaza ni superpone dedos, como agarrar un bate.' },
+          { q: 'En el stance, ¿qué tan separados deben estar los pies aproximadamente?', options: ['Juntos', 'Ancho de hombros', 'El doble del ancho de hombros', 'No importa'], correct: 1, explain: 'Un stance al ancho de hombros da una base estable sin limitar el giro del cuerpo.' },
+          { q: 'En el alignment, el cuerpo debe apuntar...', options: ['Directo al objetivo', 'Paralelo a la línea objetivo', 'Hacia la derecha del objetivo siempre', 'No tiene relación con el objetivo'], correct: 1, explain: 'El cuerpo se alinea paralelo a la línea objetivo, como los rieles de una vía — no apuntando directo a ella.' },
         ],
       },
       {
@@ -372,13 +464,39 @@ const CURRICULUM = [
           </ol>
           <p>Para principiantes, lo más importante no es la velocidad sino el <span class="term">tempo</span> (el ritmo): un swing lento y controlado, con buen contacto, va a dar mejores resultados que un swing rápido y descontrolado.</p>
           <p>Un buen ejercicio para arrancar es practicar el movimiento completo sin bola (<span class="term">practice swing</span>), enfocándote en sentir cada una de las 5 etapas antes de agregar la bola.</p>
+          <div class="diagram">
+            <svg viewBox="0 0 340 110">
+              <line x1="30" y1="20" x2="30" y2="80" stroke="var(--line)" stroke-width="1.4"/>
+              <line x1="30" y1="80" x2="30" y2="100" stroke="currentColor" stroke-width="1.6"/>
+              <text x="30" y="14" text-anchor="middle">ADDRESS</text>
+
+              <line x1="98" y1="20" x2="98" y2="80" stroke="var(--line)" stroke-width="1.4"/>
+              <line x1="98" y1="80" x2="72" y2="35" stroke="currentColor" stroke-width="1.6"/>
+              <text x="90" y="14" text-anchor="middle">BACKSWING</text>
+
+              <line x1="170" y1="20" x2="170" y2="80" stroke="var(--line)" stroke-width="1.4"/>
+              <line x1="170" y1="80" x2="150" y2="50" stroke="currentColor" stroke-width="1.6"/>
+              <text x="166" y="14" text-anchor="middle">DOWNSWING</text>
+
+              <line x1="240" y1="20" x2="240" y2="80" stroke="var(--line)" stroke-width="1.4"/>
+              <line x1="240" y1="80" x2="240" y2="100" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="240" cy="102" r="2.4" fill="currentColor" stroke="none"/>
+              <text x="240" y="14" text-anchor="middle">IMPACT</text>
+
+              <line x1="308" y1="20" x2="308" y2="80" stroke="var(--line)" stroke-width="1.4"/>
+              <line x1="308" y1="80" x2="330" y2="32" stroke="currentColor" stroke-width="1.6"/>
+              <text x="308" y="14" text-anchor="middle">FOLLOW-</text>
+              <text x="308" y="24" text-anchor="middle">THROUGH</text>
+            </svg>
+            <div class="diagramCaption">Posición aproximada del palo en cada una de las 5 etapas del swing, vistas en secuencia.</div>
+          </div>
         `,
         summary: 'El swing tiene 5 etapas: address, backswing, downswing, impact y follow-through. Para principiantes, el tempo controlado importa más que la velocidad.',
         quiz: [
-          { q: '¿Qué etapa viene justo después del "backswing"?', options: ['Address', 'Downswing', 'Follow-through', 'Impact'], correct: 1 },
-          { q: '¿Qué es el "impact" en el swing?', options: ['La posición inicial', 'El momento en que el palo golpea la bola', 'El final del movimiento', 'El agarre del palo'], correct: 1 },
-          { q: 'Para un principiante, ¿qué es más importante: la velocidad o el tempo?', options: ['La velocidad', 'El tempo (ritmo controlado)'], correct: 1 },
-          { q: '¿Qué es un "practice swing"?', options: ['Un swing de torneo', 'Practicar el movimiento completo sin bola', 'Un tipo de grip', 'Un formato de juego'], correct: 1 },
+          { q: '¿Qué etapa viene justo después del "backswing"?', options: ['Address', 'Downswing', 'Follow-through', 'Impact'], correct: 1, explain: 'Después de subir el palo en el backswing, el downswing lo trae de vuelta hacia la bola.' },
+          { q: '¿Qué es el "impact" en el swing?', options: ['La posición inicial', 'El momento en que el palo golpea la bola', 'El final del movimiento', 'El agarre del palo'], correct: 1, explain: 'El impact es el instante exacto del contacto entre la cara del palo y la bola.' },
+          { q: 'Para un principiante, ¿qué es más importante: la velocidad o el tempo?', options: ['La velocidad', 'El tempo (ritmo controlado)'], correct: 1, explain: 'Un ritmo controlado y repetible ayuda más a un principiante que la velocidad pura.' },
+          { q: '¿Qué es un "practice swing"?', options: ['Un swing de torneo', 'Practicar el movimiento completo sin bola', 'Un tipo de grip', 'Un formato de juego'], correct: 1, explain: 'Practicar el movimiento sin bola ayuda a sentir las 5 etapas antes de sumar la dificultad del contacto.' },
         ],
       },
       {
@@ -397,10 +515,10 @@ const CURRICULUM = [
         `,
         summary: 'Reglas básicas: jugás la bola donde cae, el primer tiro sale del teeing area, perder la bola o salir fuera de límites cuesta un golpe extra, y podés jugar una provisional si hay dudas.',
         quiz: [
-          { q: 'Si perdés la bola, ¿cuál es la penalidad estándar bajo "stroke and distance"?', options: ['Ninguna', 'Un golpe extra, volviendo a jugar desde antes', 'Perder el hoyo automáticamente', 'Dos golpes extra'], correct: 1 },
-          { q: '¿Para qué sirve una "provisional ball"?', options: ['Para jugar más rápido siempre', 'Para no tener que volver si tu bola original está perdida', 'Es obligatoria en cada hoyo', 'Reemplaza a la bola original sin penalidad'], correct: 1 },
-          { q: '¿Desde dónde tiene que salir tu primer tiro en cada hoyo?', options: ['Desde el green', 'Desde dentro del teeing area', 'Desde cualquier parte del fairway', 'Desde el rough'], correct: 1 },
-          { q: '¿Quién tiene el "honor" de jugar primero en el siguiente tee?', options: ['El jugador más joven', 'Quien tuvo el mejor puntaje en el hoyo anterior', 'Se decide al azar', 'El capitán del grupo'], correct: 1 },
+          { q: 'Si perdés la bola, ¿cuál es la penalidad estándar bajo "stroke and distance"?', options: ['Ninguna', 'Un golpe extra, volviendo a jugar desde antes', 'Perder el hoyo automáticamente', 'Dos golpes extra'], correct: 1, explain: 'Bajo stroke and distance, perder la bola o salir OB cuesta un golpe extra y volver a jugar desde donde golpeaste antes.' },
+          { q: '¿Para qué sirve una "provisional ball"?', options: ['Para jugar más rápido siempre', 'Para no tener que volver si tu bola original está perdida', 'Es obligatoria en cada hoyo', 'Reemplaza a la bola original sin penalidad'], correct: 1, explain: 'La provisional evita que tengas que volver caminando si después confirmás que la bola original está perdida.' },
+          { q: '¿Desde dónde tiene que salir tu primer tiro en cada hoyo?', options: ['Desde el green', 'Desde dentro del teeing area', 'Desde cualquier parte del fairway', 'Desde el rough'], correct: 1, explain: 'El primer tiro de cada hoyo tiene que salir desde dentro del área de tee marcada.' },
+          { q: '¿Quién tiene el "honor" de jugar primero en el siguiente tee?', options: ['El jugador más joven', 'Quien tuvo el mejor puntaje en el hoyo anterior', 'Se decide al azar', 'El capitán del grupo'], correct: 1, explain: 'El "honor" para salir primero lo tiene quien hizo el mejor puntaje en el hoyo anterior.' },
         ],
       },
       {
@@ -420,10 +538,10 @@ const CURRICULUM = [
         `,
         summary: 'La etiqueta incluye reparar divots y pitch marks, rastrillar los bunkers, no pisar la línea de putt de otros, gritar "fore" si hay riesgo, y mantener el ritmo de juego dejando pasar a grupos más rápidos.',
         quiz: [
-          { q: '¿Qué gritás si tu bola puede golpear a alguien?', options: ['"Ojo!"', '"Fore!"', '"Cuidado!"', '"Stop!"'], correct: 1 },
-          { q: '¿Qué es un "divot"?', options: ['Una trampa de arena', 'El pedazo de pasto que sale al golpear', 'Un tipo de palo', 'La marca de la bola en el green'], correct: 1 },
-          { q: '¿Qué significa "play through"?', options: ['Terminar la ronda rápido', 'Dejar pasar a un grupo más rápido detrás', 'Jugar sin parar de llover', 'Repetir un hoyo'], correct: 1 },
-          { q: '¿Qué hay que hacer después de jugar desde un bunker?', options: ['Nada', 'Rastrillar la arena (rake it)', 'Avisar al starter', 'Cambiar de bola'], correct: 1 },
+          { q: '¿Qué gritás si tu bola puede golpear a alguien?', options: ['"Ojo!"', '"Fore!"', '"Cuidado!"', '"Stop!"'], correct: 1, explain: '"Fore!" es la advertencia de seguridad universal en golf cuando una bola puede golpear a alguien.' },
+          { q: '¿Qué es un "divot"?', options: ['Una trampa de arena', 'El pedazo de pasto que sale al golpear', 'Un tipo de palo', 'La marca de la bola en el green'], correct: 1, explain: 'El divot es el pedazo de pasto que se levanta al golpear; se repara para cuidar el fairway.' },
+          { q: '¿Qué significa "play through"?', options: ['Terminar la ronda rápido', 'Dejar pasar a un grupo más rápido detrás', 'Jugar sin parar de llover', 'Repetir un hoyo'], correct: 1, explain: '"Play through" es dejar pasar a un grupo más rápido detrás del tuyo para no atrasar el ritmo de juego.' },
+          { q: '¿Qué hay que hacer después de jugar desde un bunker?', options: ['Nada', 'Rastrillar la arena (rake it)', 'Avisar al starter', 'Cambiar de bola'], correct: 1, explain: 'Rastrillar el bunker después de jugar deja la arena lista para el próximo jugador.' },
         ],
       },
     ],
@@ -499,6 +617,59 @@ function levelStats(level) {
   return { done, total: level.modules.length };
 }
 
+/* ================= Pronóstico de cuándo terminarías el curso =================
+   Estimación honesta a partir de tu propio ritmo: cuántos minutos de
+   contenido ya completaste y en cuántos días, proyectado sobre los
+   minutos que faltan de TODO el curso (34 módulos, incluidos los que
+   todavía están "próximamente"). No es una promesa, es una proyección. */
+function allModulesFlat() {
+  const out = [];
+  CURRICULUM.forEach(level => level.modules.forEach(m => out.push(m)));
+  return out;
+}
+function courseForecast() {
+  const all = allModulesFlat();
+  const totalMinutes = all.reduce((s, m) => s + m.minutes, 0);
+
+  const idToMinutes = {};
+  allUnlockedModules().forEach(m => { idToMinutes[m.id] = m.minutes; });
+
+  const completedEntries = Object.entries(progress.completed);
+  const completedCount = completedEntries.length;
+  const completedMinutes = completedEntries.reduce((s, [id]) => s + (idToMinutes[id] || 0), 0);
+  const remainingMinutes = Math.max(0, totalMinutes - completedMinutes);
+
+  const scores = completedEntries.map(([, v]) => v.score && typeof v.score.pct === 'number' ? v.score.pct : null).filter(v => v !== null);
+  const avgScorePct = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+
+  let etaText = null;
+  if (completedCount === 0) {
+    etaText = 'Completá tu primer módulo para empezar a ver un pronóstico.';
+  } else if (remainingMinutes <= 0) {
+    etaText = '¡Ya completaste todo el contenido disponible del curso!';
+  } else {
+    const timestamps = completedEntries.map(([, v]) => v.at).sort((a, b) => a - b);
+    const spanDays = (timestamps[timestamps.length - 1] - timestamps[0]) / 86400000;
+    if (completedCount < 2 || spanDays < 1) {
+      etaText = `Te faltan ${formatMinutes(remainingMinutes)} de contenido. Seguí completando módulos en distintos días para que la app calcule tu ritmo real y te dé una fecha estimada.`;
+    } else {
+      const paceMinutesPerDay = completedMinutes / spanDays;
+      const daysLeft = Math.max(1, Math.ceil(remainingMinutes / paceMinutesPerDay));
+      const target = new Date(Date.now() + daysLeft * 86400000);
+      const dateStr = target.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+      etaText = `A tu ritmo actual (~${Math.round(paceMinutesPerDay)} min/día), terminarías el curso completo alrededor del ${dateStr} (~${daysLeft} días).`;
+    }
+  }
+
+  return { totalMinutes, completedMinutes, remainingMinutes, completedCount, totalCount: all.length, avgScorePct, etaText };
+}
+function formatMinutes(min) {
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  const rem = min % 60;
+  return rem ? `${h} h ${rem} min` : `${h} h`;
+}
+
 /* ================= Navegación (pila de vistas) ================= */
 let viewStack = [{ view: 'niveles' }];
 
@@ -520,24 +691,125 @@ document.getElementById('backBtn').addEventListener('click', (e) => {
   back();
 });
 
-/* ================= Texto a voz (botón "escuchar") ================= */
+/* ================= Texto a voz (botón "escuchar") =================
+   El botón lee el MÓDULO COMPLETO, no solo el resumen. Safari/iOS tiene
+   un bug conocido donde speechSynthesis corta utterances largas a mitad
+   de camino — se evita partiendo el texto en oraciones cortas (se hablan
+   en cadena) y con un "watchdog" que hace pause()/resume() cada pocos
+   segundos, que es el workaround estándar para ese bug. */
+
+const VOICE_PREF_KEY = 'golf_voice_pref';
+let availableVoices = [];
+let speakWatchdog = null;
+let speakChain = null; // { chunks, idx, btn } — para poder cancelar
+
+function refreshVoices() {
+  if (!('speechSynthesis' in window)) return;
+  availableVoices = window.speechSynthesis.getVoices() || [];
+}
+if ('speechSynthesis' in window) {
+  refreshVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    refreshVoices();
+    // Si estamos parados en una lección, redibujá para que aparezca el
+    // selector de voz apenas el navegador termine de cargar las voces
+    // (en muchos navegadores getVoices() llega vacío en el primer intento).
+    const top = viewStack[viewStack.length - 1];
+    if (top && top.view === 'leccion') render();
+  };
+}
+
+/* Heurística para preferir voces que suenan más naturales/humanas:
+   las voces "Enhanced"/"Premium"/"Neural" suelen ser mejores que las
+   "compact" por defecto, cuando el dispositivo las tiene instaladas. */
+function scoreVoice(v) {
+  let score = 0;
+  const name = (v.name || '').toLowerCase();
+  if (v.lang && v.lang.toLowerCase().startsWith('es')) score += 100;
+  if (/enhanced|premium|neural|natural|siri/.test(name)) score += 50;
+  if (v.localService) score += 5;
+  return score;
+}
+function voiceOptions() {
+  if (!availableVoices.length) return [];
+  const spanish = availableVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('es'));
+  const list = spanish.length ? spanish : availableVoices;
+  return list.slice().sort((a, b) => scoreVoice(b) - scoreVoice(a));
+}
+function getPreferredVoice() {
+  const opts = voiceOptions();
+  if (!opts.length) return null;
+  let savedName = null;
+  try { savedName = localStorage.getItem(VOICE_PREF_KEY); } catch (e) {}
+  if (savedName) {
+    const match = opts.find(v => v.name === savedName);
+    if (match) return match;
+  }
+  return opts[0];
+}
+function setVoicePref(name) {
+  try { localStorage.setItem(VOICE_PREF_KEY, name); } catch (e) {}
+}
+
 function stopSpeaking() {
+  if (speakWatchdog) { clearInterval(speakWatchdog); speakWatchdog = null; }
+  if (speakChain && speakChain.btn) speakChain.btn.classList.remove('playing');
+  speakChain = null;
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
+
+/* Convierte el HTML de un módulo en texto plano hablable, agregando el
+   título y el resumen final como cierre. */
+function moduleSpeechText(m) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = m.content;
+  tmp.querySelectorAll('li').forEach(li => { li.textContent = li.textContent.trim().replace(/[.:]?$/, '. '); });
+  const raw = tmp.textContent.replace(/\s+/g, ' ').trim();
+  return `${m.title}. ${raw} En resumen: ${m.summary}`;
+}
+
+function splitIntoChunks(text) {
+  const sentences = text.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [text];
+  const chunks = [];
+  let cur = '';
+  sentences.forEach(s => {
+    if ((cur + s).length > 180 && cur) { chunks.push(cur.trim()); cur = s; }
+    else cur += s;
+  });
+  if (cur.trim()) chunks.push(cur.trim());
+  return chunks;
+}
+
 function toggleSpeak(text, btn) {
   if (!('speechSynthesis' in window)) return;
-  if (window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-    btn.classList.remove('playing');
+  if (window.speechSynthesis.speaking || speakChain) {
+    stopSpeaking();
     return;
   }
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'es-ES';
-  utter.rate = 0.98;
-  utter.onend = () => btn.classList.remove('playing');
-  utter.onerror = () => btn.classList.remove('playing');
+  const chunks = splitIntoChunks(text);
+  const voice = getPreferredVoice();
+  speakChain = { chunks, idx: 0, btn };
   btn.classList.add('playing');
-  window.speechSynthesis.speak(utter);
+
+  function speakNext() {
+    if (!speakChain) return;
+    if (speakChain.idx >= speakChain.chunks.length) { stopSpeaking(); return; }
+    const utter = new SpeechSynthesisUtterance(speakChain.chunks[speakChain.idx]);
+    utter.lang = voice ? voice.lang : 'es-ES';
+    if (voice) utter.voice = voice;
+    utter.rate = 0.98;
+    utter.onend = () => { if (speakChain) { speakChain.idx++; speakNext(); } };
+    utter.onerror = () => { if (speakChain) { speakChain.idx++; speakNext(); } };
+    window.speechSynthesis.speak(utter);
+  }
+  speakNext();
+
+  // Watchdog contra el bug de Safari/iOS que corta utterances largas.
+  speakWatchdog = setInterval(() => {
+    if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) return;
+    window.speechSynthesis.pause();
+    window.speechSynthesis.resume();
+  }, 4000);
 }
 
 /* ================= Render ================= */
@@ -567,6 +839,18 @@ function renderNiveles(app) {
   `;
   if (totalDone > 0) reviewBtn.addEventListener('click', () => startRepaso());
   app.appendChild(reviewBtn);
+
+  const fc = courseForecast();
+  const forecastCard = document.createElement('div');
+  forecastCard.className = 'forecastCard';
+  forecastCard.innerHTML = `
+    <div class="forecastTitle">Tu progreso</div>
+    <div class="forecastRow"><span>Módulos completados</span><span>${fc.completedCount}/${fc.totalCount}</span></div>
+    <div class="forecastRow"><span>Contenido completado</span><span>${formatMinutes(fc.completedMinutes)} de ${formatMinutes(fc.totalMinutes)}</span></div>
+    ${fc.avgScorePct !== null ? `<div class="forecastRow"><span>Promedio en quizzes</span><span>${fc.avgScorePct}%</span></div>` : ''}
+    <div class="forecastEta">${fc.etaText}</div>
+  `;
+  app.appendChild(forecastCard);
 
   CURRICULUM.forEach(level => {
     const stats = levelStats(level);
@@ -622,11 +906,31 @@ function renderLeccion(app, data) {
   `;
   app.appendChild(head);
 
+  const listenRow = document.createElement('div');
+  listenRow.className = 'listenRow';
+
   const listenBtn = document.createElement('div');
   listenBtn.className = 'listenBtn';
-  listenBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg><span>Escuchar resumen</span>`;
-  listenBtn.addEventListener('click', () => toggleSpeak(m.summary, listenBtn));
-  app.appendChild(listenBtn);
+  listenBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg><span>Escuchar el módulo</span>`;
+  listenBtn.addEventListener('click', () => toggleSpeak(moduleSpeechText(m), listenBtn));
+  listenRow.appendChild(listenBtn);
+
+  const voiceOpts = voiceOptions();
+  if (voiceOpts.length > 1) {
+    const select = document.createElement('select');
+    select.className = 'voiceSelect';
+    const preferred = getPreferredVoice();
+    voiceOpts.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = v.name.replace(/^Microsoft |^Google /, '');
+      if (preferred && v.name === preferred.name) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', () => setVoicePref(select.value));
+    listenRow.appendChild(select);
+  }
+  app.appendChild(listenRow);
 
   const body = document.createElement('div');
   body.className = 'lessonBody';
@@ -688,11 +992,21 @@ function renderRepaso(app, data) {
   });
 }
 
-/* Motor de quiz reusado tanto por el quiz de módulo como por el repaso. */
+/* Calificación cualitativa a partir del porcentaje de aciertos. */
+function gradeLabel(pct) {
+  if (pct === 100) return '¡Perfecto!';
+  if (pct >= 80) return 'Muy bien';
+  if (pct >= 60) return 'Bien, pero conviene repasar';
+  return 'Convendría repasar el módulo de nuevo';
+}
+
+/* Motor de quiz reusado tanto por el quiz de módulo como por el repaso.
+   Cada pregunta da retroalimentación inmediata (correcto/incorrecto +
+   explicación) y el avance a la siguiente pregunta es manual, para que
+   haya tiempo de leerla en vez de saltar sola. */
 function runQuizSession(app, questions, opts) {
   let idx = 0;
   let correctCount = 0;
-  let answered = false;
 
   function renderQuestion() {
     app.innerHTML = '';
@@ -708,44 +1022,63 @@ function runQuizSession(app, questions, opts) {
     qEl.textContent = q.q;
     app.appendChild(qEl);
 
-    answered = false;
+    const optEls = [];
     q.options.forEach((opt, i) => {
       const optEl = document.createElement('div');
       optEl.className = 'quizOpt';
       optEl.textContent = opt;
-      optEl.addEventListener('click', () => {
-        if (answered) return;
-        answered = true;
-        const isCorrect = i === q.correct;
-        if (isCorrect) correctCount++;
-        optEl.classList.add(isCorrect ? 'correct' : 'wrong');
-        if (!isCorrect) {
-          const correctEl = app.querySelectorAll('.quizOpt')[q.correct];
-          correctEl.classList.add('correct');
-        }
-        setTimeout(() => {
-          idx++;
-          if (idx < questions.length) renderQuestion();
-          else renderResult();
-        }, 700);
-      });
+      optEl.addEventListener('click', () => onAnswer(i));
       app.appendChild(optEl);
+      optEls.push(optEl);
     });
+
+    function onAnswer(i) {
+      optEls.forEach(el => el.replaceWith(el.cloneNode(true))); // saca listeners, evita doble click
+      const freshEls = app.querySelectorAll('.quizOpt');
+      const isCorrect = i === q.correct;
+      if (isCorrect) correctCount++;
+      freshEls[i].classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) freshEls[q.correct].classList.add('correct');
+
+      const feedback = document.createElement('div');
+      feedback.className = 'feedbackBox ' + (isCorrect ? 'good' : 'bad');
+      feedback.innerHTML = `<div class="feedbackHead">${isCorrect ? '¡Correcto!' : 'No es correcto'}</div>` +
+        (isCorrect ? '' : `<div>La respuesta correcta es: ${q.options[q.correct]}.</div>`) +
+        (q.explain ? `<div style="margin-top:4px">${q.explain}</div>` : '');
+      app.appendChild(feedback);
+
+      const nextBtn = document.createElement('div');
+      nextBtn.className = 'primaryBtn';
+      nextBtn.textContent = idx + 1 < questions.length ? 'Siguiente pregunta' : 'Ver resultado';
+      nextBtn.addEventListener('click', () => {
+        idx++;
+        if (idx < questions.length) renderQuestion();
+        else renderResult();
+      });
+      app.appendChild(nextBtn);
+    }
   }
 
   function renderResult() {
     app.innerHTML = '';
+    const pct = Math.round((correctCount / questions.length) * 100);
+
     const score = document.createElement('div');
     score.className = 'resultScore';
     score.textContent = `${correctCount}/${questions.length}`;
     app.appendChild(score);
 
+    const grade = document.createElement('div');
+    grade.className = 'resultGrade';
+    grade.textContent = gradeLabel(pct);
+    app.appendChild(grade);
+
     const label = document.createElement('div');
     label.className = 'resultLabel';
-    label.textContent = correctCount === questions.length ? '¡Perfecto!' : 'buen intento';
+    label.textContent = `${pct}% de aciertos`;
     app.appendChild(label);
 
-    if (opts.onFinish) opts.onFinish({ correct: correctCount, total: questions.length });
+    if (opts.onFinish) opts.onFinish({ correct: correctCount, total: questions.length, pct });
 
     const btn = document.createElement('div');
     btn.className = 'primaryBtn';
