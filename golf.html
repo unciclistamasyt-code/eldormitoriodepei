@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>&nbsp;</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content=" " />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+<style>
+  .topTitle {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .topSub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Botón de repaso ---- */
+  .reviewBtn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 22px;
+  }
+  .reviewBtn.disabled { opacity: 0.4; }
+  .reviewIcon {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .reviewIcon svg { width: 17px; height: 17px; stroke: var(--text); fill: none; stroke-width: 1.6; }
+  .reviewText { flex: 1; }
+  .reviewTitle { font-size: 14px; font-weight: 600; }
+  .reviewSub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+  .chev { width: 14px; height: 14px; stroke: var(--text-dim); fill: none; stroke-width: 1.6; flex-shrink: 0; }
+
+  /* ---- Niveles ---- */
+  .levelCard {
+    padding: 16px 2px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .levelCard.locked { opacity: 0.4; }
+  .levelNum {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .levelBody { flex: 1; min-width: 0; }
+  .levelName { font-size: 15.5px; font-weight: 600; }
+  .levelSub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .levelProgress { font-size: 11px; color: var(--text-dim); margin-top: 6px; }
+  .levelBar { height: 3px; border-radius: 2px; background: var(--line); margin-top: 6px; overflow: hidden; }
+  .levelBarFill { height: 100%; background: var(--text); border-radius: 2px; }
+
+  /* ---- Módulos ---- */
+  .moduleRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 2px;
+    border-bottom: 1px solid var(--line);
+  }
+  .moduleRow.locked { opacity: 0.35; }
+  .modCheck {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--text-dim);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modCheck svg { width: 12px; height: 12px; opacity: 0; stroke: var(--bg); }
+  .moduleRow.done .modCheck { background: var(--text); border-color: var(--text); }
+  .moduleRow.done .modCheck svg { opacity: 1; }
+  .modBody { flex: 1; min-width: 0; }
+  .modTitle { font-size: 15px; line-height: 1.35; }
+  .modMeta { font-size: 11.5px; color: var(--text-dim); margin-top: 3px; }
+
+  /* ---- Lección ---- */
+  .lessonHead { margin-bottom: 4px; }
+  .lessonKicker { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); }
+  .lessonTitle { font-size: 21px; font-weight: 700; line-height: 1.25; margin-top: 6px; }
+  .lessonMeta { font-size: 12px; color: var(--text-dim); margin-top: 6px; margin-bottom: 18px; }
+
+  .listenBtn {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 9px 16px;
+    font-size: 13px;
+    margin-bottom: 22px;
+    align-self: flex-start;
+  }
+  .listenBtn svg { width: 14px; height: 14px; stroke: var(--text); fill: none; stroke-width: 1.6; }
+  .listenBtn.playing { border-color: var(--text); }
+
+  .lessonBody { font-size: 15.5px; line-height: 1.65; }
+  .lessonBody p { margin: 0 0 14px; }
+  .lessonBody ul, .lessonBody ol { margin: 0 0 14px; padding-left: 20px; }
+  .lessonBody li { margin-bottom: 8px; }
+  .lessonBody strong { font-weight: 600; }
+  .term {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.92em;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 5px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .summaryBox {
+    margin-top: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--bg-soft);
+  }
+  .summaryLabel { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .summaryText { font-size: 14px; line-height: 1.55; }
+
+  .primaryBtn {
+    margin-top: 24px;
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .primaryBtn:active { opacity: 0.85; }
+  .primaryBtn.secondary {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--text);
+  }
+
+  /* ---- Quiz ---- */
+  .quizProgress { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; }
+  .quizQ { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 18px; }
+  .quizOpt {
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+  .quizOpt.selected { border-color: var(--text); }
+  .quizOpt.correct { border-color: #5fbf7a; background: rgba(95,191,122,0.1); }
+  .quizOpt.wrong { border-color: #d97070; background: rgba(217,112,112,0.1); }
+
+  .resultScore { font-size: 40px; font-weight: 700; text-align: center; margin: 30px 0 6px; }
+  .resultLabel { font-size: 13px; color: var(--text-dim); text-align: center; margin-bottom: 30px; }
+
+  .emptyHint { color: var(--text-dim); font-size: 13.5px; line-height: 1.5; text-align: center; margin-top: 60px; padding: 0 10px; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="topbar">
+      <a class="back" id="backBtn" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5 L8 12 L15 19"/></svg>
+      </a>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="scroll fade-in" id="app"></div>
+  </div>
+
+<script>
+/* ============================================================
+   Golf School — curso modular de golf (principiante a pro)
+   Todo el contenido en español, terminología técnica en inglés
+   sin traducir. Sin backend: todo vive en este archivo + localStorage.
+   ============================================================ */
+
+const PROGRESS_KEY = 'golf_progress_v1';
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    return raw ? JSON.parse(raw) : { completed: {} };
+  } catch (e) { return { completed: {} }; }
+}
+function saveProgress(p) {
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch (e) {}
+}
+let progress = loadProgress();
+
+/* ================= CURRICULUM ================= */
+// Cada módulo: id, title, minutes, content (HTML), summary (texto para
+// leer en voz alta), quiz (array de {q, options, correct}).
+// Los niveles 2-5 están con sus módulos planeados (locked:true) —
+// se van desbloqueando a medida que se escriba el contenido.
+
+const CURRICULUM = [
+  {
+    id: 'n1',
+    name: 'Nivel 1',
+    subtitle: 'Fundamentos y vocabulario',
+    locked: false,
+    modules: [
+      {
+        id: 'n1m1',
+        title: '¿Qué es el golf?',
+        minutes: 5,
+        content: `
+          <p>El golf es un deporte donde el objetivo es meter una bola en una serie de hoyos golpeándola con palos, usando la menor cantidad de golpes posible — cada golpe se llama <span class="term">stroke</span>.</p>
+          <p>Una ronda estándar tiene 18 <span class="term">holes</span> (hoyos), aunque muchos campos también ofrecen rondas cortas de 9. Los primeros 9 hoyos se conocen como el <span class="term">front nine</span> y los últimos 9 como el <span class="term">back nine</span>.</p>
+          <p>Cada hoyo tiene un <span class="term">par</span> asignado: la cantidad de golpes que un jugador experto necesitaría en condiciones normales para completarlo (generalmente 3, 4 o 5). La suma de los pares de los 18 hoyos suele rondar los 70-72 golpes en un campo estándar.</p>
+          <p>El golf tiene sus orígenes en Escocia, donde ya se jugaba en el siglo XV; St Andrews es conocida como "the home of golf". Hoy, dos organizaciones gobiernan juntas el reglamento oficial a nivel mundial: la <span class="term">USGA</span> (United States Golf Association) para Estados Unidos y México, y <span class="term">The R&A</span> para el resto del mundo. Juntas publican el mismo reglamento, las <span class="term">Rules of Golf</span> — la edición vigente es la de 2023.</p>
+          <p>En su formato más común, el <span class="term">stroke play</span>, gana quien complete la ronda con menos golpes en total. Más adelante vas a conocer otros formatos de juego.</p>
+        `,
+        summary: 'El golf consiste en meter una bola en 18 hoyos con la menor cantidad de golpes posible. Cada hoyo tiene un par, y las reglas oficiales las publican juntas la USGA y The R&A, en la edición vigente de 2023.',
+        quiz: [
+          { q: '¿Cuántos hoyos tiene una ronda estándar de golf?', options: ['9', '18', '24', '36'], correct: 1 },
+          { q: '¿Qué organizaciones publican juntas el reglamento oficial del golf?', options: ['FIFA y COI', 'USGA y The R&A', 'PGA Tour y LPGA', 'Augusta National y St Andrews'], correct: 1 },
+          { q: '¿Cómo se le llama a cada golpe en golf?', options: ['Par', 'Stroke', 'Birdie', 'Round'], correct: 1 },
+          { q: '¿Qué significa "front nine"?', options: ['Los últimos 9 hoyos', 'Los primeros 9 hoyos', 'Un tipo de palo', 'Un formato de torneo'], correct: 1 },
+        ],
+      },
+      {
+        id: 'n1m2',
+        title: 'Vocabulario esencial: el campo y el puntaje',
+        minutes: 6,
+        content: `
+          <p>Para entender cualquier conversación en la cancha, primero hay que conocer las partes básicas de un hoyo:</p>
+          <ul>
+            <li><span class="term">Tee</span> (o <span class="term">teeing area</span>): la zona donde empieza cada hoyo.</li>
+            <li><span class="term">Fairway</span>: la franja de pasto corto y prolijo entre el tee y el green.</li>
+            <li><span class="term">Rough</span>: el pasto más alto y denso a los costados del fairway, más difícil de jugar.</li>
+            <li><span class="term">Bunker</span>: una trampa de arena.</li>
+            <li><span class="term">Green</span>: el área de pasto muy corto alrededor del hoyo, donde se putea.</li>
+            <li><span class="term">Hole</span> (o <span class="term">cup</span>): el agujero de 4.25 pulgadas donde tiene que entrar la bola, marcado con una bandera o <span class="term">flagstick</span>.</li>
+            <li><span class="term">Penalty area</span>: zonas de agua u otras áreas marcadas con reglas especiales de alivio.</li>
+            <li><span class="term">Out of bounds</span> (<span class="term">OB</span>): el límite del campo; si la bola cae ahí, hay penalidad.</li>
+            <li><span class="term">Dogleg</span>: un hoyo que se curva hacia la izquierda o la derecha en vez de ir recto.</li>
+          </ul>
+          <p>El puntaje de cada hoyo se compara contra su par:</p>
+          <ul>
+            <li><span class="term">Eagle</span>: 2 golpes bajo par.</li>
+            <li><span class="term">Birdie</span>: 1 golpe bajo par.</li>
+            <li><span class="term">Par</span>: exactamente el par del hoyo.</li>
+            <li><span class="term">Bogey</span>: 1 golpe sobre par.</li>
+            <li><span class="term">Double bogey</span>: 2 golpes sobre par.</li>
+            <li><span class="term">Hole-in-one</span> (o <span class="term">ace</span>): meter la bola de un solo golpe desde el tee.</li>
+          </ul>
+        `,
+        summary: 'El campo se divide en tee, fairway, rough, bunker y green, entre otras zonas. El puntaje de cada hoyo se mide contra el par: birdie es un golpe menos, bogey un golpe más, y así.',
+        quiz: [
+          { q: '¿Qué es el "fairway"?', options: ['El pasto alto a los costados', 'La franja de pasto corto entre el tee y el green', 'La trampa de arena', 'El agujero final'], correct: 1 },
+          { q: '¿Cómo se llama meter la bola de un solo golpe desde el tee?', options: ['Birdie', 'Eagle', 'Hole-in-one', 'Par'], correct: 2 },
+          { q: 'Si hacés 1 golpe menos que el par de un hoyo, ¿cómo se llama tu resultado?', options: ['Bogey', 'Birdie', 'Eagle', 'Double bogey'], correct: 1 },
+          { q: '¿Qué es un "dogleg"?', options: ['Un tipo de bunker', 'Un hoyo que se curva en vez de ir recto', 'Un palo de golf', 'Un formato de torneo'], correct: 1 },
+        ],
+      },
+      {
+        id: 'n1m3',
+        title: 'El equipo: palos, bolas y bolsa',
+        minutes: 6,
+        content: `
+          <p>Un jugador puede llevar un máximo de 14 palos en la bolsa durante una ronda — es una regla oficial (Rule 4.1b del reglamento), no solo una costumbre.</p>
+          <p>Los palos se dividen en cuatro grandes familias, que vas a ver en detalle en los próximos niveles:</p>
+          <ul>
+            <li><span class="term">Woods</span> (maderas), incluyendo el <span class="term">driver</span>: para los golpes más largos.</li>
+            <li><span class="term">Irons</span> (hierros): para distancias medias.</li>
+            <li><span class="term">Wedges</span>: para golpes cortos y de aproximación.</li>
+            <li><span class="term">Putter</span>: para putear en el green.</li>
+          </ul>
+          <p>Además de los palos, para empezar necesitás: una <span class="term">golf bag</span> (bolsa), <span class="term">golf balls</span> (bolas), <span class="term">tees</span> (los soportes donde apoyás la bola en el tee) y, opcionalmente, un <span class="term">glove</span> (guante) para mejorar el agarre.</p>
+          <p>No hace falta comprar un set completo de 14 palos para arrancar: muchos principiantes empiezan con un <span class="term">half set</span> (medio set) de 7 u 8 palos.</p>
+        `,
+        summary: 'El máximo permitido son 14 palos, divididos en woods, irons, wedges y putter. Para arrancar no hace falta el set completo: muchos principiantes usan un medio set.',
+        quiz: [
+          { q: '¿Cuál es el máximo de palos permitidos en la bolsa durante una ronda?', options: ['10', '12', '14', '16'], correct: 2 },
+          { q: '¿Qué palo se usa para putear en el green?', options: ['Driver', 'Wedge', 'Putter', 'Iron'], correct: 2 },
+          { q: '¿Qué familia de palos se usa típicamente para los golpes más largos?', options: ['Wedges', 'Woods', 'Putter', 'Irons cortos'], correct: 1 },
+          { q: '¿Es obligatorio empezar a jugar con el set completo de 14 palos?', options: ['Sí, es una regla', 'No, muchos principiantes usan un medio set'], correct: 1 },
+        ],
+      },
+      {
+        id: 'n1m4',
+        title: 'Vestimenta y qué llevar a la cancha',
+        minutes: 4,
+        content: `
+          <p>El código de vestimenta varía según el campo, pero hay convenciones generales que se repiten en la mayoría de los clubes:</p>
+          <ul>
+            <li>Camisa con cuello (<span class="term">collared shirt</span>) o polo — muchos campos no permiten remeras sin cuello.</li>
+            <li>Pantalón o short de golf; generalmente no se permite <span class="term">denim</span> (jean).</li>
+            <li><span class="term">Golf shoes</span> (zapatos de golf), con o sin <span class="term">soft spikes</span> (tacos suaves) según el campo.</li>
+            <li>Gorra o visera para el sol.</li>
+          </ul>
+          <p>Otras cosas útiles para llevar: protector solar, agua, y una toalla para limpiar los palos y la bola.</p>
+          <p>Como esto varía de campo en campo, siempre es buena idea confirmar el <span class="term">dress code</span> específico antes de tu primera visita a un club nuevo.</p>
+        `,
+        summary: 'El código de vestimenta varía por campo, pero lo más común es camisa con cuello, sin jean, y zapatos de golf. Conviene confirmar el dress code antes de visitar un club nuevo.',
+        quiz: [
+          { q: '¿Qué tipo de camisa se suele exigir en la mayoría de los clubes?', options: ['Sin cuello', 'Con cuello (collared)', 'Mangas largas obligatorias', 'No hay ninguna regla'], correct: 1 },
+          { q: '¿El código de vestimenta es igual en todos los campos?', options: ['Sí, siempre igual', 'No, varía según el campo'], correct: 1 },
+          { q: '¿Qué son los "soft spikes"?', options: ['Tacos suaves en los zapatos de golf', 'Un tipo de guante', 'Una parte de la bolsa', 'Un tipo de palo'], correct: 0 },
+          { q: '¿Qué conviene hacer antes de visitar un club nuevo?', options: ['Nada, todos los clubes son iguales', 'Confirmar el dress code del campo'], correct: 1 },
+        ],
+      },
+      {
+        id: 'n1m5',
+        title: 'Grip, stance y alignment',
+        minutes: 7,
+        content: `
+          <p>Antes de pensar en el swing, hay tres fundamentos que se practican sin siquiera golpear la bola: el <span class="term">grip</span>, el <span class="term">stance</span> y el <span class="term">alignment</span>.</p>
+          <p><strong>Grip (empuñadura):</strong> hay tres formas estándar de agarrar el palo:</p>
+          <ul>
+            <li><span class="term">Overlap grip</span> (o <span class="term">Vardon grip</span>): el meñique de la mano trasera se apoya sobre el índice de la mano delantera. Es el más usado entre jugadores avanzados.</li>
+            <li><span class="term">Interlock grip</span>: el meñique de la mano trasera y el índice de la mano delantera se entrelazan. Popular entre jugadores con manos más pequeñas.</li>
+            <li><span class="term">Ten-finger grip</span> (o <span class="term">baseball grip</span>): los diez dedos se apoyan en el palo sin entrelazar ni superponer, parecido a agarrar un bate de béisbol. Se suele recomendar para principiantes o jugadores con poca fuerza en las manos.</li>
+          </ul>
+          <p><strong>Stance (postura):</strong> los pies separados aproximadamente al ancho de los hombros, rodillas ligeramente flexionadas, peso distribuido de forma pareja, e inclinado levemente desde la cadera (no desde la espalda).</p>
+          <p><strong>Alignment (alineación):</strong> los hombros, caderas y pies deben apuntar en una línea paralela a la línea objetivo (hacia donde querés que vaya la bola) — no directamente hacia el objetivo.</p>
+        `,
+        summary: 'Hay tres grips estándar: overlap, interlock y ten-finger. El stance va al ancho de hombros con las rodillas flexionadas, y en el alignment el cuerpo apunta paralelo a la línea objetivo, no directo a ella.',
+        quiz: [
+          { q: '¿Cómo se llama el grip donde el meñique se apoya sobre el índice de la otra mano?', options: ['Interlock', 'Overlap (Vardon)', 'Ten-finger', 'Baseball'], correct: 1 },
+          { q: '¿Qué grip se parece a agarrar un bate de béisbol?', options: ['Overlap', 'Interlock', 'Ten-finger', 'Vardon'], correct: 2 },
+          { q: 'En el stance, ¿qué tan separados deben estar los pies aproximadamente?', options: ['Juntos', 'Ancho de hombros', 'El doble del ancho de hombros', 'No importa'], correct: 1 },
+          { q: 'En el alignment, el cuerpo debe apuntar...', options: ['Directo al objetivo', 'Paralelo a la línea objetivo', 'Hacia la derecha del objetivo siempre', 'No tiene relación con el objetivo'], correct: 1 },
+        ],
+      },
+      {
+        id: 'n1m6',
+        title: 'El swing básico, paso a paso',
+        minutes: 8,
+        content: `
+          <p>El swing de golf se puede dividir en 5 etapas:</p>
+          <ol>
+            <li><span class="term">Address</span>: la posición inicial, con el palo apoyado detrás de la bola, listo para empezar el movimiento.</li>
+            <li><span class="term">Backswing</span>: el palo sube desde la bola hacia atrás y arriba, girando los hombros y las caderas.</li>
+            <li><span class="term">Downswing</span>: el palo baja desde la parte más alta del backswing hacia la bola, generando la mayor parte de la velocidad.</li>
+            <li><span class="term">Impact</span>: el momento exacto en que la cara del palo golpea la bola.</li>
+            <li><span class="term">Follow-through</span>: el movimiento continúa después del impacto hasta que el cuerpo termina girado hacia el objetivo.</li>
+          </ol>
+          <p>Para principiantes, lo más importante no es la velocidad sino el <span class="term">tempo</span> (el ritmo): un swing lento y controlado, con buen contacto, va a dar mejores resultados que un swing rápido y descontrolado.</p>
+          <p>Un buen ejercicio para arrancar es practicar el movimiento completo sin bola (<span class="term">practice swing</span>), enfocándote en sentir cada una de las 5 etapas antes de agregar la bola.</p>
+        `,
+        summary: 'El swing tiene 5 etapas: address, backswing, downswing, impact y follow-through. Para principiantes, el tempo controlado importa más que la velocidad.',
+        quiz: [
+          { q: '¿Qué etapa viene justo después del "backswing"?', options: ['Address', 'Downswing', 'Follow-through', 'Impact'], correct: 1 },
+          { q: '¿Qué es el "impact" en el swing?', options: ['La posición inicial', 'El momento en que el palo golpea la bola', 'El final del movimiento', 'El agarre del palo'], correct: 1 },
+          { q: 'Para un principiante, ¿qué es más importante: la velocidad o el tempo?', options: ['La velocidad', 'El tempo (ritmo controlado)'], correct: 1 },
+          { q: '¿Qué es un "practice swing"?', options: ['Un swing de torneo', 'Practicar el movimiento completo sin bola', 'Un tipo de grip', 'Un formato de juego'], correct: 1 },
+        ],
+      },
+      {
+        id: 'n1m7',
+        title: 'Reglas esenciales para tu primera ronda',
+        minutes: 8,
+        content: `
+          <p>No hace falta memorizar todo el reglamento para tu primera ronda, pero sí conviene conocer estas reglas básicas de las <span class="term">Rules of Golf</span> (edición 2023, USGA y The R&A):</p>
+          <ul>
+            <li><span class="term">Play it as it lies</span>: en general, tenés que jugar la bola desde donde cayó, sin moverla ni mejorar su posición, salvo excepciones específicas de alivio.</li>
+            <li><span class="term">Teeing area</span>: en cada hoyo, tu primer tiro tiene que salir desde dentro del área de tee marcada, no desde cualquier lugar.</li>
+            <li><span class="term">Stroke and distance</span>: si tu bola se pierde o sale <span class="term">out of bounds</span>, la penalidad estándar es un golpe extra, volviendo a jugar desde donde golpeaste antes.</li>
+            <li><span class="term">Provisional ball</span>: si creés que tu bola puede estar perdida o fuera de límites, podés jugar una segunda bola provisional para no tener que volver caminando si confirmás que la primera se perdió.</li>
+            <li><span class="term">Honor</span>: en el tee, juega primero quien tuvo el mejor puntaje en el hoyo anterior.</li>
+          </ul>
+        `,
+        summary: 'Reglas básicas: jugás la bola donde cae, el primer tiro sale del teeing area, perder la bola o salir fuera de límites cuesta un golpe extra, y podés jugar una provisional si hay dudas.',
+        quiz: [
+          { q: 'Si perdés la bola, ¿cuál es la penalidad estándar bajo "stroke and distance"?', options: ['Ninguna', 'Un golpe extra, volviendo a jugar desde antes', 'Perder el hoyo automáticamente', 'Dos golpes extra'], correct: 1 },
+          { q: '¿Para qué sirve una "provisional ball"?', options: ['Para jugar más rápido siempre', 'Para no tener que volver si tu bola original está perdida', 'Es obligatoria en cada hoyo', 'Reemplaza a la bola original sin penalidad'], correct: 1 },
+          { q: '¿Desde dónde tiene que salir tu primer tiro en cada hoyo?', options: ['Desde el green', 'Desde dentro del teeing area', 'Desde cualquier parte del fairway', 'Desde el rough'], correct: 1 },
+          { q: '¿Quién tiene el "honor" de jugar primero en el siguiente tee?', options: ['El jugador más joven', 'Quien tuvo el mejor puntaje en el hoyo anterior', 'Se decide al azar', 'El capitán del grupo'], correct: 1 },
+        ],
+      },
+      {
+        id: 'n1m8',
+        title: 'Etiqueta y seguridad en la cancha',
+        minutes: 6,
+        content: `
+          <p>Más allá de las reglas formales, el golf tiene una fuerte cultura de <span class="term">etiquette</span> (etiqueta) que hace que el juego sea seguro y agradable para todos:</p>
+          <ul>
+            <li>Reparar los <span class="term">divots</span> (los pedazos de pasto que salen volando al golpear) y los <span class="term">pitch marks</span> (las marcas que deja la bola al caer en el green).</li>
+            <li><span class="term">Rake the bunker</span>: rastrillar la arena después de jugar desde un bunker.</li>
+            <li>No pisar la <span class="term">line</span> (línea) de putt de otro jugador en el green.</li>
+            <li>Gritar <span class="term">"Fore!"</span> si tu bola puede golpear a alguien — es la advertencia de seguridad estándar en todo el mundo del golf.</li>
+            <li>Mantener un buen <span class="term">pace of play</span> (ritmo de juego): estar listo para jugar cuando te toca, y dejar pasar a un grupo más rápido detrás (<span class="term">play through</span>) si tu grupo se atrasa.</li>
+            <li>En el <span class="term">golf cart</span>, respetar las reglas del día del campo — a veces solo se permite andar por el <span class="term">cart path</span>.</li>
+          </ul>
+        `,
+        summary: 'La etiqueta incluye reparar divots y pitch marks, rastrillar los bunkers, no pisar la línea de putt de otros, gritar "fore" si hay riesgo, y mantener el ritmo de juego dejando pasar a grupos más rápidos.',
+        quiz: [
+          { q: '¿Qué gritás si tu bola puede golpear a alguien?', options: ['"Ojo!"', '"Fore!"', '"Cuidado!"', '"Stop!"'], correct: 1 },
+          { q: '¿Qué es un "divot"?', options: ['Una trampa de arena', 'El pedazo de pasto que sale al golpear', 'Un tipo de palo', 'La marca de la bola en el green'], correct: 1 },
+          { q: '¿Qué significa "play through"?', options: ['Terminar la ronda rápido', 'Dejar pasar a un grupo más rápido detrás', 'Jugar sin parar de llover', 'Repetir un hoyo'], correct: 1 },
+          { q: '¿Qué hay que hacer después de jugar desde un bunker?', options: ['Nada', 'Rastrillar la arena (rake it)', 'Avisar al starter', 'Cambiar de bola'], correct: 1 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'n2', name: 'Nivel 2', subtitle: 'Construyendo tu juego', locked: true,
+    modules: [
+      { title: 'Los palos y cuándo usar cada uno', minutes: 8 },
+      { title: 'Vocabulario técnico de golpes: draw, fade, hook, slice', minutes: 7 },
+      { title: 'Juego corto: chip y pitch', minutes: 8 },
+      { title: 'Putting: técnica y lectura de greens', minutes: 8 },
+      { title: 'Cómo salir de bunkers', minutes: 6 },
+      { title: 'Situaciones difíciles: agua, OB, pelota perdida', minutes: 8 },
+      { title: 'Course management básico', minutes: 7 },
+      { title: 'El sistema de hándicap (World Handicap System)', minutes: 8 },
+      { title: 'Formatos de juego: stroke play vs. match play', minutes: 6 },
+    ],
+  },
+  {
+    id: 'n3', name: 'Nivel 3', subtitle: 'Equipamiento y tecnología', locked: true,
+    modules: [
+      { title: 'Anatomía del palo: cara, hosel, sweet spot y forgiveness', minutes: 9 },
+      { title: 'Bolas de golf: construcción y por qué importa cuál elegís', minutes: 8 },
+      { title: 'Shafts: materiales, flex/stiffness, torque y kick point', minutes: 9 },
+      { title: 'El driver a fondo: loft, ángulos y forgiveness vs. distancia', minutes: 9 },
+    ],
+  },
+  {
+    id: 'n4', name: 'Nivel 4', subtitle: 'Perfeccionamiento', locked: true,
+    modules: [
+      { title: 'Biomecánica del swing y plano de swing', minutes: 9 },
+      { title: 'Trabajar la pelota: draw, fade y control de trayectoria', minutes: 9 },
+      { title: 'El reglamento oficial a fondo (Rules of Golf 2023)', minutes: 10 },
+      { title: 'Preparación física y mental para competir', minutes: 8 },
+      { title: 'Torneos y formatos de competencia', minutes: 7 },
+      { title: 'Estadísticas de juego: cómo analizar tu rendimiento', minutes: 8 },
+    ],
+  },
+  {
+    id: 'n5', name: 'Nivel 5', subtitle: 'Pro — negocio y tecnología del golf', locked: true,
+    modules: [
+      { title: 'Conformidad y homologación de equipo (USGA/R&A)', minutes: 9 },
+      { title: 'El debate del "rollback" de la pelota', minutes: 7 },
+      { title: 'Fitting profesional y launch monitors', minutes: 9 },
+      { title: 'Reparación y mantenimiento de palos', minutes: 8 },
+      { title: 'Cómo dirigir una tienda de golf', minutes: 9 },
+      { title: 'El camino para ser profesional de golf (PGA)', minutes: 7 },
+      { title: 'Tendencias y el futuro del golf', minutes: 6 },
+    ],
+  },
+];
+
+/* Índice plano de todos los módulos con contenido real, para el repaso. */
+function allUnlockedModules() {
+  const out = [];
+  CURRICULUM.forEach(level => {
+    if (level.locked) return;
+    level.modules.forEach(m => out.push(m));
+  });
+  return out;
+}
+function findModule(moduleId) {
+  for (const level of CURRICULUM) {
+    if (level.locked) continue;
+    const m = level.modules.find(x => x.id === moduleId);
+    if (m) return { level, module: m };
+  }
+  return null;
+}
+function levelStats(level) {
+  if (level.locked) return { done: 0, total: level.modules.length };
+  const done = level.modules.filter(m => progress.completed[m.id]).length;
+  return { done, total: level.modules.length };
+}
+
+/* ================= Navegación (pila de vistas) ================= */
+let viewStack = [{ view: 'niveles' }];
+
+function push(view, data) {
+  stopSpeaking();
+  viewStack.push({ view, data });
+  render();
+  document.getElementById('app').scrollTop = 0;
+}
+function back() {
+  stopSpeaking();
+  viewStack.pop();
+  if (!viewStack.length) { window.location.href = 'index.html'; return; }
+  render();
+  document.getElementById('app').scrollTop = 0;
+}
+document.getElementById('backBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  back();
+});
+
+/* ================= Texto a voz (botón "escuchar") ================= */
+function stopSpeaking() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+function toggleSpeak(text, btn) {
+  if (!('speechSynthesis' in window)) return;
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    btn.classList.remove('playing');
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'es-ES';
+  utter.rate = 0.98;
+  utter.onend = () => btn.classList.remove('playing');
+  utter.onerror = () => btn.classList.remove('playing');
+  btn.classList.add('playing');
+  window.speechSynthesis.speak(utter);
+}
+
+/* ================= Render ================= */
+function render() {
+  const top = viewStack[viewStack.length - 1];
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  if (top.view === 'niveles') renderNiveles(app);
+  else if (top.view === 'nivel') renderNivel(app, top.data);
+  else if (top.view === 'leccion') renderLeccion(app, top.data);
+  else if (top.view === 'quiz') renderQuiz(app, top.data);
+  else if (top.view === 'repaso') renderRepaso(app, top.data);
+}
+
+function renderNiveles(app) {
+  const totalDone = Object.keys(progress.completed).length;
+
+  const reviewBtn = document.createElement('div');
+  reviewBtn.className = 'reviewBtn' + (totalDone === 0 ? ' disabled' : '');
+  reviewBtn.innerHTML = `
+    <div class="reviewIcon"><svg viewBox="0 0 24 24"><path d="M4 12 a8 8 0 1 1 2.5 5.8"/><path d="M4 12 L4 17 L9 17"/></svg></div>
+    <div class="reviewText">
+      <div class="reviewTitle">Repaso general</div>
+      <div class="reviewSub">${totalDone === 0 ? 'Completá al menos un módulo para desbloquearlo' : 'Quiz con preguntas de los ' + totalDone + ' módulo' + (totalDone === 1 ? '' : 's') + ' que ya completaste'}</div>
+    </div>
+    <svg class="chev" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></svg>
+  `;
+  if (totalDone > 0) reviewBtn.addEventListener('click', () => startRepaso());
+  app.appendChild(reviewBtn);
+
+  CURRICULUM.forEach(level => {
+    const stats = levelStats(level);
+    const card = document.createElement('div');
+    card.className = 'levelCard' + (level.locked ? ' locked' : '');
+    card.innerHTML = `
+      <div class="levelNum">${level.name.replace('Nivel ', '')}</div>
+      <div class="levelBody">
+        <div class="levelName">${level.name} — ${level.subtitle}</div>
+        ${level.locked
+          ? `<div class="levelSub">próximamente</div>`
+          : `<div class="levelProgress">${stats.done}/${stats.total} módulos completados</div>
+             <div class="levelBar"><div class="levelBarFill" style="width:${stats.total ? (stats.done / stats.total * 100) : 0}%"></div></div>`
+        }
+      </div>
+      ${level.locked ? '' : '<svg class="chev" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></svg>'}
+    `;
+    if (!level.locked) card.addEventListener('click', () => push('nivel', { levelId: level.id }));
+    app.appendChild(card);
+  });
+}
+
+function renderNivel(app, data) {
+  const level = CURRICULUM.find(l => l.id === data.levelId);
+  level.modules.forEach(m => {
+    const done = !!progress.completed[m.id];
+    const row = document.createElement('div');
+    row.className = 'moduleRow' + (done ? ' done' : '');
+    row.innerHTML = `
+      <div class="modCheck"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M4 12 L9 17 L20 6"/></svg></div>
+      <div class="modBody">
+        <div class="modTitle">${m.title}</div>
+        <div class="modMeta">${m.minutes} min · ${done ? 'completado' : 'sin empezar'}</div>
+      </div>
+      <svg class="chev" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></svg>
+    `;
+    row.addEventListener('click', () => push('leccion', { moduleId: m.id }));
+    app.appendChild(row);
+  });
+}
+
+function renderLeccion(app, data) {
+  const found = findModule(data.moduleId);
+  if (!found) { app.innerHTML = '<div class="emptyHint">Módulo no encontrado.</div>'; return; }
+  const { level, module: m } = found;
+
+  const head = document.createElement('div');
+  head.className = 'lessonHead';
+  head.innerHTML = `
+    <div class="lessonKicker">${level.name} · ${level.subtitle}</div>
+    <div class="lessonTitle">${m.title}</div>
+    <div class="lessonMeta">${m.minutes} min de lectura</div>
+  `;
+  app.appendChild(head);
+
+  const listenBtn = document.createElement('div');
+  listenBtn.className = 'listenBtn';
+  listenBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg><span>Escuchar resumen</span>`;
+  listenBtn.addEventListener('click', () => toggleSpeak(m.summary, listenBtn));
+  app.appendChild(listenBtn);
+
+  const body = document.createElement('div');
+  body.className = 'lessonBody';
+  body.innerHTML = m.content;
+  app.appendChild(body);
+
+  const summaryBox = document.createElement('div');
+  summaryBox.className = 'summaryBox';
+  summaryBox.innerHTML = `<div class="summaryLabel">Resumen</div><div class="summaryText">${m.summary}</div>`;
+  app.appendChild(summaryBox);
+
+  const quizBtn = document.createElement('div');
+  quizBtn.className = 'primaryBtn';
+  quizBtn.textContent = progress.completed[m.id] ? 'Repetir el quiz' : 'Empezar el quiz';
+  quizBtn.addEventListener('click', () => push('quiz', { moduleId: m.id }));
+  app.appendChild(quizBtn);
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderQuiz(app, data) {
+  const found = findModule(data.moduleId);
+  if (!found) { app.innerHTML = '<div class="emptyHint">Módulo no encontrado.</div>'; return; }
+  runQuizSession(app, found.module.quiz, {
+    onFinish: (score) => {
+      progress.completed[found.module.id] = { at: Date.now(), score };
+      saveProgress(progress);
+    },
+    finishLabel: 'Volver al módulo',
+    onFinishNav: () => { viewStack.pop(); render(); },
+  });
+}
+
+function startRepaso() {
+  const pool = [];
+  allUnlockedModules().forEach(m => {
+    if (progress.completed[m.id]) pool.push(...m.quiz.map(q => ({ ...q, _mod: m.title })));
+  });
+  const picked = shuffle(pool).slice(0, 10);
+  push('repaso', { questions: picked });
+}
+
+function renderRepaso(app, data) {
+  if (!data.questions.length) {
+    app.innerHTML = '<div class="emptyHint">Todavía no hay suficientes módulos completados para armar un repaso.</div>';
+    return;
+  }
+  runQuizSession(app, data.questions, {
+    isRepaso: true,
+    finishLabel: 'Volver',
+    onFinishNav: () => { viewStack.pop(); render(); },
+  });
+}
+
+/* Motor de quiz reusado tanto por el quiz de módulo como por el repaso. */
+function runQuizSession(app, questions, opts) {
+  let idx = 0;
+  let correctCount = 0;
+  let answered = false;
+
+  function renderQuestion() {
+    app.innerHTML = '';
+    const q = questions[idx];
+
+    const prog = document.createElement('div');
+    prog.className = 'quizProgress';
+    prog.textContent = `Pregunta ${idx + 1} de ${questions.length}` + (opts.isRepaso && q._mod ? ' · ' + q._mod : '');
+    app.appendChild(prog);
+
+    const qEl = document.createElement('div');
+    qEl.className = 'quizQ';
+    qEl.textContent = q.q;
+    app.appendChild(qEl);
+
+    answered = false;
+    q.options.forEach((opt, i) => {
+      const optEl = document.createElement('div');
+      optEl.className = 'quizOpt';
+      optEl.textContent = opt;
+      optEl.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        const isCorrect = i === q.correct;
+        if (isCorrect) correctCount++;
+        optEl.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (!isCorrect) {
+          const correctEl = app.querySelectorAll('.quizOpt')[q.correct];
+          correctEl.classList.add('correct');
+        }
+        setTimeout(() => {
+          idx++;
+          if (idx < questions.length) renderQuestion();
+          else renderResult();
+        }, 700);
+      });
+      app.appendChild(optEl);
+    });
+  }
+
+  function renderResult() {
+    app.innerHTML = '';
+    const score = document.createElement('div');
+    score.className = 'resultScore';
+    score.textContent = `${correctCount}/${questions.length}`;
+    app.appendChild(score);
+
+    const label = document.createElement('div');
+    label.className = 'resultLabel';
+    label.textContent = correctCount === questions.length ? '¡Perfecto!' : 'buen intento';
+    app.appendChild(label);
+
+    if (opts.onFinish) opts.onFinish({ correct: correctCount, total: questions.length });
+
+    const btn = document.createElement('div');
+    btn.className = 'primaryBtn';
+    btn.textContent = opts.finishLabel || 'Continuar';
+    btn.addEventListener('click', () => opts.onFinishNav ? opts.onFinishNav() : back());
+    app.appendChild(btn);
+  }
+
+  renderQuestion();
+}
+
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>
