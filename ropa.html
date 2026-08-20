@@ -105,39 +105,63 @@
     min-height: 14px;
   }
 
+  .mannequinStage {
+    position: relative;
+    width: 100%;
+  }
   .mannequinWrap {
-    width: min(56vw, 230px);
+    width: min(52vw, 210px);
     margin: 0 auto;
     aspect-ratio: 200 / 480;
+    position: relative;
+    z-index: 1;
   }
   .mannequinWrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .skin { fill: #c7c9ce; }
 
-  .pieceChips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 20px;
+  .calloutLines {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 2;
   }
-  .pieceChips .pchip {
+  .calloutLines line {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+  .calloutLines circle.dot { fill: var(--text-dim); }
+
+  .calloutBadges {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .calloutBadge {
+    position: absolute;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 4px 12px 4px 4px;
+    gap: 3px;
+    width: 48px;
+    transform: translateY(-50%);
   }
-  .pieceChips .pchip img {
-    width: 22px; height: 22px;
+  .calloutBadge img {
+    width: 26px; height: 26px;
     border-radius: 50%;
     object-fit: cover;
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
   }
-  .pieceChips .pchip span {
-    font-size: 10px;
+  .calloutBadge span {
+    font-size: 8px;
     letter-spacing: 0.03em;
     text-transform: uppercase;
     color: var(--text-dim);
+    text-align: center;
+    line-height: 1.2;
   }
 
   .shuffleRow {
@@ -334,65 +358,68 @@
       </div>
 
       <div id="combinarResult" style="display:none; flex:1; flex-direction:column;">
-        <div class="mannequinWrap">
-          <svg viewBox="0 0 200 480" id="mannequinSvg">
-            <defs>
-              <filter id="clothShadow" x="-60%" y="-60%" width="220%" height="220%">
-                <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.45"/>
-              </filter>
-            </defs>
+        <div class="mannequinStage" id="mannequinStage">
+          <div class="mannequinWrap">
+            <svg viewBox="0 0 200 480" id="mannequinSvg">
+              <defs>
+                <filter id="clothShadow" x="-60%" y="-60%" width="220%" height="220%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.45"/>
+                </filter>
+              </defs>
 
-            <g id="bodyBase">
-              <path class="skin" d="M72 200
-                C 69 250, 67 305, 65 345
-                C 64 368, 65 385, 68 400
-                C 74 404, 80 404, 84 400
-                C 83 384, 83 366, 85 344
-                C 89 300, 94 260, 100 224
-                Z"/>
-              <path class="skin" d="M128 200
-                C 131 250, 133 305, 135 345
-                C 136 368, 135 385, 132 400
-                C 126 404, 120 404, 116 400
-                C 117 384, 117 366, 115 344
-                C 111 300, 106 260, 100 224
-                Z"/>
-              <path class="skin" d="M70 70
-                C 58 80, 52 100, 54 122
-                C 55 140, 60 155, 64 168
-                C 62 185, 58 205, 62 226
-                L 138 226
-                C 142 205, 138 185, 136 168
-                C 140 155, 145 140, 146 122
-                C 148 100, 142 80, 130 70
-                C 118 62, 108 58, 100 58
-                C 92 58, 82 62, 70 70
-                Z"/>
-              <path class="skin" d="M68 78
-                C 54 84, 42 96, 36 118
-                C 31 138, 30 160, 33 182
-                C 35 196, 38 206, 42 212
-                C 47 216, 53 215, 56 210
-                C 53 200, 51 188, 50 174
-                C 48 154, 50 134, 56 116
-                C 60 102, 66 90, 84 76
-                Z"/>
-              <path class="skin" d="M132 78
-                C 146 84, 158 96, 164 118
-                C 169 138, 170 160, 167 182
-                C 165 196, 162 206, 158 212
-                C 153 216, 147 215, 144 210
-                C 147 200, 149 188, 150 174
-                C 152 154, 150 134, 144 116
-                C 140 102, 134 90, 116 76
-                Z"/>
-              <circle class="skin" cx="100" cy="46" r="26"/>
-            </g>
+              <g id="bodyBase">
+                <path class="skin" d="M72 200
+                  C 69 250, 67 305, 65 345
+                  C 64 368, 65 385, 68 400
+                  C 74 404, 80 404, 84 400
+                  C 83 384, 83 366, 85 344
+                  C 89 300, 94 260, 100 224
+                  Z"/>
+                <path class="skin" d="M128 200
+                  C 131 250, 133 305, 135 345
+                  C 136 368, 135 385, 132 400
+                  C 126 404, 120 404, 116 400
+                  C 117 384, 117 366, 115 344
+                  C 111 300, 106 260, 100 224
+                  Z"/>
+                <path class="skin" d="M70 70
+                  C 58 80, 52 100, 54 122
+                  C 55 140, 60 155, 64 168
+                  C 62 185, 58 205, 62 226
+                  L 138 226
+                  C 142 205, 138 185, 136 168
+                  C 140 155, 145 140, 146 122
+                  C 148 100, 142 80, 130 70
+                  C 118 62, 108 58, 100 58
+                  C 92 58, 82 62, 70 70
+                  Z"/>
+                <path class="skin" d="M68 78
+                  C 54 84, 42 96, 36 118
+                  C 31 138, 30 160, 33 182
+                  C 35 196, 38 206, 42 212
+                  C 47 216, 53 215, 56 210
+                  C 53 200, 51 188, 50 174
+                  C 48 154, 50 134, 56 116
+                  C 60 102, 66 90, 84 76
+                  Z"/>
+                <path class="skin" d="M132 78
+                  C 146 84, 158 96, 164 118
+                  C 169 138, 170 160, 167 182
+                  C 165 196, 162 206, 158 212
+                  C 153 216, 147 215, 144 210
+                  C 147 200, 149 188, 150 174
+                  C 152 154, 150 134, 144 116
+                  C 140 102, 134 90, 116 76
+                  Z"/>
+                <circle class="skin" cx="100" cy="46" r="26"/>
+              </g>
 
-            <g id="clothingLayer"></g>
-          </svg>
+              <g id="clothingLayer"></g>
+            </svg>
+          </div>
+          <svg class="calloutLines" id="calloutLines"></svg>
+          <div class="calloutBadges" id="calloutBadges"></div>
         </div>
-        <div class="pieceChips" id="pieceChips"></div>
       </div>
 
       <div class="shuffleRow" id="shuffleRow" style="display:none;">
@@ -520,6 +547,9 @@ function switchView(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
   if (name === 'closet') renderCloset();
+  if (name === 'combinar' && lastOutfitPieces) {
+    requestAnimationFrame(() => renderCallouts(lastOutfitPieces));
+  }
 }
 
 /* ---------------- Agregar prenda ---------------- */
@@ -882,11 +912,11 @@ let lastGuessedTags = null;
    a fixed silhouette, but a flat color always "fits" perfectly, same idea
    as the reference drawing. */
 const SHAPE_D = {
-  top: 'M62 66 L138 66 C148 68,158 80,158 100 C158 116,150 130,140 140 L138 226 L62 226 L60 140 C50 130,42 116,42 100 C42 80,52 68,62 66 Z',
+  top: 'M84 66 C 90 70, 110 70, 116 66 L 136 66 C 148 68, 160 78, 162 94 C 163 104, 156 112, 146 116 L 138 126 L 138 226 L 62 226 L 62 126 L 54 116 C 44 112, 37 104, 38 94 C 40 78, 52 68, 64 66 Z',
   bottom: 'M65 198 L135 198 L135 226 L131 344 L127 404 L108 404 L100 230 L92 404 L73 404 L69 344 L65 226 Z',
   calzado: 'M58 394 C58 390,62 388,68 388 L84 388 C90 388,94 392,94 398 C94 406,88 410,76 410 C64 410,58 406,58 398 Z M106 394 C106 390,110 388,116 388 L132 388 C138 388,142 392,142 398 C142 406,136 410,124 410 C112 410,106 406,106 398 Z',
-  vestido: 'M62 66 L138 66 C148 68,158 80,158 100 C158 116,150 130,140 140 L138 226 L150 400 L50 400 L62 226 L60 140 C50 130,42 116,42 100 C42 80,52 68,62 66 Z',
-  abrigo: 'M54 62 L146 62 C158 64,170 78,170 102 C170 120,160 136,148 146 L146 280 L54 280 L52 146 C40 136,30 120,30 102 C30 78,42 64,54 62 Z'
+  vestido: 'M84 66 C 90 70, 110 70, 116 66 L 136 66 C 148 68, 160 78, 162 94 C 163 104, 156 112, 146 116 L 138 126 L 138 226 L 150 400 L 50 400 L 62 226 L 62 126 L 54 116 C 44 112, 37 104, 38 94 C 40 78, 52 68, 64 66 Z',
+  abrigo: 'M82 62 C 88 67, 112 67, 118 62 L 140 62 C 154 64, 168 76, 170 96 C 171 108, 162 118, 150 122 L 142 132 L 142 280 L 58 280 L 58 132 L 50 122 C 38 118, 29 108, 30 96 C 32 76, 46 64, 60 62 Z'
 };
 
 function svgShape(d, color) {
@@ -897,6 +927,81 @@ function svgShape(d, color) {
   path.setAttribute('filter', 'url(#clothShadow)');
   return path;
 }
+
+/* Anchor points (in the mannequin's 200x480 viewBox) that each garment
+   callout line starts from, and which side of the mannequin its real-photo
+   badge sits on — mirrors the reference image's "line pointing out to a
+   small photo of the actual piece" layout. */
+const CALLOUT_ANCHORS = {
+  top:     { x: 48,  y: 95,  side: 'left'  },
+  vestido: { x: 48,  y: 150, side: 'left'  },
+  abrigo:  { x: 152, y: 170, side: 'right' },
+  bottom:  { x: 152, y: 300, side: 'right' },
+  calzado: { x: 48,  y: 400, side: 'left'  }
+};
+
+let lastOutfitPieces = null;
+
+function renderCallouts(pieces) {
+  lastOutfitPieces = pieces;
+  const stage = document.getElementById('mannequinStage');
+  const wrap = stage.querySelector('.mannequinWrap');
+  const svgLines = document.getElementById('calloutLines');
+  const badgesWrap = document.getElementById('calloutBadges');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  svgLines.innerHTML = '';
+  badgesWrap.innerHTML = '';
+
+  const stageRect = stage.getBoundingClientRect();
+  const wrapRect = wrap.getBoundingClientRect();
+  if (!stageRect.width || !wrapRect.width) return;
+
+  svgLines.setAttribute('width', stageRect.width);
+  svgLines.setAttribute('height', stageRect.height);
+
+  const scaleX = wrapRect.width / 200;
+  const scaleY = wrapRect.height / 480;
+  const offsetX = wrapRect.left - stageRect.left;
+  const offsetY = wrapRect.top - stageRect.top;
+
+  pieces.forEach(([label, item]) => {
+    const a = CALLOUT_ANCHORS[label];
+    if (!a) return;
+    const anchorX = offsetX + a.x * scaleX;
+    const anchorY = offsetY + a.y * scaleY;
+    const badgeEdgeX = a.side === 'left' ? 44 : stageRect.width - 44;
+
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', anchorX);
+    line.setAttribute('y1', anchorY);
+    line.setAttribute('x2', badgeEdgeX);
+    line.setAttribute('y2', anchorY);
+    svgLines.appendChild(line);
+
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', anchorX);
+    dot.setAttribute('cy', anchorY);
+    dot.setAttribute('r', 2.5);
+    dot.setAttribute('class', 'dot');
+    svgLines.appendChild(dot);
+
+    const badge = document.createElement('div');
+    badge.className = 'calloutBadge';
+    badge.style.top = anchorY + 'px';
+    badge.style[a.side] = '0px';
+    badge.innerHTML = `<img src="${item.photo}" /><span>${label}</span>`;
+    badgesWrap.appendChild(badge);
+  });
+}
+
+let calloutResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(calloutResizeTimer);
+  calloutResizeTimer = setTimeout(() => {
+    if (lastOutfitPieces) renderCallouts(lastOutfitPieces);
+  }, 150);
+});
 
 function svgImage(href, x, y, w, h, clipId) {
   const ns = 'http://www.w3.org/2000/svg';
@@ -925,7 +1030,6 @@ async function buildOutfit() {
   const empty = document.getElementById('combinarEmpty');
   const result = document.getElementById('combinarResult');
   const shuffleRow = document.getElementById('shuffleRow');
-  const chipsWrap = document.getElementById('pieceChips');
   const clothingLayer = document.getElementById('clothingLayer');
 
   if (!items.length) {
@@ -991,13 +1095,7 @@ async function buildOutfit() {
     clothingLayer.appendChild(svgShape(SHAPE_D.calzado, byLabel['calzado'].color));
   }
 
-  chipsWrap.innerHTML = '';
-  pieces.forEach(([label, item]) => {
-    const chip = document.createElement('div');
-    chip.className = 'pchip';
-    chip.innerHTML = `<img src="${item.photo}" /><span>${label}</span>`;
-    chipsWrap.appendChild(chip);
-  });
+  requestAnimationFrame(() => renderCallouts(pieces));
 }
 
 document.getElementById('occasionGo').addEventListener('click', buildOutfit);
