@@ -112,12 +112,13 @@
   .mannequinWrap {
     width: min(52vw, 210px);
     margin: 0 auto;
-    aspect-ratio: 200 / 480;
+    aspect-ratio: 200 / 380;
     position: relative;
     z-index: 1;
   }
   .mannequinWrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .skin { fill: #c7c9ce; }
+  .hair { fill: #55585d; }
 
   .calloutLines {
     position: absolute;
@@ -147,6 +148,8 @@
     gap: 3px;
     width: 48px;
     transform: translateY(-50%);
+    pointer-events: auto;
+    cursor: pointer;
   }
   .calloutBadge img {
     width: 26px; height: 26px;
@@ -162,6 +165,23 @@
     color: var(--text-dim);
     text-align: center;
     line-height: 1.2;
+  }
+
+  .photoLightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+  .photoLightbox.show { display: flex; }
+  .photoLightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 12px;
   }
 
   .shuffleRow {
@@ -360,58 +380,28 @@
       <div id="combinarResult" style="display:none; flex:1; flex-direction:column;">
         <div class="mannequinStage" id="mannequinStage">
           <div class="mannequinWrap">
-            <svg viewBox="0 0 200 480" id="mannequinSvg">
+            <svg viewBox="0 0 200 380" id="mannequinSvg">
               <defs>
                 <filter id="clothShadow" x="-60%" y="-60%" width="220%" height="220%">
                   <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.45"/>
                 </filter>
               </defs>
 
+              <!-- Silueta simple y fija (sin brazos doblados, una sola medida):
+                   el mismo cuerpo base de siempre, la ropa solo cambia de color
+                   y de manga (corta/larga), nunca de forma. -->
               <g id="bodyBase">
-                <path class="skin" d="M72 200
-                  C 69 250, 67 305, 65 345
-                  C 64 368, 65 385, 68 400
-                  C 74 404, 80 404, 84 400
-                  C 83 384, 83 366, 85 344
-                  C 89 300, 94 260, 100 224
-                  Z"/>
-                <path class="skin" d="M128 200
-                  C 131 250, 133 305, 135 345
-                  C 136 368, 135 385, 132 400
-                  C 126 404, 120 404, 116 400
-                  C 117 384, 117 366, 115 344
-                  C 111 300, 106 260, 100 224
-                  Z"/>
-                <path class="skin" d="M70 70
-                  C 58 80, 52 100, 54 122
-                  C 55 140, 60 155, 64 168
-                  C 62 185, 58 205, 62 226
-                  L 138 226
-                  C 142 205, 138 185, 136 168
-                  C 140 155, 145 140, 146 122
-                  C 148 100, 142 80, 130 70
-                  C 118 62, 108 58, 100 58
-                  C 92 58, 82 62, 70 70
-                  Z"/>
-                <path class="skin" d="M68 78
-                  C 54 84, 42 96, 36 118
-                  C 31 138, 30 160, 33 182
-                  C 35 196, 38 206, 42 212
-                  C 47 216, 53 215, 56 210
-                  C 53 200, 51 188, 50 174
-                  C 48 154, 50 134, 56 116
-                  C 60 102, 66 90, 84 76
-                  Z"/>
-                <path class="skin" d="M132 78
-                  C 146 84, 158 96, 164 118
-                  C 169 138, 170 160, 167 182
-                  C 165 196, 162 206, 158 212
-                  C 153 216, 147 215, 144 210
-                  C 147 200, 149 188, 150 174
-                  C 152 154, 150 134, 144 116
-                  C 140 102, 134 90, 116 76
-                  Z"/>
-                <circle class="skin" cx="100" cy="46" r="26"/>
+                <path class="hair" d="M 76 18 Q 100 2 124 18 Q 132 32 126 48 Q 124 32 116 26 L 116 40 Q 108 32 100 32 Q 92 32 84 40 L 84 26 Q 76 32 74 48 Q 68 32 76 18 Z"/>
+                <ellipse class="skin" cx="100" cy="34" rx="18" ry="21"/>
+                <rect class="skin" x="93" y="52" width="14" height="12"/>
+                <path class="skin" d="M 70 70 Q 100 58 130 70 L 117 108 Q 100 112 84 108 Z"/>
+                <path class="skin" d="M 70 72 Q 58 90 56 135 L 66 140 Q 69 100 76 80 Z"/>
+                <path class="skin" d="M 130 72 Q 142 90 144 135 L 134 140 Q 131 100 124 80 Z"/>
+                <ellipse class="skin" cx="56" cy="145" rx="6" ry="8"/>
+                <ellipse class="skin" cx="144" cy="145" rx="6" ry="8"/>
+                <path class="skin" d="M 84 108 Q 100 112 117 108 Q 130 120 134 152 L 127 250 L 105 250 L 100 190 L 95 250 L 73 250 L 66 152 Q 70 120 84 108 Z"/>
+                <ellipse class="skin" cx="78" cy="258" rx="9" ry="6"/>
+                <ellipse class="skin" cx="122" cy="258" rx="9" ry="6"/>
               </g>
 
               <g id="clothingLayer"></g>
@@ -451,6 +441,11 @@
         <div class="chipRow" id="categoryChips"></div>
       </div>
 
+      <div class="fieldGroup" id="sleeveGroup" style="display:none;">
+        <div class="fieldLabel">manga</div>
+        <div class="chipRow" id="sleeveChips"></div>
+      </div>
+
       <div class="fieldGroup">
         <div class="fieldLabel">para qué ocasión (puedes elegir varias)</div>
         <div class="chipRow" id="tagChips"></div>
@@ -458,6 +453,10 @@
 
       <button class="saveBtn" id="saveItemBtn" disabled>guardar prenda</button>
     </div>
+  </div>
+
+  <div class="photoLightbox" id="photoLightbox">
+    <img id="lightboxImg" src="" alt="" />
   </div>
 
 <script>
@@ -555,8 +554,27 @@ function switchView(name) {
 /* ---------------- Agregar prenda ---------------- */
 let selectedCategory = null;
 let selectedTags = new Set();
+let selectedSleeve = 'corta';
 let pendingPhotoDataUrl = null;
 let pendingPhotoColor = '#9a9a9a';
+
+/* La manga solo se pregunta para "top" — el resto de las categorías tiene
+   una sola medida fija (más simple, sin adivinar el corte a partir de la foto). */
+const SLEEVE_OPTIONS = [
+  { key: 'corta', label: 'manga corta' },
+  { key: 'larga', label: 'manga larga' }
+];
+SLEEVE_OPTIONS.forEach(s => {
+  const chip = document.createElement('div');
+  chip.className = 'chip' + (s.key === selectedSleeve ? ' selected' : '');
+  chip.textContent = s.label;
+  chip.addEventListener('click', () => {
+    selectedSleeve = s.key;
+    document.querySelectorAll('#sleeveChips .chip').forEach(el => el.classList.remove('selected'));
+    chip.classList.add('selected');
+  });
+  document.getElementById('sleeveChips').appendChild(chip);
+});
 
 CATEGORIES.forEach(c => {
   const chip = document.createElement('div');
@@ -566,6 +584,7 @@ CATEGORIES.forEach(c => {
     selectedCategory = c.key;
     document.querySelectorAll('#categoryChips .chip').forEach(el => el.classList.remove('selected'));
     chip.classList.add('selected');
+    document.getElementById('sleeveGroup').style.display = (c.key === 'top') ? 'block' : 'none';
     validateForm();
   });
   document.getElementById('categoryChips').appendChild(chip);
@@ -822,6 +841,7 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
     tags: Array.from(selectedTags),
     photo: pendingPhotoDataUrl,
     color: pendingPhotoColor,
+    sleeve: selectedCategory === 'top' ? selectedSleeve : null,
     createdAt: Date.now()
   };
   await dbAdd(item);
@@ -830,7 +850,10 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
   pendingPhotoColor = '#9a9a9a';
   selectedCategory = null;
   selectedTags = new Set();
+  selectedSleeve = 'corta';
   document.querySelectorAll('.chip').forEach(el => el.classList.remove('selected'));
+  document.querySelector('#sleeveChips .chip').classList.add('selected');
+  document.getElementById('sleeveGroup').style.display = 'none';
   document.getElementById('photoPreview').style.display = 'none';
   document.getElementById('photoPickerLabel').style.display = 'block';
   document.getElementById('photoInput').value = '';
@@ -907,16 +930,24 @@ function pickForCategory(items, category, tags) {
 
 let lastGuessedTags = null;
 
-/* Illustrated garment shapes, drawn in solid color (from getDominantColor)
-   instead of the real photo — a real photo's exact cut/length never matches
-   a fixed silhouette, but a flat color always "fits" perfectly, same idea
-   as the reference drawing. */
+/* Silueta ilustrada de una sola medida fija (nunca se estira ni se dobla):
+   la prenda solo cambia de color (del color dominante de la foto real) y,
+   en el caso del top, de manga corta o larga. Nada se calcula a partir del
+   recorte de la foto — siempre es la misma forma. */
 const SHAPE_D = {
-  top: 'M84 66 C 90 70, 110 70, 116 66 L 136 66 C 148 68, 160 78, 162 94 C 163 104, 156 112, 146 116 L 138 126 L 138 226 L 62 226 L 62 126 L 54 116 C 44 112, 37 104, 38 94 C 40 78, 52 68, 64 66 Z',
-  bottom: 'M65 198 L135 198 L135 226 L131 344 L127 404 L108 404 L100 230 L92 404 L73 404 L69 344 L65 226 Z',
-  calzado: 'M58 394 C58 390,62 388,68 388 L84 388 C90 388,94 392,94 398 C94 406,88 410,76 410 C64 410,58 406,58 398 Z M106 394 C106 390,110 388,116 388 L132 388 C138 388,142 392,142 398 C142 406,136 410,124 410 C112 410,106 406,106 398 Z',
-  vestido: 'M84 66 C 90 70, 110 70, 116 66 L 136 66 C 148 68, 160 78, 162 94 C 163 104, 156 112, 146 116 L 138 126 L 138 226 L 150 400 L 50 400 L 62 226 L 62 126 L 54 116 C 44 112, 37 104, 38 94 C 40 78, 52 68, 64 66 Z',
-  abrigo: 'M82 62 C 88 67, 112 67, 118 62 L 140 62 C 154 64, 168 76, 170 96 C 171 108, 162 118, 150 122 L 142 132 L 142 280 L 58 280 L 58 132 L 50 122 C 38 118, 29 108, 30 96 C 32 76, 46 64, 60 62 Z'
+  top: 'M 70 70 Q 100 58 130 70 L 117 108 Q 100 112 84 108 Z',
+  bottom: 'M 84 108 Q 100 112 117 108 Q 130 120 134 152 L 127 250 L 105 250 L 100 190 L 95 250 L 73 250 L 66 152 Q 70 120 84 108 Z',
+  vestido: 'M 70 70 Q 100 58 130 70 L 117 108 Q 100 112 84 108 Z M 84 108 Q 100 112 117 108 Q 134 128 138 216 L 62 216 Q 66 128 84 108 Z',
+  abrigo: 'M 66 66 Q 100 50 134 66 L 140 150 Q 100 162 60 150 Z'
+};
+
+const SLEEVE_D = {
+  cortaL: 'M 70 72 Q 60 84 58 100 L 68 102 Q 71 88 76 80 Z',
+  cortaR: 'M 130 72 Q 140 84 142 100 L 132 102 Q 129 88 124 80 Z',
+  largaL: 'M 70 72 Q 58 90 56 135 L 66 140 Q 69 100 76 80 Z',
+  largaR: 'M 130 72 Q 142 90 144 135 L 134 140 Q 131 100 124 80 Z',
+  abrigoL: 'M 68 68 Q 52 88 50 140 L 62 146 Q 65 100 72 76 Z',
+  abrigoR: 'M 132 68 Q 148 88 150 140 L 138 146 Q 135 100 128 76 Z'
 };
 
 function svgShape(d, color) {
@@ -928,16 +959,54 @@ function svgShape(d, color) {
   return path;
 }
 
-/* Anchor points (in the mannequin's 200x480 viewBox) that each garment
+function svgEllipse(cx, cy, rx, ry, color) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const el = document.createElementNS(ns, 'ellipse');
+  el.setAttribute('cx', cx);
+  el.setAttribute('cy', cy);
+  el.setAttribute('rx', rx);
+  el.setAttribute('ry', ry);
+  el.setAttribute('fill', color || '#9a9a9a');
+  el.setAttribute('filter', 'url(#clothShadow)');
+  return el;
+}
+
+function svgRect(x, y, w, h, rx, color) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const el = document.createElementNS(ns, 'rect');
+  el.setAttribute('x', x);
+  el.setAttribute('y', y);
+  el.setAttribute('width', w);
+  el.setAttribute('height', h);
+  el.setAttribute('rx', rx);
+  el.setAttribute('fill', color || '#9a9a9a');
+  el.setAttribute('filter', 'url(#clothShadow)');
+  return el;
+}
+
+function svgStrap(d) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const el = document.createElementNS(ns, 'path');
+  el.setAttribute('d', d);
+  el.setAttribute('fill', 'none');
+  el.setAttribute('stroke', '#2b2320');
+  el.setAttribute('stroke-width', '3');
+  el.setAttribute('stroke-linecap', 'round');
+  return el;
+}
+
+/* Anchor points (in the mannequin's 200x380 viewBox) that each garment
    callout line starts from, and which side of the mannequin its real-photo
    badge sits on — mirrors the reference image's "line pointing out to a
-   small photo of the actual piece" layout. */
+   small photo of the actual piece" layout. Spaced out so up to 5 badges
+   (top/vestido, bottom, abrigo, calzado, accesorio) never overlap. */
 const CALLOUT_ANCHORS = {
-  top:     { x: 48,  y: 95,  side: 'left'  },
-  vestido: { x: 48,  y: 150, side: 'left'  },
-  abrigo:  { x: 152, y: 170, side: 'right' },
-  bottom:  { x: 152, y: 300, side: 'right' },
-  calzado: { x: 48,  y: 400, side: 'left'  }
+  top:       { x: 48,  y: 60,  side: 'left'  },
+  vestido:   { x: 48,  y: 140, side: 'left'  },
+  calzado:   { x: 48,  y: 300, side: 'left'  },
+  abrigo:    { x: 152, y: 100, side: 'right' },
+  bottom:    { x: 152, y: 190, side: 'right' },
+  accesorio: { x: 152, y: 290, side: 'right' }
 };
 
 let lastOutfitPieces = null;
@@ -961,7 +1030,7 @@ function renderCallouts(pieces) {
   svgLines.setAttribute('height', stageRect.height);
 
   const scaleX = wrapRect.width / 200;
-  const scaleY = wrapRect.height / 480;
+  const scaleY = wrapRect.height / 380;
   const offsetX = wrapRect.left - stageRect.left;
   const offsetY = wrapRect.top - stageRect.top;
 
@@ -991,9 +1060,19 @@ function renderCallouts(pieces) {
     badge.style.top = anchorY + 'px';
     badge.style[a.side] = '0px';
     badge.innerHTML = `<img src="${item.photo}" /><span>${label}</span>`;
+    badge.addEventListener('click', () => openLightbox(item.photo));
     badgesWrap.appendChild(badge);
   });
 }
+
+/* Toca la foto circular junto al maniquí para verla en grande. */
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('photoLightbox').classList.add('show');
+}
+document.getElementById('photoLightbox').addEventListener('click', () => {
+  document.getElementById('photoLightbox').classList.remove('show');
+});
 
 let calloutResizeTimer = null;
 window.addEventListener('resize', () => {
@@ -1085,14 +1164,34 @@ async function buildOutfit() {
   const byLabel = Object.fromEntries(pieces);
 
   if (byLabel['vestido']) {
-    clothingLayer.appendChild(svgShape(SHAPE_D.vestido, byLabel['vestido'].color));
+    const c = byLabel['vestido'].color;
+    clothingLayer.appendChild(svgShape(SHAPE_D.vestido, c));
+    clothingLayer.appendChild(svgShape(SLEEVE_D.cortaL, c));
+    clothingLayer.appendChild(svgShape(SLEEVE_D.cortaR, c));
   } else {
     if (byLabel['bottom']) clothingLayer.appendChild(svgShape(SHAPE_D.bottom, byLabel['bottom'].color));
-    if (byLabel['top']) clothingLayer.appendChild(svgShape(SHAPE_D.top, byLabel['top'].color));
+    if (byLabel['top']) {
+      const t = byLabel['top'];
+      const larga = t.sleeve === 'larga';
+      clothingLayer.appendChild(svgShape(SHAPE_D.top, t.color));
+      clothingLayer.appendChild(svgShape(larga ? SLEEVE_D.largaL : SLEEVE_D.cortaL, t.color));
+      clothingLayer.appendChild(svgShape(larga ? SLEEVE_D.largaR : SLEEVE_D.cortaR, t.color));
+    }
   }
-  if (byLabel['abrigo']) clothingLayer.appendChild(svgShape(SHAPE_D.abrigo, byLabel['abrigo'].color));
+  if (byLabel['abrigo']) {
+    const c = byLabel['abrigo'].color;
+    clothingLayer.appendChild(svgShape(SHAPE_D.abrigo, c));
+    clothingLayer.appendChild(svgShape(SLEEVE_D.abrigoL, c));
+    clothingLayer.appendChild(svgShape(SLEEVE_D.abrigoR, c));
+  }
   if (byLabel['calzado']) {
-    clothingLayer.appendChild(svgShape(SHAPE_D.calzado, byLabel['calzado'].color));
+    const c = byLabel['calzado'].color;
+    clothingLayer.appendChild(svgEllipse(78, 258, 13, 7, c));
+    clothingLayer.appendChild(svgEllipse(122, 258, 13, 7, c));
+  }
+  if (byLabel['accesorio']) {
+    clothingLayer.appendChild(svgStrap('M 122 158 Q 138 140 154 158'));
+    clothingLayer.appendChild(svgRect(118, 157, 34, 26, 4, byLabel['accesorio'].color));
   }
 
   requestAnimationFrame(() => renderCallouts(pieces));
