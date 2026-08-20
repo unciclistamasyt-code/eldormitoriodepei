@@ -211,6 +211,53 @@
   .shuffleBtn svg { width: 22px; height: 22px; }
   .shuffleBtn:active { transform: scale(0.94); }
 
+  .chatPanel {
+    margin-top: 26px;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .chatMessages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 260px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    padding-right: 2px;
+  }
+  .chatMsg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .chatMsg.assistant {
+    align-self: flex-start;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+  .chatMsg.user {
+    align-self: flex-end;
+    background: var(--text);
+    color: var(--bg);
+    border-bottom-right-radius: 4px;
+  }
+  .chatInputRow { display: flex; gap: 10px; }
+  .chatInputRow input {
+    flex: 1;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 14px;
+    padding: 11px 14px;
+    outline: none;
+  }
+  .chatInputRow input::placeholder { color: var(--text-dim); }
+
   /* ---- Clóset ---- */
   .catFilter {
     display: flex;
@@ -441,6 +488,16 @@
         <button class="shuffleBtn" id="shuffleBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 3l4 4-4 4"/><path d="M3 7h6a4 4 0 0 1 4 4"/><path d="M17 21l4-4-4-4"/><path d="M3 17h6a4 4 0 0 0 4-4"/></svg>
         </button>
+      </div>
+
+      <div class="chatPanel" id="chatPanel" style="display:none;">
+        <div class="chatMessages" id="chatMessages"></div>
+        <div class="chatInputRow">
+          <input id="chatInput" type="text" placeholder="dime qué cambiar…" maxlength="140" />
+          <button class="goBtn" id="chatSend">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -880,22 +937,36 @@ function cropToContent(canvas) {
   return out;
 }
 
-/* Finds the most common color among the garment's opaque pixels (grouped
-   into coarse buckets so a small logo/print doesn't skew a plain average),
-   used to draw a solid-color illustrated version of the garment on the
-   mannequin instead of stretching the real photo onto a fixed shape. */
+/* Finds the garment's true color among its opaque pixels, used to draw a
+   solid-color illustrated version on the mannequin instead of stretching
+   the real photo onto a fixed shape.
+
+   Two passes, because a single pass with fine buckets (the original
+   approach) often picked the WRONG color: real fabric photos have soft
+   shading/fold gradients across the same color, which spreads that color
+   over many small neighboring buckets — so a small uniform patch (a
+   shadow, a tag, an overexposed highlight) could end up "winning" just
+   because it was more uniform, even though it covers less of the garment.
+     Pass 1 uses coarse buckets to find the general neighborhood of the
+   most common color.
+     Pass 2 re-averages every sampled pixel close to that neighborhood
+   (not just the ones that fell in the same bucket), so the result isn't
+   thrown off by where the bucket grid lines happen to fall and better
+   reflects the fabric's actual color across its shading. */
 function getDominantColor(canvas) {
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   const data = ctx.getImageData(0, 0, w, h).data;
-  const buckets = new Map();
   const total = w * h;
-  const step = Math.max(1, Math.floor(total / 20000));
+  const step = Math.max(1, Math.floor(total / 30000));
+  const ALPHA_MIN = 220; // descarta bordes semi-transparentes mezclados con el fondo
+
+  const buckets = new Map();
   for (let i = 0; i < total; i += step) {
     const idx = i * 4;
-    if (data[idx + 3] < 200) continue;
+    if (data[idx + 3] < ALPHA_MIN) continue;
     const r = data[idx], g = data[idx + 1], b = data[idx + 2];
-    const key = (r >> 4) + ',' + (g >> 4) + ',' + (b >> 4);
+    const key = ((r / 24) | 0) + ',' + ((g / 24) | 0) + ',' + ((b / 24) | 0);
     let bucket = buckets.get(key);
     if (!bucket) { bucket = { r: 0, g: 0, b: 0, count: 0 }; buckets.set(key, bucket); }
     bucket.r += r; bucket.g += g; bucket.b += b; bucket.count++;
@@ -905,7 +976,22 @@ function getDominantColor(canvas) {
     if (!best || bucket.count > best.count) best = bucket;
   }
   if (!best) return '#9a9a9a';
-  const r = Math.round(best.r / best.count), g = Math.round(best.g / best.count), b = Math.round(best.b / best.count);
+  const coarseR = best.r / best.count, coarseG = best.g / best.count, coarseB = best.b / best.count;
+
+  let r2 = 0, g2 = 0, b2 = 0, n2 = 0;
+  const THRESHOLD = 55;
+  for (let i = 0; i < total; i += step) {
+    const idx = i * 4;
+    if (data[idx + 3] < ALPHA_MIN) continue;
+    const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+    const dr = r - coarseR, dg = g - coarseG, db = b - coarseB;
+    if (Math.sqrt(dr * dr + dg * dg + db * db) <= THRESHOLD) {
+      r2 += r; g2 += g; b2 += b; n2++;
+    }
+  }
+  const r = Math.round(n2 ? r2 / n2 : coarseR);
+  const g = Math.round(n2 ? g2 / n2 : coarseG);
+  const b = Math.round(n2 ? b2 / n2 : coarseB);
   return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
@@ -1104,9 +1190,17 @@ async function renderCloset() {
 }
 
 /* ---------------- Combinar ---------------- */
-function pickForCategory(items, category, tags) {
+function pickForCategory(items, category, tags, excludeId) {
   let inCat = items.filter(i => i.category === category);
   if (!inCat.length) return null;
+
+  /* Cuando el usuario pide "cambia el top" (u otra prenda) en la
+     conversación, se descarta la que ya tenía puesta para que el nuevo
+     armado elija otra distinta — salvo que sea la única que tiene. */
+  if (excludeId) {
+    const withoutExcluded = inCat.filter(i => i.id !== excludeId);
+    if (withoutExcluded.length) inCat = withoutExcluded;
+  }
 
   /* Si sabemos el clima de hoy, entre las prendas que ya calzan la
      categoría se prefieren las de manga/largo adecuados (sin descartar
@@ -1309,6 +1403,155 @@ function svgImage(href, x, y, w, h, clipId) {
   return img;
 }
 
+/* ---------------- Conversación sobre el outfit ----------------
+   No hay IA ni backend — es una interpretación simple por palabras clave
+   de lo que responde el usuario, que ajusta el próximo armado (sin abrigo,
+   cambia el top, más formal, etc.) y explica en texto por qué se eligió
+   cada combinación. */
+let chatState = { forcedAbrigo: null, forcedAccesorio: null, excludedIds: {}, extraTags: [] };
+let pendingChangeNotes = [];
+let pendingChangeCategories = [];
+
+function resetChatState() {
+  chatState = { forcedAbrigo: null, forcedAccesorio: null, excludedIds: {}, extraTags: [] };
+  const wrap = document.getElementById('chatMessages');
+  if (wrap) wrap.innerHTML = '';
+}
+
+function normalizeText(str) {
+  return str.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+function addChatMessage(role, text) {
+  const wrap = document.getElementById('chatMessages');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'chatMsg ' + role;
+  el.textContent = text;
+  wrap.appendChild(el);
+  wrap.scrollTop = wrap.scrollHeight;
+  document.getElementById('chatPanel').style.display = 'block';
+}
+
+function joinList(arr) {
+  if (arr.length === 0) return '';
+  if (arr.length === 1) return arr[0];
+  return arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1];
+}
+
+/* Arma la frase que explica por qué se eligió esa combinación: qué piezas
+   entraron, y si el clima de hoy influyó en la manga/largo/abrigo. */
+function describeOutfit(pieces, tags) {
+  const byLabel = Object.fromEntries(pieces);
+  const parts = [];
+  if (byLabel['vestido']) {
+    parts.push('un vestido');
+  } else {
+    if (byLabel['top']) parts.push('un top de manga ' + (byLabel['top'].sleeve === 'larga' ? 'larga' : 'corta'));
+    if (byLabel['bottom']) parts.push(byLabel['bottom'].length === 'corto' ? 'un short' : 'un pantalón');
+  }
+  if (byLabel['abrigo']) parts.push('abrigo');
+  if (byLabel['calzado']) parts.push('calzado');
+  if (byLabel['accesorio']) parts.push('un accesorio');
+
+  if (!parts.length) return 'No encontré suficientes prendas para armar algo con lo que pediste.';
+
+  let sentence = `Para ${tags.join(' · ')} elegí ${joinList(parts)}.`;
+  if (weatherInfo) {
+    const range = `${Math.round(weatherInfo.tempMin)}°–${Math.round(weatherInfo.tempMax)}°C`;
+    if (weatherInfo.isCold) {
+      const bits = [];
+      if (byLabel['top'] && byLabel['top'].sleeve === 'larga') bits.push('manga larga');
+      if (byLabel['bottom'] && byLabel['bottom'].length !== 'corto') bits.push('pantalón');
+      if (byLabel['abrigo']) bits.push('abrigo');
+      sentence += bits.length
+        ? ` Hoy hace frío (${range}), así que preferí ${joinList(bits)}.`
+        : ` Hoy hace frío (${range}), aunque esta combinación no fue la más abrigadora.`;
+    } else if (weatherInfo.isHot) {
+      const bits = [];
+      if (byLabel['top'] && byLabel['top'].sleeve !== 'larga') bits.push('manga corta');
+      if (byLabel['bottom'] && byLabel['bottom'].length === 'corto') bits.push('short');
+      sentence += bits.length
+        ? ` Hoy hace calor (${range}), así que preferí ${joinList(bits)} y evité el abrigo.`
+        : ` Hoy hace calor (${range}).`;
+    }
+  }
+  return sentence;
+}
+
+const CHAT_NO_ABRIGO = ['sin abrigo', 'sin chaqueta', 'sin saco', 'quita el abrigo', 'quitar el abrigo', 'no quiero abrigo', 'no abrigo'];
+const CHAT_SI_ABRIGO = ['con abrigo', 'mas abrigador', 'tengo frio', 'hace frio', 'agrega abrigo', 'agregale abrigo', 'pon abrigo', 'quiero abrigo', 'sumale abrigo'];
+const CHAT_NO_ACC = ['sin bolso', 'sin accesorio', 'quita el bolso', 'quitar el bolso', 'no quiero bolso'];
+const CHAT_SI_ACC = ['con bolso', 'agrega un bolso', 'agrega bolso', 'pon un bolso', 'quiero un bolso', 'agrega accesorio', 'quiero un accesorio'];
+const CHAT_CHANGE = {
+  top: ['cambia el top', 'otro top', 'cambia la playera', 'otra playera', 'cambia la camisa', 'otra camisa', 'cambia la blusa', 'otra blusa'],
+  bottom: ['cambia el pantalon', 'otro pantalon', 'cambia el bottom', 'otro bottom', 'cambia el short', 'otro short'],
+  calzado: ['cambia los zapatos', 'otros zapatos', 'cambia el calzado', 'otro calzado', 'cambia los tenis', 'otros tenis'],
+  abrigo: ['cambia el abrigo', 'otro abrigo'],
+  accesorio: ['cambia el bolso', 'otro bolso', 'cambia el accesorio', 'otro accesorio'],
+  vestido: ['cambia el vestido', 'otro vestido']
+};
+
+function matchAny(text, list) {
+  return list.some(k => text.includes(k));
+}
+
+/* Lee lo que escribió el usuario y ajusta chatState en consecuencia.
+   Devuelve una lista de notas cortas (para explicar qué se cambió) — si
+   no reconoce nada, la lista queda vacía y igual se vuelve a armar el
+   outfit con la ocasión actual. */
+function interpretChatReply(rawText) {
+  const text = normalizeText(rawText);
+  const notes = [];
+
+  if (matchAny(text, CHAT_NO_ABRIGO)) { chatState.forcedAbrigo = false; notes.push('quité el abrigo'); }
+  else if (matchAny(text, CHAT_SI_ABRIGO)) { chatState.forcedAbrigo = true; notes.push('agregué abrigo'); }
+
+  if (matchAny(text, CHAT_NO_ACC)) { chatState.forcedAccesorio = false; notes.push('quité el accesorio'); }
+  else if (matchAny(text, CHAT_SI_ACC)) { chatState.forcedAccesorio = true; notes.push('agregué un accesorio'); }
+
+  if (lastOutfitPieces) {
+    for (const cat in CHAT_CHANGE) {
+      if (matchAny(text, CHAT_CHANGE[cat])) {
+        const current = lastOutfitPieces.find(([label]) => label === cat);
+        if (current) {
+          chatState.excludedIds[cat] = current[1].id;
+          pendingChangeCategories.push(cat);
+        }
+      }
+    }
+  }
+
+  const extraTags = [];
+  for (const key in KEYWORD_MAP) {
+    if (KEYWORD_MAP[key].some(kw => text.includes(kw)) && !chatState.extraTags.includes(key)) {
+      extraTags.push(key);
+    }
+  }
+  if (extraTags.length) {
+    chatState.extraTags = [...new Set([...chatState.extraTags, ...extraTags])];
+    notes.push('tomé en cuenta que quieres algo más ' + extraTags.join('/'));
+  }
+
+  return notes;
+}
+
+document.getElementById('chatSend').addEventListener('click', sendChatReply);
+document.getElementById('chatInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendChatReply();
+});
+
+function sendChatReply() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  addChatMessage('user', text);
+  input.value = '';
+  const notes = interpretChatReply(text);
+  pendingChangeNotes = notes;
+  buildOutfit();
+}
+
 async function buildOutfit() {
   const items = await dbGetAll();
   const empty = document.getElementById('combinarEmpty');
@@ -1327,32 +1570,54 @@ async function buildOutfit() {
   }
 
   const text = document.getElementById('occasionInput').value.trim();
-  const tags = text ? guessTags(text) : lastGuessedTags || ['casual'];
-  lastGuessedTags = tags;
+  const baseTags = text ? guessTags(text) : lastGuessedTags || ['casual'];
+  const tags = [...new Set([...baseTags, ...chatState.extraTags])];
+  lastGuessedTags = baseTags;
   document.getElementById('guessTag').textContent = tags.join(' · ');
 
   const pieces = [];
-  const dress = Math.random() < 0.35 ? pickForCategory(items, 'dress', tags) : null;
+  const dress = Math.random() < 0.35 ? pickForCategory(items, 'dress', tags, chatState.excludedIds.vestido) : null;
   if (dress) {
     pieces.push(['vestido', dress]);
   } else {
-    const top = pickForCategory(items, 'top', tags);
-    const bottom = pickForCategory(items, 'bottom', tags);
+    const top = pickForCategory(items, 'top', tags, chatState.excludedIds.top);
+    const bottom = pickForCategory(items, 'bottom', tags, chatState.excludedIds.bottom);
     if (top) pieces.push(['top', top]);
     if (bottom) pieces.push(['bottom', bottom]);
   }
-  const shoes = pickForCategory(items, 'shoes', tags);
+  const shoes = pickForCategory(items, 'shoes', tags, chatState.excludedIds.calzado);
   if (shoes) pieces.push(['calzado', shoes]);
 
-  /* Con frío casi siempre suma abrigo; con calor casi nunca. */
+  /* Con frío casi siempre suma abrigo; con calor casi nunca — salvo que
+     el usuario haya pedido explícitamente con/sin abrigo en el chat. */
   const abrigoChance = weatherInfo ? (weatherInfo.isCold ? 0.9 : (weatherInfo.isHot ? 0.05 : 0.5)) : 0.5;
-  if (Math.random() < abrigoChance) {
-    const outer = pickForCategory(items, 'outerwear', tags);
+  const wantAbrigo = chatState.forcedAbrigo !== null ? chatState.forcedAbrigo : Math.random() < abrigoChance;
+  if (wantAbrigo) {
+    const outer = pickForCategory(items, 'outerwear', tags, chatState.excludedIds.abrigo);
     if (outer) pieces.push(['abrigo', outer]);
   }
-  if (Math.random() < 0.4) {
-    const acc = pickForCategory(items, 'accessory', tags);
+  const wantAccesorio = chatState.forcedAccesorio !== null ? chatState.forcedAccesorio : Math.random() < 0.4;
+  if (wantAccesorio) {
+    const acc = pickForCategory(items, 'accessory', tags, chatState.excludedIds.accesorio);
     if (acc) pieces.push(['accesorio', acc]);
+  }
+  chatState.excludedIds = {};
+
+  /* Si el usuario pidió "cambia X", compara la prenda nueva con la que
+     tenía antes (lastOutfitPieces todavía no se actualiza — eso pasa en
+     renderCallouts, que corre después) para decir la verdad: si de
+     verdad cambió, o si no había otra opción guardada. */
+  if (pendingChangeCategories.length) {
+    const prevByLabel = Object.fromEntries(lastOutfitPieces || []);
+    const newByLabel = Object.fromEntries(pieces);
+    pendingChangeCategories.forEach(cat => {
+      const newItem = newByLabel[cat];
+      const oldItem = prevByLabel[cat];
+      if (newItem && oldItem && newItem.id !== oldItem.id) pendingChangeNotes.push('cambié el ' + cat);
+      else if (newItem && !oldItem) pendingChangeNotes.push('agregué ' + cat);
+      else pendingChangeNotes.push('no tengo otra opción de ' + cat + ' guardada');
+    });
+    pendingChangeCategories = [];
   }
 
   if (!pieces.length) {
@@ -1406,11 +1671,20 @@ async function buildOutfit() {
   }
 
   requestAnimationFrame(() => renderCallouts(pieces));
+
+  const changePrefix = pendingChangeNotes.length ? 'Listo, ' + joinList(pendingChangeNotes) + '. ' : '';
+  const explanation = changePrefix + describeOutfit(pieces, tags);
+  pendingChangeNotes = [];
+  addChatMessage('assistant', explanation);
 }
 
-document.getElementById('occasionGo').addEventListener('click', buildOutfit);
+function startNewOccasion() {
+  resetChatState();
+  buildOutfit();
+}
+document.getElementById('occasionGo').addEventListener('click', startNewOccasion);
 document.getElementById('occasionInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') buildOutfit();
+  if (e.key === 'Enter') startNewOccasion();
 });
 document.getElementById('shuffleBtn').addEventListener('click', buildOutfit);
 
