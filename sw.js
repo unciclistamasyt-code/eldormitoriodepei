@@ -1,4 +1,4 @@
-const CACHE = 'app-v22';
+const CACHE = 'app-v23';
 const ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,20 @@ const ASSETS = [
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  './audio/n1m1.mp3',
+  './audio/n1m2.mp3',
+  './audio/n1m3.mp3',
+  './audio/n1m4.mp3',
+  './audio/n1m5.mp3',
+  './audio/n1m6.mp3',
+  './audio/n1m7.mp3',
+  './audio/n1m8.mp3',
+  './audio/n2m1.mp3',
+  './audio/n2m2.mp3',
+  './audio/n2m3.mp3',
+  './audio/n2m4.mp3',
+  './audio/n2m5.mp3'
 ];
 
 self.addEventListener('install', (e) => {

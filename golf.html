@@ -1460,13 +1460,50 @@ function playSynthChunk(text, voice) {
   });
 }
 
-function toggleSpeak(text, btn) {
+/* ================= Audio pregrabado (voz "real" de ElevenLabs) =================
+   Algunos módulos tienen su audio grabado de antemano con una voz humana
+   mucho más natural (ElevenLabs) — se reproduce directo desde ./audio/,
+   sin depender de internet en el momento (queda cacheado por el service
+   worker). Si el archivo no está o falla, cae al flujo en vivo de siempre
+   (Google Translate TTS con fallback a la voz del dispositivo). */
+const PREGEN_AUDIO_MODULES = new Set([
+  'n1m1', 'n1m2', 'n1m3', 'n1m4', 'n1m5', 'n1m6', 'n1m7', 'n1m8',
+  'n2m1', 'n2m2', 'n2m3', 'n2m4', 'n2m5'
+]);
+
+function pregenAudioUrl(moduleId) {
+  return `./audio/${moduleId}.mp3`;
+}
+
+function playPregenAudio(moduleId, btn, text, fallbackVoice) {
+  const audio = new Audio(pregenAudioUrl(moduleId));
+  speakChain = { btn, currentAudio: audio };
+  btn.classList.add('playing');
+  const fallToLive = () => {
+    if (!speakChain || speakChain.currentAudio !== audio) return;
+    speakChain.currentAudio = null;
+    speakWithLiveVoice(text, btn, fallbackVoice);
+  };
+  audio.addEventListener('ended', () => stopSpeaking());
+  audio.addEventListener('error', fallToLive);
+  audio.play().catch(fallToLive);
+}
+
+function toggleSpeak(text, btn, moduleId) {
   if (speakChain || (('speechSynthesis' in window) && window.speechSynthesis.speaking)) {
     stopSpeaking();
     return;
   }
-  const chunks = splitIntoChunks(text);
   const fallbackVoice = getPreferredVoice();
+  if (moduleId && PREGEN_AUDIO_MODULES.has(moduleId)) {
+    playPregenAudio(moduleId, btn, text, fallbackVoice);
+    return;
+  }
+  speakWithLiveVoice(text, btn, fallbackVoice);
+}
+
+function speakWithLiveVoice(text, btn, fallbackVoice) {
+  const chunks = splitIntoChunks(text);
   speakChain = { chunks, idx: 0, btn, currentAudio: null };
   btn.classList.add('playing');
   // Si el primer chunk falla con Google, asumimos que no hay internet /
@@ -1636,7 +1673,7 @@ function renderLeccion(app, data) {
   const listenBtn = document.createElement('div');
   listenBtn.className = 'listenBtn';
   listenBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg><span>Escuchar el módulo</span>`;
-  listenBtn.addEventListener('click', () => toggleSpeak(moduleSpeechText(m), listenBtn));
+  listenBtn.addEventListener('click', () => toggleSpeak(moduleSpeechText(m), listenBtn, m.id));
   listenRow.appendChild(listenBtn);
 
   const voiceOpts = voiceOptions();
@@ -1661,7 +1698,9 @@ function renderLeccion(app, data) {
   voiceHint.className = 'modMeta';
   voiceHint.style.marginTop = '-14px';
   voiceHint.style.marginBottom = '18px';
-  voiceHint.textContent = 'Por defecto "Escuchar el módulo" usa una voz en español más natural (necesita internet). Si no hay conexión o el servicio falla, cae automáticamente a la voz de tu dispositivo elegida arriba — que no incluye "Siri Voice": eso es una limitación de iOS, Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, nunca la voz de Siri en sí.';
+  voiceHint.textContent = PREGEN_AUDIO_MODULES.has(m.id)
+    ? 'Este módulo tiene audio grabado con una voz humana real (no una síntesis) — se reproduce sin necesitar internet, y si por algún motivo falla, cae automáticamente a la voz de tu dispositivo elegida arriba.'
+    : 'Por defecto "Escuchar el módulo" usa una voz en español más natural (necesita internet). Si no hay conexión o el servicio falla, cae automáticamente a la voz de tu dispositivo elegida arriba — que no incluye "Siri Voice": eso es una limitación de iOS, Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, nunca la voz de Siri en sí.';
   app.appendChild(voiceHint);
 
   const body = document.createElement('div');
