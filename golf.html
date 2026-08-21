@@ -1376,7 +1376,12 @@ function setVoicePref(name) {
 
 function stopSpeaking() {
   if (speakWatchdog) { clearInterval(speakWatchdog); speakWatchdog = null; }
-  if (speakChain && speakChain.btn) speakChain.btn.classList.remove('playing');
+  if (speakChain) {
+    if (speakChain.currentAudio) {
+      try { speakChain.currentAudio.pause(); speakChain.currentAudio.src = ''; } catch (e) {}
+    }
+    if (speakChain.btn) speakChain.btn.classList.remove('playing');
+  }
   speakChain = null;
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
@@ -1403,32 +1408,100 @@ function splitIntoChunks(text) {
   return chunks;
 }
 
+/* ================= Voz "real" (Google Translate TTS) con fallback =================
+   Por defecto, la app pide el audio de cada oración al endpoint público de
+   Google Translate (el mismo que usa la librería gTTS) — da una voz en
+   español mucho más natural y consistente que las voces del dispositivo,
+   y no depende de qué voces tenga instaladas el iPhone. Es un endpoint NO
+   oficial (no hay una API con clave detrás), así que puede fallar o dejar
+   de funcionar sin aviso — por eso cada oración que falla (sin internet,
+   bloqueado, lo que sea) cae automáticamente a la voz del dispositivo
+   (speechSynthesis), sin que el usuario tenga que hacer nada. */
+
+const GOOGLE_TTS_ENDPOINT = 'https://translate.google.com/translate_tts';
+
+function googleTtsUrl(text) {
+  const params = new URLSearchParams({ ie: 'UTF-8', q: text, tl: 'es', client: 'tw-ob' });
+  return `${GOOGLE_TTS_ENDPOINT}?${params.toString()}`;
+}
+
+/* Reproduce un chunk con la voz de Google. Resuelve al terminar, rechaza
+   si falla (sin internet, endpoint bloqueado, timeout, etc.). */
+function playGoogleTtsChunk(text) {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio(googleTtsUrl(text));
+    let settled = false;
+    const finish = (ok, err) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (speakChain && speakChain.currentAudio === audio) speakChain.currentAudio = null;
+      ok ? resolve() : reject(err || new Error('google-tts-failed'));
+    };
+    const timer = setTimeout(() => { audio.pause(); finish(false, new Error('timeout')); }, 6000);
+    audio.addEventListener('ended', () => finish(true));
+    audio.addEventListener('error', () => finish(false, new Error('audio-error')));
+    if (speakChain) speakChain.currentAudio = audio;
+    audio.play().catch(err => finish(false, err));
+  });
+}
+
+/* Reproduce un chunk con la voz del dispositivo (fallback). Nunca rechaza:
+   si falla, simplemente sigue con el próximo chunk. */
+function playSynthChunk(text, voice) {
+  return new Promise((resolve) => {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = voice ? voice.lang : 'es-ES';
+    if (voice) utter.voice = voice;
+    utter.rate = 0.98;
+    utter.onend = () => resolve();
+    utter.onerror = () => resolve();
+    window.speechSynthesis.speak(utter);
+  });
+}
+
 function toggleSpeak(text, btn) {
-  if (!('speechSynthesis' in window)) return;
-  if (window.speechSynthesis.speaking || speakChain) {
+  if (speakChain || (('speechSynthesis' in window) && window.speechSynthesis.speaking)) {
     stopSpeaking();
     return;
   }
   const chunks = splitIntoChunks(text);
-  const voice = getPreferredVoice();
-  speakChain = { chunks, idx: 0, btn };
+  const fallbackVoice = getPreferredVoice();
+  speakChain = { chunks, idx: 0, btn, currentAudio: null };
   btn.classList.add('playing');
+  // Si el primer chunk falla con Google, asumimos que no hay internet /
+  // el endpoint está bloqueado, y usamos la voz del dispositivo para el
+  // resto — así no esperamos un timeout de 6s por cada oración.
+  let googleFailedThisPlayback = false;
 
-  function speakNext() {
+  async function speakNext() {
     if (!speakChain) return;
     if (speakChain.idx >= speakChain.chunks.length) { stopSpeaking(); return; }
-    const utter = new SpeechSynthesisUtterance(speakChain.chunks[speakChain.idx]);
-    utter.lang = voice ? voice.lang : 'es-ES';
-    if (voice) utter.voice = voice;
-    utter.rate = 0.98;
-    utter.onend = () => { if (speakChain) { speakChain.idx++; speakNext(); } };
-    utter.onerror = () => { if (speakChain) { speakChain.idx++; speakNext(); } };
-    window.speechSynthesis.speak(utter);
+    const chunk = speakChain.chunks[speakChain.idx];
+    if (!googleFailedThisPlayback) {
+      try {
+        await playGoogleTtsChunk(chunk);
+        if (!speakChain) return;
+        speakChain.idx++;
+        speakNext();
+        return;
+      } catch (e) {
+        googleFailedThisPlayback = true;
+      }
+    }
+    if (!speakChain) return;
+    if (!('speechSynthesis' in window)) { stopSpeaking(); return; }
+    await playSynthChunk(chunk, fallbackVoice);
+    if (!speakChain) return;
+    speakChain.idx++;
+    speakNext();
   }
   speakNext();
 
-  // Watchdog contra el bug de Safari/iOS que corta utterances largas.
+  // Watchdog contra el bug de Safari/iOS que corta utterances largas de
+  // speechSynthesis — solo entra en juego cuando estamos en el fallback.
   speakWatchdog = setInterval(() => {
+    if (!('speechSynthesis' in window)) return;
     if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) return;
     window.speechSynthesis.pause();
     window.speechSynthesis.resume();
@@ -1570,11 +1643,12 @@ function renderLeccion(app, data) {
   if (voiceOpts.length > 1) {
     const select = document.createElement('select');
     select.className = 'voiceSelect';
+    select.title = 'Voz de respaldo sin internet';
     const preferred = getPreferredVoice();
     voiceOpts.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v.name;
-      opt.textContent = v.name.replace(/^Microsoft |^Google /, '');
+      opt.textContent = '(sin internet) ' + v.name.replace(/^Microsoft |^Google /, '');
       if (preferred && v.name === preferred.name) opt.selected = true;
       select.appendChild(opt);
     });
@@ -1587,7 +1661,7 @@ function renderLeccion(app, data) {
   voiceHint.className = 'modMeta';
   voiceHint.style.marginTop = '-14px';
   voiceHint.style.marginBottom = '18px';
-  voiceHint.textContent = '¿No aparece "Siri Voice"? Es una limitación de iOS: Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, no la voz de Siri en sí. Si la descargás ahí y volvés a esta página, a veces sí aparece — pero no depende de la app.';
+  voiceHint.textContent = 'Por defecto "Escuchar el módulo" usa una voz en español más natural (necesita internet). Si no hay conexión o el servicio falla, cae automáticamente a la voz de tu dispositivo elegida arriba — que no incluye "Siri Voice": eso es una limitación de iOS, Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, nunca la voz de Siri en sí.';
   app.appendChild(voiceHint);
 
   const body = document.createElement('div');
