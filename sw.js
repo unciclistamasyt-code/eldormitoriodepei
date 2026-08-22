@@ -1,4 +1,4 @@
-const CACHE = 'app-v23';
+const CACHE = 'app-v24';
 const ASSETS = [
   './',
   './index.html',
@@ -24,7 +24,28 @@ const ASSETS = [
   './audio/n2m2.mp3',
   './audio/n2m3.mp3',
   './audio/n2m4.mp3',
-  './audio/n2m5.mp3'
+  './audio/n2m5.mp3',
+  './audio/n2m6.mp3',
+  './audio/n2m7.mp3',
+  './audio/n2m8.mp3',
+  './audio/n2m9.mp3',
+  './audio/n3m1.mp3',
+  './audio/n3m2.mp3',
+  './audio/n3m3.mp3',
+  './audio/n3m4.mp3',
+  './audio/n4m1.mp3',
+  './audio/n4m2.mp3',
+  './audio/n4m3.mp3',
+  './audio/n4m4.mp3',
+  './audio/n4m5.mp3',
+  './audio/n4m6.mp3',
+  './audio/n5m1.mp3',
+  './audio/n5m2.mp3',
+  './audio/n5m3.mp3',
+  './audio/n5m4.mp3',
+  './audio/n5m5.mp3',
+  './audio/n5m6.mp3',
+  './audio/n5m7.mp3'
 ];
 
 self.addEventListener('install', (e) => {
