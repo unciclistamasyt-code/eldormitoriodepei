@@ -1,4 +1,4 @@
-const CACHE = 'app-v25';
+const CACHE = 'app-v27';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,9 @@ const ASSETS = [
   './ropa.html',
   './golf.html',
   './menu.html',
+  './videos/fettuccine.webm',
+  './videos/fettuccine.mp4',
+  './img/fettuccine-poster.jpg',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',
@@ -67,6 +70,13 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  if (e.request.headers.has('range')) {
+    // Range requests (used by <video>/<audio> for seeking/streaming) must hit
+    // the network directly — serving a cached full-body response instead of a
+    // real 206 Partial Content breaks media playback in Chrome/Safari.
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then((cached) => {
       const fetchPromise = fetch(e.request)

@@ -90,6 +90,19 @@
     inset: 0;
     background: linear-gradient(180deg, rgba(6,6,8,0.15) 0%, rgba(6,6,8,0.15) 40%, rgba(6,6,8,0.92) 100%);
   }
+  video.slide-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    background: #0a0a0c;
+  }
+  .slide-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(180deg, rgba(6,6,8,0.15) 0%, rgba(6,6,8,0.15) 40%, rgba(6,6,8,0.92) 100%);
+  }
 
   .slide-art {
     position: absolute;
@@ -233,21 +246,11 @@
 
   <!-- 1: Fettuccine Prosciutto y Burrata -->
   <section class="slide" style="--slide-accent:#d99a5b;">
-    <div class="slide-bg" style="background: radial-gradient(120% 90% at 50% 0%, #3a2716 0%, #1c130b 55%, #0a0a0c 100%);"></div>
-    <div class="slide-art">
-      <svg viewBox="0 0 200 200" fill="none" stroke="#eceeed" stroke-width="1.3">
-        <ellipse cx="100" cy="150" rx="72" ry="14" opacity="0.5"/>
-        <path d="M35 140 Q30 90 55 70 Q40 55 50 35" opacity="0.7"/>
-        <path d="M50 142 Q45 100 70 78 Q58 60 66 40" opacity="0.7"/>
-        <path d="M68 145 Q66 105 92 82 Q82 62 90 42" opacity="0.7"/>
-        <path d="M90 147 Q90 108 112 84 Q104 64 112 44" opacity="0.7"/>
-        <path d="M112 146 Q114 106 138 80 Q128 60 136 40" opacity="0.7"/>
-        <path d="M132 144 Q136 100 158 74 Q148 56 154 36" opacity="0.7"/>
-        <circle cx="100" cy="118" r="16" opacity="0.9"/>
-        <circle cx="78" cy="130" r="6" opacity="0.6"/>
-        <circle cx="122" cy="128" r="5" opacity="0.6"/>
-      </svg>
-    </div>
+    <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="img/fettuccine-poster.jpg">
+      <source src="videos/fettuccine.webm" type="video/webm">
+      <source src="videos/fettuccine.mp4" type="video/mp4">
+    </video>
+    <div class="slide-scrim"></div>
     <div class="kicker-row"><span class="count">01 / 04</span></div>
     <div class="swipe-hint">
       desliza para ver el menú
