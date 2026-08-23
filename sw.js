@@ -1,4 +1,4 @@
-const CACHE = 'app-v27';
+const CACHE = 'app-v28';
 const ASSETS = [
   './',
   './index.html',
@@ -11,6 +11,15 @@ const ASSETS = [
   './videos/fettuccine.webm',
   './videos/fettuccine.mp4',
   './img/fettuccine-poster.jpg',
+  './videos/pizza.webm',
+  './videos/pizza.mp4',
+  './img/pizza-poster.jpg',
+  './videos/ensalada.webm',
+  './videos/ensalada.mp4',
+  './img/ensalada-poster.jpg',
+  './videos/hamburguesa.webm',
+  './videos/hamburguesa.mp4',
+  './img/hamburguesa-poster.jpg',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',
