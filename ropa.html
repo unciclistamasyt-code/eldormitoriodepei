@@ -416,6 +416,30 @@
     letter-spacing: 0.02em;
   }
   .saveBtn:disabled { opacity: 0.35; }
+
+  .backupBar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .backupBar button {
+    flex: 1;
+    padding: 10px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    color: var(--text-dim);
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+  }
+  .backupBar button:active { opacity: 0.6; }
+  .backupToast {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 14px;
+    margin: -4px 0 12px;
+  }
 </style>
 </head>
 <body>
@@ -503,6 +527,12 @@
 
     <!-- CLOSET -->
     <div class="view" id="view-closet">
+      <div class="backupBar">
+        <button id="exportClosetBtn" type="button">↓ respaldar clóset</button>
+        <button id="importClosetBtn" type="button">↑ restaurar respaldo</button>
+        <input type="file" id="importClosetInput" accept="application/json,.json" style="display:none;" />
+      </div>
+      <div class="backupToast" id="backupToast"></div>
       <div class="catFilter" id="catFilter"></div>
       <div class="closetGrid" id="closetGrid"></div>
     </div>
@@ -1211,6 +1241,74 @@ async function renderCloset() {
     grid.appendChild(el);
   });
 }
+
+/* ---------------- Respaldo del clóset (exportar / restaurar) ----------------
+   El clóset vive solo en IndexedDB, que es almacenamiento por-origen: si
+   alguna vez hay que borrar los "Datos de sitios web" de Safari para forzar
+   una actualización atascada de la PWA, eso borra TODO lo del origen,
+   incluyendo el clóset guardado — no solo la caché de archivos. Este
+   respaldo permite exportar todas las prendas (con sus fotos, ya guardadas
+   como data URLs, así que son texto plano) a un archivo .json descargable,
+   y restaurarlas después con solo elegir ese archivo. Reimportar el mismo
+   respaldo varias veces es seguro: usa el mismo id de cada prenda, así que
+   sobreescribe en vez de duplicar. */
+function showBackupToast(msg) {
+  const el = document.getElementById('backupToast');
+  el.textContent = msg;
+  if (msg) setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 4000);
+}
+
+document.getElementById('exportClosetBtn').addEventListener('click', async () => {
+  const items = await dbGetAll();
+  if (!items.length) {
+    showBackupToast('el clóset está vacío, nada que respaldar');
+    return;
+  }
+  const payload = { app: 'ropa.html', version: 1, exportedAt: Date.now(), items };
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `closet-respaldo-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  showBackupToast(`${items.length} prenda${items.length === 1 ? '' : 's'} respaldadas`);
+  if (navigator.vibrate) navigator.vibrate(15);
+});
+
+document.getElementById('importClosetBtn').addEventListener('click', () => {
+  document.getElementById('importClosetInput').click();
+});
+
+document.getElementById('importClosetInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const payload = JSON.parse(text);
+    const items = Array.isArray(payload) ? payload : payload.items;
+    if (!Array.isArray(items) || !items.length) {
+      showBackupToast('ese archivo no tiene prendas reconocibles');
+      return;
+    }
+    let ok = 0;
+    for (const item of items) {
+      if (item && item.id && item.photo) {
+        await dbAdd(item);
+        ok++;
+      }
+    }
+    showBackupToast(`${ok} prenda${ok === 1 ? '' : 's'} restauradas`);
+    renderCloset();
+    if (navigator.vibrate) navigator.vibrate(15);
+  } catch (err) {
+    showBackupToast('no se pudo leer ese archivo');
+  }
+});
 
 /* ---------------- Combinar ---------------- */
 function pickForCategory(items, category, tags, excludeId) {
