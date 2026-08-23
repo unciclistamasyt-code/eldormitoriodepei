@@ -191,23 +191,23 @@
   .dots {
     position: absolute;
     bottom: calc(env(safe-area-inset-bottom) + 14px);
-    right: 22px;
+    left: 26px;
+    right: 26px;
     display: flex;
-    flex-direction: column;
     gap: 6px;
     z-index: 5;
   }
   .dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: rgba(236,238,237,0.28);
-    transition: background 0.2s ease, height 0.2s ease;
+    flex: 1;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(236,238,237,0.24);
+    transition: background 0.25s ease, transform 0.25s ease;
+    transform: scaleY(1);
   }
   .dot.active {
     background: var(--slide-accent, #d8a568);
-    height: 16px;
-    border-radius: 3px;
+    transform: scaleY(1.6);
   }
 
   .swipe-hint {
@@ -347,12 +347,18 @@
   var dotEls = Array.prototype.slice.call(dotsWrap.children);
 
   var ticking = false;
+  function syncDots() {
+    var idx = Math.round(rail.scrollLeft / rail.clientWidth);
+    dotEls.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+    var accent = getComputedStyle(slides[idx]).getPropertyValue('--slide-accent');
+    if (accent) dotsWrap.style.setProperty('--slide-accent', accent.trim());
+  }
+  syncDots();
   rail.addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(function () {
-      var idx = Math.round(rail.scrollLeft / rail.clientWidth);
-      dotEls.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+      syncDots();
       ticking = false;
     });
   }, { passive: true });
