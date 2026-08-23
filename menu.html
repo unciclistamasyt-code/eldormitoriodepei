@@ -50,6 +50,20 @@
     color: rgba(236,238,237,0.65);
     font-weight: 600;
   }
+  .topbar-float .info-btn {
+    pointer-events: auto;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,10,12,0.35);
+    backdrop-filter: blur(6px);
+    border-radius: 50%;
+    opacity: 0.9;
+  }
+  .topbar-float .info-btn:active { transform: scale(0.92); }
+  .topbar-float .info-btn svg { width: 18px; height: 18px; }
 
   .rail {
     height: 100vh;
@@ -230,6 +244,95 @@
     50% { opacity: 0.85; transform: translateX(4px); }
   }
   .slide:not(:first-child) .swipe-hint { display: none; }
+
+  .dishModal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .dishModal.open { display: flex; }
+  .dishModal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(6,6,8,0.72);
+    backdrop-filter: blur(3px);
+  }
+  .dishModal-card {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 82vh;
+    overflow-y: auto;
+    background: var(--bg-soft);
+    border-radius: 22px 22px 0 0;
+    animation: modalUp 0.3s ease both;
+  }
+  @keyframes modalUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .dishModal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(10,10,12,0.5);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  .dishModal-close svg { width: 16px; height: 16px; }
+  .dishModal-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+  }
+  .dishModal-body {
+    padding: 22px 24px calc(env(safe-area-inset-bottom) + 28px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dishModal-title {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .dishModal-desc {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: rgba(236,238,237,0.82);
+    margin-top: 4px;
+  }
+  .dishModal-list {
+    list-style: none;
+    margin-top: 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .dishModal-list li {
+    font-size: 13px;
+    color: rgba(236,238,237,0.75);
+    padding-left: 14px;
+    position: relative;
+  }
+  .dishModal-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--slide-accent, #d8a568);
+  }
 </style>
 </head>
 <body>
@@ -239,13 +342,15 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="#eceeed" stroke-width="1.8"><path d="M15 5 L8 12 L15 19"/></svg>
   </a>
   <div class="brandmark">Mi Casa · Menú</div>
-  <div style="width:34px"></div>
+  <button class="info-btn" id="infoBtn" aria-label="detalle del plato">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#eceeed" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="1" fill="#eceeed" stroke="none"/></svg>
+  </button>
 </div>
 
 <div class="rail" id="rail">
 
   <!-- 1: Fettuccine Prosciutto y Burrata -->
-  <section class="slide" style="--slide-accent:#d99a5b;">
+  <section class="slide" data-dish="fettuccine" style="--slide-accent:#d99a5b;">
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="img/fettuccine-poster.jpg">
       <source src="videos/fettuccine.webm" type="video/webm">
       <source src="videos/fettuccine.mp4" type="video/mp4">
@@ -270,7 +375,7 @@
   </section>
 
   <!-- 2: Pizza Pesto Prosciutto y Burrata -->
-  <section class="slide" style="--slide-accent:#c97b5a;">
+  <section class="slide" data-dish="pizza" style="--slide-accent:#c97b5a;">
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="img/pizza-poster.jpg">
       <source src="videos/pizza.webm" type="video/webm">
       <source src="videos/pizza.mp4" type="video/mp4">
@@ -291,7 +396,7 @@
   </section>
 
   <!-- 3: Ensalada con Salmón -->
-  <section class="slide" style="--slide-accent:#8fae7c;">
+  <section class="slide" data-dish="ensalada" style="--slide-accent:#8fae7c;">
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="img/ensalada-poster.jpg">
       <source src="videos/ensalada.webm" type="video/webm">
       <source src="videos/ensalada.mp4" type="video/mp4">
@@ -311,7 +416,7 @@
   </section>
 
   <!-- 4: Hamburguesa Bowl -->
-  <section class="slide" style="--slide-accent:#d9b25b;">
+  <section class="slide" data-dish="hamburguesa" style="--slide-accent:#d9b25b;">
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="img/hamburguesa-poster.jpg">
       <source src="videos/hamburguesa.webm" type="video/webm">
       <source src="videos/hamburguesa.mp4" type="video/mp4">
@@ -334,6 +439,22 @@
 
 <div class="dots" id="dots"></div>
 
+<div class="dishModal" id="dishModal">
+  <div class="dishModal-backdrop" id="dishModalBackdrop"></div>
+  <div class="dishModal-card">
+    <button class="dishModal-close" id="dishModalClose" aria-label="cerrar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#eceeed" stroke-width="1.8"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+    </button>
+    <img class="dishModal-img" id="dishModalImg" alt="">
+    <div class="dishModal-body">
+      <span class="eyebrow" id="dishModalEyebrow"></span>
+      <h2 class="dishModal-title" id="dishModalTitle"></h2>
+      <p class="dishModal-desc" id="dishModalDesc"></p>
+      <ul class="dishModal-list" id="dishModalList"></ul>
+    </div>
+  </div>
+</div>
+
 <script>
   var rail = document.getElementById('rail');
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
@@ -346,9 +467,20 @@
   });
   var dotEls = Array.prototype.slice.call(dotsWrap.children);
 
+  // Deep link from ruleta.html (?d=pizza) — jump straight to that dish, no animation.
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var d = params.get('d');
+    if (!d) return;
+    var idx = slides.findIndex(function (s) { return s.dataset.dish === d; });
+    if (idx >= 0) rail.scrollLeft = idx * rail.clientWidth;
+  })();
+
+  var currentIdx = 0;
   var ticking = false;
   function syncDots() {
     var idx = Math.round(rail.scrollLeft / rail.clientWidth);
+    currentIdx = idx;
     dotEls.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
     var accent = getComputedStyle(slides[idx]).getPropertyValue('--slide-accent');
     if (accent) dotsWrap.style.setProperty('--slide-accent', accent.trim());
@@ -362,6 +494,69 @@
       ticking = false;
     });
   }, { passive: true });
+
+  // Restaurant-style dish detail sheet
+  var DISH_INFO = {
+    fettuccine: {
+      eyebrow: 'Pasta fresca',
+      title: 'Fettuccine prosciutto & burrata',
+      accent: '#d99a5b',
+      img: 'img/fettuccine-poster.jpg',
+      desc: 'Fettuccine hecho a mano, cocido al punto y terminado en mantequilla noisette con salvia fresca. Coronado con láminas de prosciutto curado y burrata artesanal que se deshace tibia sobre la pasta al momento de servir. Un clásico italiano en su versión más honesta: pocos ingredientes, ejecutados con precisión.',
+      items: ['Fettuccine fresco', 'Prosciutto curado', 'Burrata cremosa', 'Mantequilla & salvia']
+    },
+    pizza: {
+      eyebrow: 'Horno de piedra',
+      title: 'Pizza pesto prosciutto & burrata',
+      accent: '#c97b5a',
+      img: 'img/pizza-poster.jpg',
+      desc: 'Masa de fermentación lenta, horneada hasta lograr un borde alveolado y ligeramente ahumado. Se viste con pesto genovese hecho en casa, prosciutto curado y burrata fresca que se derrama con el calor del horno. Un balance entre lo rústico de la masa y la delicadeza de sus toppings.',
+      items: ['Masa madre', 'Pesto genovese', 'Prosciutto curado', 'Burrata fresca']
+    },
+    ensalada: {
+      eyebrow: 'Fresco & ligero',
+      title: 'Ensalada con salmón',
+      accent: '#8fae7c',
+      img: 'img/ensalada-poster.jpg',
+      desc: 'Salmón sellado a la plancha hasta lograr un exterior dorado y un centro jugoso, sobre una base de hojas verdes y vegetales frescos. Vinagreta cítrica ligera que realza sin opacar. Un plato fresco pensado para quienes buscan sabor sin excesos.',
+      items: ['Salmón a la plancha', 'Hojas verdes', 'Vegetales frescos', 'Vinagreta cítrica']
+    },
+    hamburguesa: {
+      eyebrow: 'Bowl de la casa',
+      title: 'Hamburguesa bowl',
+      accent: '#d9b25b',
+      img: 'img/hamburguesa-poster.jpg',
+      desc: 'Toda la esencia de nuestra hamburguesa de la casa, servida en bowl: carne sazonada a la parrilla, vegetales frescos y la salsa de la casa. La misma satisfacción, sin pan, en un formato más ligero.',
+      items: ['Carne de la casa', 'Vegetales frescos', 'Salsa de la casa']
+    }
+  };
+
+  var dishModal = document.getElementById('dishModal');
+  function openDishModal() {
+    var dishId = slides[currentIdx] && slides[currentIdx].dataset.dish;
+    var info = DISH_INFO[dishId];
+    if (!info) return;
+    dishModal.style.setProperty('--slide-accent', info.accent);
+    document.getElementById('dishModalImg').src = info.img;
+    document.getElementById('dishModalImg').alt = info.title;
+    document.getElementById('dishModalEyebrow').textContent = info.eyebrow;
+    document.getElementById('dishModalTitle').textContent = info.title;
+    document.getElementById('dishModalDesc').textContent = info.desc;
+    var list = document.getElementById('dishModalList');
+    list.innerHTML = '';
+    info.items.forEach(function (t) {
+      var li = document.createElement('li');
+      li.textContent = t;
+      list.appendChild(li);
+    });
+    dishModal.classList.add('open');
+  }
+  function closeDishModal() {
+    dishModal.classList.remove('open');
+  }
+  document.getElementById('infoBtn').addEventListener('click', openDishModal);
+  document.getElementById('dishModalClose').addEventListener('click', closeDishModal);
+  document.getElementById('dishModalBackdrop').addEventListener('click', closeDishModal);
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function(){});

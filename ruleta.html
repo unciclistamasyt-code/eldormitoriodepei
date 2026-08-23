@@ -69,10 +69,24 @@
     overflow: hidden;
   }
 
-  .seg-label {
+  .seg-inner {
     position: absolute;
     top: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .seg-thumb {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(10,10,12,0.55);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  }
+  .seg-label {
     font-size: 12px;
     color: var(--bg);
     font-weight: 600;
@@ -80,6 +94,7 @@
     max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: center;
   }
 
   .hub {
@@ -191,6 +206,7 @@
       <div class="tab" data-mode="comer">comer</div>
       <div class="tab" data-mode="sino">sí / no</div>
       <div class="tab" data-mode="hacer">hacer</div>
+      <div class="tab" data-mode="menu">menú</div>
     </div>
 
     <div class="wheelZone fade-in">
@@ -225,6 +241,15 @@ const DEFAULTS = {
 };
 const COLORS = ['#e8e6df', '#c9c7c0', '#aeada7', '#8f8e89'];
 
+// Menú "Mi Casa" — lista fija ligada a menu.html, con thumbnail e id de cada plato
+// para poder navegar directo a su slide al caer la ruleta.
+const MENU_ITEMS = [
+  { id: 'fettuccine', label: 'Fettuccine prosciutto & burrata', accent: '#d99a5b', img: 'img/fettuccine-poster.jpg' },
+  { id: 'pizza', label: 'Pizza pesto prosciutto & burrata', accent: '#c97b5a', img: 'img/pizza-poster.jpg' },
+  { id: 'ensalada', label: 'Ensalada con salmón', accent: '#8fae7c', img: 'img/ensalada-poster.jpg' },
+  { id: 'hamburguesa', label: 'Hamburguesa bowl', accent: '#d9b25b', img: 'img/hamburguesa-poster.jpg' }
+];
+
 let mode = localStorage.getItem('ruleta_mode') || 'comer';
 let currentRotation = 0;
 let spinning = false;
@@ -243,34 +268,40 @@ function saveList(m, arr) {
   localStorage.setItem('ruleta_' + m, JSON.stringify(arr));
 }
 
+function currentItems() {
+  if (mode === 'menu') return MENU_ITEMS;
+  return loadList(mode).map(label => ({ label }));
+}
+
 function setActiveTab() {
   document.querySelectorAll('.tab').forEach(t => {
     t.classList.toggle('active', t.dataset.mode === mode);
   });
+  document.getElementById('editOpen').style.display = mode === 'menu' ? 'none' : '';
 }
 
 function buildWheel() {
   const wheel = document.getElementById('wheel');
-  wheel.querySelectorAll('.seg-label').forEach(n => n.remove());
+  wheel.querySelectorAll(':scope > div:not(.hub)').forEach(n => n.remove());
   wheel.style.transition = 'none';
   wheel.style.transform = 'rotate(0deg)';
   currentRotation = 0;
   void wheel.offsetWidth;
   wheel.style.transition = '';
 
-  const list = loadList(mode);
-  const n = list.length;
+  const items = currentItems();
+  const n = items.length;
   const segAngle = 360 / n;
   const stops = [];
-  for (let i = 0; i < n; i++) {
-    const c = COLORS[i % COLORS.length];
+  items.forEach((item, i) => {
+    const c = item.accent || COLORS[i % COLORS.length];
     stops.push(`${c} ${i*segAngle}deg ${(i+1)*segAngle}deg`);
-  }
+  });
   wheel.style.background = `conic-gradient(${stops.join(',')})`;
 
   const rect = wheel.getBoundingClientRect();
   const radiusPx = rect.width * 0.29;
-  list.forEach((label, i) => {
+  items.forEach((item, i) => {
     const angle = segAngle * i + segAngle / 2;
     const wrap = document.createElement('div');
     wrap.style.position = 'absolute';
@@ -280,13 +311,25 @@ function buildWheel() {
     wrap.style.height = '0';
     wrap.style.transform = `rotate(${angle}deg) translate(${radiusPx}px, 0)`;
 
+    const inner = document.createElement('div');
+    inner.className = 'seg-inner';
+    inner.style.transform = `translate(-50%, -50%) rotate(${-angle}deg)`;
+
+    if (item.img) {
+      const img = document.createElement('img');
+      img.className = 'seg-thumb';
+      img.src = item.img;
+      img.alt = '';
+      inner.appendChild(img);
+    }
+
     const span = document.createElement('div');
     span.className = 'seg-label';
-    span.textContent = label;
-    span.style.transform = `translate(-50%, -50%) rotate(${-angle}deg)`;
-    span.style.fontSize = n > 8 ? '10px' : '12px';
+    span.textContent = item.label;
+    span.style.fontSize = n > 8 ? '10px' : (item.img ? '10.5px' : '12px');
+    inner.appendChild(span);
 
-    wrap.appendChild(span);
+    wrap.appendChild(inner);
     wheel.appendChild(wrap);
   });
 
@@ -296,8 +339,8 @@ function buildWheel() {
 
 function spin() {
   if (spinning) return;
-  const list = loadList(mode);
-  const n = list.length;
+  const items = currentItems();
+  const n = items.length;
   if (n < 2) return;
   spinning = true;
   document.getElementById('spinBtn').disabled = true;
@@ -316,10 +359,14 @@ function spin() {
   setTimeout(() => {
     spinning = false;
     document.getElementById('spinBtn').disabled = false;
+    const item = items[targetIndex];
     const result = document.getElementById('result');
-    result.textContent = list[targetIndex];
+    result.textContent = item.label;
     result.classList.add('show');
     if (navigator.vibrate) navigator.vibrate(15);
+    if (mode === 'menu' && item.id) {
+      setTimeout(() => { location.href = 'menu.html?d=' + item.id; }, 1100);
+    }
   }, 4300);
 }
 
