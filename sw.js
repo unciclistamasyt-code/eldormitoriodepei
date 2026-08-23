@@ -1,4 +1,4 @@
-const CACHE = 'app-v24';
+const CACHE = 'app-v25';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   './pomodoro.html',
   './ropa.html',
   './golf.html',
+  './menu.html',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',

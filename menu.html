@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>&nbsp;</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content=" " />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+<style>
+  html, body { overscroll-behavior: none; }
+  body { padding: 0 !important; }
+
+  .topbar-float {
+    position: fixed;
+    top: env(safe-area-inset-top);
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    z-index: 30;
+    pointer-events: none;
+  }
+  .topbar-float .back {
+    pointer-events: auto;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,10,12,0.35);
+    backdrop-filter: blur(6px);
+    border-radius: 50%;
+    opacity: 0.9;
+  }
+  .topbar-float .back svg { width: 18px; height: 18px; }
+  .brandmark {
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(236,238,237,0.65);
+    font-weight: 600;
+  }
+
+  .rail {
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .rail::-webkit-scrollbar { display: none; }
+
+  .slide {
+    position: relative;
+    flex: 0 0 100vw;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .slide-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+  .slide-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6,6,8,0.15) 0%, rgba(6,6,8,0.15) 40%, rgba(6,6,8,0.92) 100%);
+  }
+
+  .slide-art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    filter: drop-shadow(0 20px 60px rgba(0,0,0,0.5));
+  }
+  .slide-art svg { width: min(78vw, 380px); height: auto; }
+
+  .kicker-row {
+    position: absolute;
+    top: env(safe-area-inset-top);
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    z-index: 5;
+  }
+  .kicker-row .count {
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: rgba(236,238,237,0.5);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .slide-body {
+    padding: 0 26px calc(env(safe-area-inset-bottom) + 34px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slide-accent, #d8a568);
+    font-weight: 600;
+  }
+
+  .dish-title {
+    font-size: clamp(34px, 10vw, 52px);
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .dish-title em {
+    display: block;
+    font-style: italic;
+    font-weight: 500;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--slide-accent, #d8a568);
+    font-size: 0.72em;
+    margin-top: 2px;
+  }
+
+  .dish-desc {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: rgba(236,238,237,0.8);
+    max-width: 34ch;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .chip {
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 7px 11px;
+    border: 1px solid rgba(236,238,237,0.22);
+    border-radius: 100px;
+    color: rgba(236,238,237,0.85);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .dots {
+    position: absolute;
+    bottom: calc(env(safe-area-inset-bottom) + 14px);
+    right: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 5;
+  }
+  .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(236,238,237,0.28);
+    transition: background 0.2s ease, height 0.2s ease;
+  }
+  .dot.active {
+    background: var(--slide-accent, #d8a568);
+    height: 16px;
+    border-radius: 3px;
+  }
+
+  .swipe-hint {
+    position: absolute;
+    bottom: calc(env(safe-area-inset-bottom) + 34px);
+    left: 26px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(236,238,237,0.55);
+    z-index: 5;
+    animation: hintPulse 1.8s ease-in-out infinite;
+  }
+  .swipe-hint svg { width: 13px; height: 13px; }
+  @keyframes hintPulse {
+    0%, 100% { opacity: 0.35; transform: translateX(0); }
+    50% { opacity: 0.85; transform: translateX(4px); }
+  }
+  .slide:not(:first-child) .swipe-hint { display: none; }
+</style>
+</head>
+<body>
+
+<div class="topbar-float">
+  <a class="back" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#eceeed" stroke-width="1.8"><path d="M15 5 L8 12 L15 19"/></svg>
+  </a>
+  <div class="brandmark">Mi Casa · Menú</div>
+  <div style="width:34px"></div>
+</div>
+
+<div class="rail" id="rail">
+
+  <!-- 1: Fettuccine Prosciutto y Burrata -->
+  <section class="slide" style="--slide-accent:#d99a5b;">
+    <div class="slide-bg" style="background: radial-gradient(120% 90% at 50% 0%, #3a2716 0%, #1c130b 55%, #0a0a0c 100%);"></div>
+    <div class="slide-art">
+      <svg viewBox="0 0 200 200" fill="none" stroke="#eceeed" stroke-width="1.3">
+        <ellipse cx="100" cy="150" rx="72" ry="14" opacity="0.5"/>
+        <path d="M35 140 Q30 90 55 70 Q40 55 50 35" opacity="0.7"/>
+        <path d="M50 142 Q45 100 70 78 Q58 60 66 40" opacity="0.7"/>
+        <path d="M68 145 Q66 105 92 82 Q82 62 90 42" opacity="0.7"/>
+        <path d="M90 147 Q90 108 112 84 Q104 64 112 44" opacity="0.7"/>
+        <path d="M112 146 Q114 106 138 80 Q128 60 136 40" opacity="0.7"/>
+        <path d="M132 144 Q136 100 158 74 Q148 56 154 36" opacity="0.7"/>
+        <circle cx="100" cy="118" r="16" opacity="0.9"/>
+        <circle cx="78" cy="130" r="6" opacity="0.6"/>
+        <circle cx="122" cy="128" r="5" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="kicker-row"><span class="count">01 / 04</span></div>
+    <div class="swipe-hint">
+      desliza para ver el menú
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6 L16 12 L9 18"/></svg>
+    </div>
+    <div class="slide-body">
+      <span class="eyebrow">Pasta fresca</span>
+      <h1 class="dish-title">Fettuccine<em>prosciutto &amp; burrata</em></h1>
+      <p class="dish-desc">Cinta de pasta fresca en mantequilla y salvia, prosciutto curado y burrata cremosa deshecha al momento.</p>
+      <div class="chips">
+        <span class="chip">Fettuccine fresco</span>
+        <span class="chip">Prosciutto</span>
+        <span class="chip">Burrata</span>
+        <span class="chip">Mantequilla &amp; salvia</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2: Pizza Pesto Prosciutto y Burrata -->
+  <section class="slide" style="--slide-accent:#c97b5a;">
+    <div class="slide-bg" style="background: radial-gradient(120% 90% at 50% 0%, #3d2013 0%, #1d0f0a 55%, #0a0a0c 100%);"></div>
+    <div class="slide-art">
+      <svg viewBox="0 0 200 200" fill="none" stroke="#eceeed" stroke-width="1.3">
+        <circle cx="100" cy="100" r="70" opacity="0.85"/>
+        <circle cx="100" cy="100" r="58" stroke-dasharray="2 5" opacity="0.4"/>
+        <path d="M100 30 L100 170 M30 100 L170 100 M50 50 L150 150 M150 50 L50 150" opacity="0.25"/>
+        <circle cx="72" cy="78" r="5" opacity="0.7"/>
+        <circle cx="128" cy="70" r="4" opacity="0.7"/>
+        <circle cx="110" cy="120" r="5.5" opacity="0.7"/>
+        <circle cx="70" cy="128" r="4" opacity="0.7"/>
+        <circle cx="135" cy="112" r="4.5" opacity="0.7"/>
+        <circle cx="95" cy="95" r="3" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="kicker-row"><span class="count">02 / 04</span></div>
+    <div class="slide-body">
+      <span class="eyebrow">Horno de piedra</span>
+      <h1 class="dish-title">Pizza pesto<em>prosciutto &amp; burrata</em></h1>
+      <p class="dish-desc">Base de pesto genovese, prosciutto curado y burrata fresca sobre masa de fermentación lenta.</p>
+      <div class="chips">
+        <span class="chip">Masa madre</span>
+        <span class="chip">Pesto genovese</span>
+        <span class="chip">Prosciutto</span>
+        <span class="chip">Burrata</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3: Ensalada con Salmón -->
+  <section class="slide" style="--slide-accent:#8fae7c;">
+    <div class="slide-bg" style="background: radial-gradient(120% 90% at 50% 0%, #1f2e1a 0%, #14200f 55%, #0a0a0c 100%);"></div>
+    <div class="slide-art">
+      <svg viewBox="0 0 200 200" fill="none" stroke="#eceeed" stroke-width="1.3">
+        <ellipse cx="100" cy="118" rx="75" ry="45" opacity="0.5"/>
+        <path d="M40 108 Q100 78 160 108" opacity="0.7"/>
+        <path d="M50 122 Q100 96 150 122" opacity="0.6"/>
+        <path d="M62 96 Q70 84 82 90" opacity="0.6"/>
+        <path d="M118 92 Q128 82 140 88" opacity="0.6"/>
+        <rect x="82" y="102" width="38" height="22" rx="6" opacity="0.85"/>
+        <path d="M82 108 L120 108 M82 116 L120 116" opacity="0.5"/>
+        <circle cx="65" cy="132" r="4" opacity="0.6"/>
+        <circle cx="138" cy="130" r="4" opacity="0.6"/>
+        <circle cx="100" cy="140" r="3.5" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="kicker-row"><span class="count">03 / 04</span></div>
+    <div class="slide-body">
+      <span class="eyebrow">Fresco &amp; ligero</span>
+      <h1 class="dish-title">Ensalada<em>con salmón</em></h1>
+      <p class="dish-desc">Mix de hojas verdes, salmón a la plancha, vegetales frescos y una vinagreta cítrica suave.</p>
+      <div class="chips">
+        <span class="chip">Salmón a la plancha</span>
+        <span class="chip">Hojas verdes</span>
+        <span class="chip">Vinagreta cítrica</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4: Hamburguesa Bowl -->
+  <section class="slide" style="--slide-accent:#d9b25b;">
+    <div class="slide-bg" style="background: radial-gradient(120% 90% at 50% 0%, #362512 0%, #1c130a 55%, #0a0a0c 100%);"></div>
+    <div class="slide-art">
+      <svg viewBox="0 0 200 200" fill="none" stroke="#eceeed" stroke-width="1.3">
+        <ellipse cx="100" cy="150" rx="66" ry="16" opacity="0.5"/>
+        <path d="M40 130 Q40 60 100 60 Q160 60 160 130 Z" opacity="0.6"/>
+        <path d="M46 120 Q100 108 154 120" opacity="0.6"/>
+        <path d="M50 106 Q100 96 150 106" opacity="0.6"/>
+        <ellipse cx="100" cy="96" rx="42" ry="10" opacity="0.7"/>
+        <path d="M62 92 q4 -6 8 0 M78 92 q4 -6 8 0 M94 92 q4 -6 8 0 M110 92 q4 -6 8 0 M126 92 q4 -6 8 0" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="kicker-row"><span class="count">04 / 04</span></div>
+    <div class="slide-body">
+      <span class="eyebrow">Bowl de la casa</span>
+      <h1 class="dish-title">Hamburguesa<em>bowl</em></h1>
+      <p class="dish-desc">Todo el sabor de la hamburguesa de la casa, sin pan: carne, vegetales frescos y salsa de la casa en bowl.</p>
+      <div class="chips">
+        <span class="chip">Carne de la casa</span>
+        <span class="chip">Vegetales frescos</span>
+        <span class="chip">Salsa de la casa</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+
+<script>
+  var rail = document.getElementById('rail');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dotsWrap = document.getElementById('dots');
+
+  slides.forEach(function(_, i) {
+    var d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsWrap.appendChild(d);
+  });
+  var dotEls = Array.prototype.slice.call(dotsWrap.children);
+
+  var ticking = false;
+  rail.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var idx = Math.round(rail.scrollLeft / rail.clientWidth);
+      dotEls.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+      ticking = false;
+    });
+  }, { passive: true });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+</script>
+
+</body>
+</html>
