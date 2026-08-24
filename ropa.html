@@ -29,7 +29,7 @@
 <style>
   .tabs {
     display: flex;
-    gap: 22px;
+    gap: 14px;
     justify-content: center;
     margin-top: 4px;
     margin-bottom: 20px;
@@ -440,6 +440,50 @@
     min-height: 14px;
     margin: -4px 0 12px;
   }
+
+  .probadorResult {
+    margin: 18px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .probadorCard {
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .probadorCardTitle {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .probadorCardBody {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .probadorThumbs {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .probadorThumbs img {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .probadorResetBtn {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+  }
 </style>
 </head>
 <body>
@@ -455,6 +499,7 @@
       <div class="tab active" data-view="combinar">combinar</div>
       <div class="tab" data-view="closet">clóset</div>
       <div class="tab" data-view="agregar">agregar</div>
+      <div class="tab" data-view="probador">probador</div>
     </div>
 
     <!-- COMBINAR -->
@@ -574,6 +619,35 @@
       </div>
 
       <button class="saveBtn" id="saveItemBtn" disabled>guardar prenda</button>
+    </div>
+
+    <!-- PROBADOR -->
+    <div class="view" id="view-probador">
+      <div class="photoHint" id="probadorIntro">toma o sube la foto de una prenda que estés viendo en una tienda — la app la compara con tu clóset (nunca se guarda como tuya, es solo una consulta)</div>
+
+      <div class="photoPicker" id="probadorPhotoPicker">
+        <span id="probadorPhotoPickerLabel">toca para elegir foto</span>
+        <img id="probadorPhotoPreview" style="display:none;" />
+        <div class="photoProcessing" id="probadorPhotoProcessing"><div class="spinner"></div><span>quitando el fondo…</span></div>
+        <input type="file" accept="image/*" id="probadorPhotoInput" />
+      </div>
+      <div class="photoHint" id="probadorAiErrorMsg" style="display:none; color:#c76b5f;"></div>
+
+      <div class="fieldGroup">
+        <div class="fieldLabel">categoría</div>
+        <div class="chipRow" id="probadorCategoryChips"></div>
+      </div>
+
+      <div class="fieldGroup">
+        <div class="fieldLabel">para qué ocasión (puedes elegir varias)</div>
+        <div class="chipRow" id="probadorTagChips"></div>
+      </div>
+
+      <button class="saveBtn" id="probadorAnalyzeBtn" disabled>ver opinión</button>
+
+      <div class="probadorResult" id="probadorResult" style="display:none;"></div>
+
+      <button class="saveBtn probadorResetBtn" id="probadorResetBtn" style="display:none;">probar otra prenda</button>
     </div>
   </div>
 
@@ -796,6 +870,119 @@ function colorCompat(hexA, hexB) {
   if (diff < 40) return 1.05;
   if (diff >= 150) return 1.15;
   return 0.7;
+}
+
+/* ---------------- Probador (25 de agosto de 2026) ----------------
+   Además de decidir qué tan bien combinan dos colores (colorCompat, arriba,
+   usado para armar outfits), el probador necesita otra pregunta distinta:
+   qué tan PARECIDOS son dos colores entre sí — para poder avisar "ya tienes
+   algo así" en vez de "esto combina con lo que tienes". Es una distancia,
+   no una compatibilidad: negro y blanco combinan muy bien (colorCompat alto)
+   pero no se parecen en nada (colorSimilarity bajo). */
+function colorSimilarity(hexA, hexB) {
+  const a = hexToHsl(hexA), b = hexToHsl(hexB);
+  if (!a || !b) return 0;
+  let hueDiff = Math.abs(a.h - b.h);
+  if (hueDiff > 180) hueDiff = 360 - hueDiff;
+  const hueTerm = hueDiff / 180;
+  const satTerm = Math.abs(a.s - b.s);
+  const lightTerm = Math.abs(a.l - b.l);
+  const dist = hueTerm * 0.5 + satTerm * 0.25 + lightTerm * 0.25;
+  return Math.max(0, 1 - dist);
+}
+
+/* Nombre aproximado en español, solo para que los mensajes del probador se
+   lean naturales ("un mostaza", "un verde") en vez de mostrar un hex —
+   nunca se usa para decidir nada, solo para redactar. */
+function colorName(hex) {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return 'ese color';
+  if (isNeutralColor(hsl)) {
+    if (hsl.l < 0.16) return 'negro';
+    if (hsl.l > 0.88) return 'blanco';
+    return hsl.l < 0.5 ? 'gris oscuro' : 'gris claro';
+  }
+  const h = hsl.h;
+  if (h < 15 || h >= 345) return 'rojo';
+  if (h < 40) return hsl.l < 0.42 ? 'café' : 'naranja';
+  if (h < 65) return 'mostaza / dorado';
+  if (h < 90) return 'verde amarillento';
+  if (h < 150) return 'verde';
+  if (h < 195) return 'verde azulado';
+  if (h < 250) return 'azul';
+  if (h < 290) return 'morado';
+  return 'rosa';
+}
+
+/* Categorías donde tiene sentido buscar con qué combinar cada prenda nueva
+   (mismo criterio con el que se arma un outfit en Combinar). */
+const PROBADOR_PAIR_CATEGORIES = {
+  top: ['bottom', 'shoes', 'outerwear', 'accessory'],
+  bottom: ['top', 'shoes', 'outerwear', 'accessory'],
+  dress: ['shoes', 'outerwear', 'accessory'],
+  shoes: ['top', 'bottom', 'dress'],
+  outerwear: ['top', 'bottom', 'dress'],
+  accessory: ['top', 'bottom', 'dress']
+};
+const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map(c => [c.key, c.label]));
+
+/* Analiza una prenda candidata (foto tomada en tienda, nunca guardada en el
+   clóset) contra el clóset real del usuario. Devuelve un objeto con las 4
+   secciones que se muestran en pantalla — nunca inventa datos: si no hay
+   suficiente clóset para opinar sobre algo, lo dice honestamente. */
+function analyzeStoreItem(candidate, items) {
+  const sameCat = items.filter(i => i.category === candidate.category);
+
+  /* 1) ¿Ya tienes algo parecido? — mismo tipo de prenda y color muy similar. */
+  const duplicates = sameCat
+    .map(i => ({ item: i, sim: colorSimilarity(candidate.color, i.color) }))
+    .filter(x => x.sim >= 0.84)
+    .sort((a, b) => b.sim - a.sim)
+    .slice(0, 3);
+
+  /* 2) ¿Encaja con tu estilo? — mismo STYLE_PROFILE que ya usa Combinar. */
+  const styleWeight = styleWeightForItem({ tags: candidate.tags });
+  let styleMsg;
+  if (candidate.tags.length === 0) {
+    styleMsg = 'no elegiste ninguna ocasión, así que no puedo comparar esto con tu estilo.';
+  } else if (styleWeight >= 1.25) {
+    styleMsg = 'esto es justo el estilo que más te gusta — encaja muy bien con lo que ya sueles elegir.';
+  } else if (styleWeight >= 1.15) {
+    styleMsg = 'encaja bien con tu estilo, aunque no es lo que más se repite en tu clóset.';
+  } else {
+    styleMsg = 'es un estilo que casi no tienes representado todavía — no está mal, pero sería salir un poco de lo que sueles usar.';
+  }
+
+  /* 3) ¿Con qué de tu clóset combinaría? — mismo colorCompat que arma outfits. */
+  const pairCats = PROBADOR_PAIR_CATEGORIES[candidate.category] || [];
+  const candidates = items.filter(i => pairCats.includes(i.category));
+  const pairs = candidates
+    .map(i => {
+      const sharedTag = i.tags.some(t => candidate.tags.includes(t));
+      const score = colorCompat(candidate.color, i.color) * (sharedTag ? 1.1 : 1);
+      return { item: i, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+
+  /* 4) ¿El color le suma variedad a esa categoría, o ya tienes muchos así? */
+  const neutralCount = sameCat.filter(i => isNeutralColor(hexToHsl(i.color))).length;
+  const colorCount = sameCat.length - neutralCount;
+  const candidateIsNeutral = isNeutralColor(hexToHsl(candidate.color));
+  let colorMsg;
+  if (!sameCat.length) {
+    colorMsg = 'todavía no tienes ninguna prenda de esta categoría guardada, así que cualquier color te suma.';
+  } else if (candidateIsNeutral && neutralCount === 0) {
+    colorMsg = 'te hacía falta un básico neutro en esta categoría — buena opción para combinar con casi todo lo demás.';
+  } else if (candidateIsNeutral) {
+    colorMsg = 'ya tienes buenos neutros en esta categoría — funciona, pero si buscas que resalte más, prueba un color en vez de otro neutro.';
+  } else if (colorCount >= 2 && colorCount > neutralCount) {
+    colorMsg = 'en esta categoría ya tienes varias prendas de color y pocos neutros — si de verdad la quieres, tal vez te conviene buscar ese mismo estilo en negro, blanco o gris para que combine más fácil con el resto.';
+  } else {
+    colorMsg = 'le suma variedad de color a esta categoría sin que se sienta repetido.';
+  }
+
+  return { duplicates, styleMsg, pairs, colorMsg };
 }
 
 /* anchorColors: colores de las prendas ya elegidas en este mismo outfit (si
@@ -1355,6 +1542,194 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
 
   if (navigator.vibrate) navigator.vibrate(15);
   switchView('closet');
+});
+
+/* ---------------- Probador (tienda) ----------------
+   El usuario pidió (verbatim, 25 de agosto de 2026): "me gustaria tener
+   otro tab o lugar donde pueda tomar una foto de ropa en tienda y me de
+   recomendaciones de que opina... esto puede salir con tal ropa, no ya
+   tienes esa prenda o esa se parece a tal, tal vez si buscas una de ese
+   estilo pero tal color".
+
+   Mismo flujo de foto que Agregar (quitar fondo, recortar, sacar color
+   dominante) pero la prenda NUNCA se guarda en el clóset — es solo una
+   consulta puntual. El usuario indica categoría y ocasión con los mismos
+   chips de siempre (no hay IA de visión real corriendo en la app, así que
+   no se intenta adivinar la categoría sola — se eligió honestidad y
+   rapidez sobre adivinar y fallar seguido). El análisis (analyzeStoreItem,
+   arriba) es 100% con lo que la app ya sabe de tu clóset y tu estilo, sin
+   ninguna llamada a un servicio externo ni costo. */
+let probadorCategory = null;
+let probadorTags = new Set();
+let probadorPhotoDataUrl = null;
+let probadorColor = '#9a9a9a';
+
+CATEGORIES.forEach(c => {
+  const chip = document.createElement('div');
+  chip.className = 'chip';
+  chip.textContent = c.label;
+  chip.addEventListener('click', () => {
+    probadorCategory = c.key;
+    document.querySelectorAll('#probadorCategoryChips .chip').forEach(el => el.classList.remove('selected'));
+    chip.classList.add('selected');
+    validateProbadorForm();
+  });
+  document.getElementById('probadorCategoryChips').appendChild(chip);
+});
+
+TAGS.forEach(t => {
+  const chip = document.createElement('div');
+  chip.className = 'chip';
+  chip.textContent = t.label;
+  chip.addEventListener('click', () => {
+    if (probadorTags.has(t.key)) {
+      probadorTags.delete(t.key);
+      chip.classList.remove('selected');
+    } else {
+      probadorTags.add(t.key);
+      chip.classList.add('selected');
+    }
+    validateProbadorForm();
+  });
+  document.getElementById('probadorTagChips').appendChild(chip);
+});
+
+document.getElementById('probadorPhotoInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = new Image();
+    img.onload = async () => {
+      const maxDim = 800;
+      let w = img.width, h = img.height;
+      if (w > h && w > maxDim) { h = h * (maxDim / w); w = maxDim; }
+      else if (h > maxDim) { w = w * (maxDim / h); h = maxDim; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+      const processingEl = document.getElementById('probadorPhotoProcessing');
+      const errEl = document.getElementById('probadorAiErrorMsg');
+      errEl.style.display = 'none';
+      processingEl.classList.add('show');
+      document.getElementById('probadorAnalyzeBtn').disabled = true;
+
+      let finalCanvas;
+      try {
+        finalCanvas = await removeBackgroundAI(canvas);
+      } catch (err) {
+        console.warn('AI background removal no disponible, usando método simple:', err);
+        errEl.textContent = 'IA no disponible (' + (err && err.message ? err.message : err) + ') — se usó el método simple';
+        errEl.style.display = 'block';
+        removeBackground(canvas);
+        finalCanvas = canvas;
+      }
+
+      processingEl.classList.remove('show');
+      const cropped = cropToContent(finalCanvas);
+      probadorPhotoDataUrl = cropped.toDataURL('image/png');
+      probadorColor = getDominantColor(cropped);
+      document.getElementById('probadorPhotoPreview').src = probadorPhotoDataUrl;
+      document.getElementById('probadorPhotoPreview').style.display = 'block';
+      document.getElementById('probadorPhotoPickerLabel').style.display = 'none';
+      validateProbadorForm();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+function validateProbadorForm() {
+  const ok = probadorPhotoDataUrl && probadorCategory && probadorTags.size > 0;
+  document.getElementById('probadorAnalyzeBtn').disabled = !ok;
+}
+
+function probadorCard(title, bodyHtml) {
+  const card = document.createElement('div');
+  card.className = 'probadorCard';
+  const t = document.createElement('div');
+  t.className = 'probadorCardTitle';
+  t.textContent = title;
+  const b = document.createElement('div');
+  b.className = 'probadorCardBody';
+  b.innerHTML = bodyHtml;
+  card.appendChild(t);
+  card.appendChild(b);
+  return card;
+}
+
+function probadorThumbRow(matches, describe) {
+  const row = document.createElement('div');
+  row.className = 'probadorThumbs';
+  matches.forEach(m => {
+    const img = document.createElement('img');
+    img.src = m.item.photo;
+    img.alt = describe(m);
+    img.title = describe(m);
+    img.addEventListener('click', () => openLightbox(m.item.photo));
+    row.appendChild(img);
+  });
+  return row;
+}
+
+async function runProbadorAnalysis() {
+  const items = await dbGetAll();
+  const candidate = {
+    category: probadorCategory,
+    tags: Array.from(probadorTags),
+    color: probadorColor
+  };
+  const result = analyzeStoreItem(candidate, items);
+  const container = document.getElementById('probadorResult');
+  container.innerHTML = '';
+
+  if (result.duplicates.length) {
+    const card = probadorCard(
+      'ya tienes algo parecido',
+      'el color se parece mucho a ' + (result.duplicates.length === 1 ? 'esta prenda que ya tienes' : 'estas prendas que ya tienes') + ' — tócala para verla mejor antes de decidir si de verdad te hace falta otra.'
+    );
+    card.appendChild(probadorThumbRow(result.duplicates, m => 'tu ' + (CATEGORY_LABEL[m.item.category] || m.item.category)));
+    container.appendChild(card);
+  } else {
+    container.appendChild(probadorCard('ya tienes algo parecido', 'no encontré nada tan parecido en tu clóset en esta categoría — sería una prenda nueva de verdad, no una repetida.'));
+  }
+
+  container.appendChild(probadorCard('tu estilo', result.styleMsg));
+
+  if (result.pairs.length) {
+    const card = probadorCard('con qué podría combinar', 'esto podría verse bien junto con lo que ya tienes en tu clóset:');
+    card.appendChild(probadorThumbRow(result.pairs, m => 'tu ' + (CATEGORY_LABEL[m.item.category] || m.item.category)));
+    container.appendChild(card);
+  } else {
+    container.appendChild(probadorCard('con qué podría combinar', 'todavía no tengo suficientes prendas guardadas en las categorías con las que esto combinaría, así que no puedo sugerir una pareja todavía.'));
+  }
+
+  container.appendChild(probadorCard('sobre el color (' + colorName(probadorColor) + ')', result.colorMsg));
+
+  container.style.display = 'flex';
+  document.getElementById('probadorAnalyzeBtn').style.display = 'none';
+  document.getElementById('probadorResetBtn').style.display = 'block';
+  if (navigator.vibrate) navigator.vibrate(15);
+}
+
+document.getElementById('probadorAnalyzeBtn').addEventListener('click', runProbadorAnalysis);
+
+document.getElementById('probadorResetBtn').addEventListener('click', () => {
+  probadorCategory = null;
+  probadorTags = new Set();
+  probadorPhotoDataUrl = null;
+  probadorColor = '#9a9a9a';
+  document.querySelectorAll('#probadorCategoryChips .chip, #probadorTagChips .chip').forEach(el => el.classList.remove('selected'));
+  document.getElementById('probadorPhotoPreview').style.display = 'none';
+  document.getElementById('probadorPhotoPickerLabel').style.display = 'block';
+  document.getElementById('probadorPhotoInput').value = '';
+  document.getElementById('probadorAiErrorMsg').style.display = 'none';
+  document.getElementById('probadorResult').style.display = 'none';
+  document.getElementById('probadorResult').innerHTML = '';
+  document.getElementById('probadorAnalyzeBtn').style.display = 'block';
+  document.getElementById('probadorResetBtn').style.display = 'none';
+  validateProbadorForm();
 });
 
 /* ---------------- Clóset ---------------- */
