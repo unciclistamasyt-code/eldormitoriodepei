@@ -563,6 +563,11 @@
         <div class="chipRow" id="bottomLengthChips"></div>
       </div>
 
+      <div class="fieldGroup" id="dressWeightGroup" style="display:none;">
+        <div class="fieldLabel">grosor</div>
+        <div class="chipRow" id="dressWeightChips"></div>
+      </div>
+
       <div class="fieldGroup">
         <div class="fieldLabel">para qué ocasión (puedes elegir varias)</div>
         <div class="chipRow" id="tagChips"></div>
@@ -805,6 +810,7 @@ let selectedCategory = null;
 let selectedTags = new Set();
 let selectedSleeve = 'corta';
 let selectedBottomLength = 'largo';
+let selectedDressWeight = 'ligero';
 let pendingPhotoDataUrl = null;
 let pendingPhotoColor = '#9a9a9a';
 
@@ -843,6 +849,25 @@ BOTTOM_LENGTH_OPTIONS.forEach(s => {
   document.getElementById('bottomLengthChips').appendChild(chip);
 });
 
+/* Grosor del vestido — mismo espíritu que manga/largo: para poder filtrar
+   por clima (un vestido ligero para calor, uno abrigado para frío) sin
+   tener que adivinar a partir de la foto. */
+const DRESS_WEIGHT_OPTIONS = [
+  { key: 'ligero', label: 'ligero' },
+  { key: 'abrigado', label: 'abrigado' }
+];
+DRESS_WEIGHT_OPTIONS.forEach(s => {
+  const chip = document.createElement('div');
+  chip.className = 'chip' + (s.key === selectedDressWeight ? ' selected' : '');
+  chip.textContent = s.label;
+  chip.addEventListener('click', () => {
+    selectedDressWeight = s.key;
+    document.querySelectorAll('#dressWeightChips .chip').forEach(el => el.classList.remove('selected'));
+    chip.classList.add('selected');
+  });
+  document.getElementById('dressWeightChips').appendChild(chip);
+});
+
 CATEGORIES.forEach(c => {
   const chip = document.createElement('div');
   chip.className = 'chip';
@@ -853,6 +878,7 @@ CATEGORIES.forEach(c => {
     chip.classList.add('selected');
     document.getElementById('sleeveGroup').style.display = (c.key === 'top') ? 'block' : 'none';
     document.getElementById('bottomLengthGroup').style.display = (c.key === 'bottom') ? 'block' : 'none';
+    document.getElementById('dressWeightGroup').style.display = (c.key === 'dress') ? 'block' : 'none';
     validateForm();
   });
   document.getElementById('categoryChips').appendChild(chip);
@@ -1140,6 +1166,7 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
     color: pendingPhotoColor,
     sleeve: selectedCategory === 'top' ? selectedSleeve : null,
     length: selectedCategory === 'bottom' ? selectedBottomLength : null,
+    weight: selectedCategory === 'dress' ? selectedDressWeight : null,
     createdAt: Date.now()
   };
   await dbAdd(item);
@@ -1150,11 +1177,14 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
   selectedTags = new Set();
   selectedSleeve = 'corta';
   selectedBottomLength = 'largo';
+  selectedDressWeight = 'ligero';
   document.querySelectorAll('.chip').forEach(el => el.classList.remove('selected'));
   document.querySelector('#sleeveChips .chip').classList.add('selected');
   document.querySelector('#bottomLengthChips .chip:last-child').classList.add('selected');
+  document.querySelector('#dressWeightChips .chip').classList.add('selected');
   document.getElementById('sleeveGroup').style.display = 'none';
   document.getElementById('bottomLengthGroup').style.display = 'none';
+  document.getElementById('dressWeightGroup').style.display = 'none';
   document.getElementById('photoPreview').style.display = 'none';
   document.getElementById('photoPickerLabel').style.display = 'block';
   document.getElementById('photoInput').value = '';
@@ -1215,6 +1245,8 @@ async function renderCloset() {
       attrHtml = `<div class="sleeveBadge">${item.sleeve === 'larga' ? 'manga larga' : 'manga corta'}</div>`;
     } else if (item.category === 'bottom') {
       attrHtml = `<div class="sleeveBadge">${item.length === 'corto' ? 'short' : 'pantalón'}</div>`;
+    } else if (item.category === 'dress') {
+      attrHtml = `<div class="sleeveBadge">${item.weight === 'abrigado' ? 'abrigado' : 'ligero'}</div>`;
     }
     el.innerHTML = `<img src="${item.photo}" /><div class="del">×</div>${attrHtml}`;
     el.querySelector('.del').addEventListener('click', async (e) => {
@@ -1233,6 +1265,8 @@ async function renderCloset() {
           item.sleeve = item.sleeve === 'larga' ? 'corta' : 'larga';
         } else if (item.category === 'bottom') {
           item.length = item.length === 'corto' ? 'largo' : 'corto';
+        } else if (item.category === 'dress') {
+          item.weight = item.weight === 'abrigado' ? 'ligero' : 'abrigado';
         }
         await dbAdd(item);
         renderCloset();
@@ -1313,7 +1347,7 @@ document.getElementById('importClosetInput').addEventListener('change', async (e
 /* ---------------- Combinar ---------------- */
 function pickForCategory(items, category, tags, excludeId) {
   let inCat = items.filter(i => i.category === category);
-  if (!inCat.length) return null;
+  if (!inCat.length) return { item: null, weatherMismatch: false };
 
   /* Cuando el usuario pide "cambia el top" (u otra prenda) en la
      conversación, se descarta la que ya tenía puesta para que el nuevo
@@ -1323,27 +1357,39 @@ function pickForCategory(items, category, tags, excludeId) {
     if (withoutExcluded.length) inCat = withoutExcluded;
   }
 
-  /* Si sabemos el clima de hoy, entre las prendas que ya calzan la
-     categoría se prefieren las de manga/largo adecuados (sin descartar
-     el resto si no hay ninguna así). */
+  /* Si sabemos el clima de hoy, la prenda tiene que calzar con manga/largo/
+     grosor apropiado — si no hay ninguna prenda así guardada en esa
+     categoría, se prefiere NO mostrar nada (weatherMismatch: true, el
+     llamador avisa que falta esa prenda) en vez de poner algo que no
+     corresponde al clima de hoy. */
   if (weatherInfo && category === 'top') {
     const wantSleeve = weatherInfo.isCold ? 'larga' : (weatherInfo.isHot ? 'corta' : null);
     if (wantSleeve) {
       const bySleeve = inCat.filter(i => (i.sleeve || 'corta') === wantSleeve);
-      if (bySleeve.length) inCat = bySleeve;
+      if (!bySleeve.length) return { item: null, weatherMismatch: true };
+      inCat = bySleeve;
     }
   }
   if (weatherInfo && category === 'bottom') {
     const wantLength = weatherInfo.isHot ? 'corto' : (weatherInfo.isCold ? 'largo' : null);
     if (wantLength) {
       const byLength = inCat.filter(i => (i.length || 'largo') === wantLength);
-      if (byLength.length) inCat = byLength;
+      if (!byLength.length) return { item: null, weatherMismatch: true };
+      inCat = byLength;
+    }
+  }
+  if (weatherInfo && category === 'dress') {
+    const wantWeight = weatherInfo.isCold ? 'abrigado' : (weatherInfo.isHot ? 'ligero' : null);
+    if (wantWeight) {
+      const byWeight = inCat.filter(i => (i.weight || 'ligero') === wantWeight);
+      if (!byWeight.length) return { item: null, weatherMismatch: true };
+      inCat = byWeight;
     }
   }
 
   const matching = inCat.filter(i => i.tags.some(t => tags.includes(t)));
   const pool = matching.length ? matching : inCat;
-  return pool[Math.floor(Math.random() * pool.length)];
+  return { item: pool[Math.floor(Math.random() * pool.length)], weatherMismatch: false };
 }
 
 let lastGuessedTags = null;
@@ -1562,7 +1608,22 @@ function joinList(arr) {
 
 /* Arma la frase que explica por qué se eligió esa combinación: qué piezas
    entraron, y si el clima de hoy influyó en la manga/largo/abrigo. */
-function describeOutfit(pieces, tags) {
+/* Traduce las categorías que faltaron por no calzar con el clima de hoy
+   (ver weatherMismatch en pickForCategory) a una frase honesta, en vez de
+   mostrar una prenda que no corresponde. */
+function describeMissingForWeather(gaps) {
+  if (!gaps.length || !weatherInfo) return '';
+  const isCold = weatherInfo.isCold;
+  const labels = gaps.map(function (g) {
+    if (g === 'top') return isCold ? 'un top de manga larga' : 'un top de manga corta';
+    if (g === 'bottom') return isCold ? 'un pantalón' : 'un short';
+    if (g === 'vestido') return isCold ? 'un vestido abrigado' : 'un vestido ligero';
+    return g;
+  });
+  return joinList(labels);
+}
+
+function describeOutfit(pieces, tags, weatherGaps) {
   const byLabel = Object.fromEntries(pieces);
   const parts = [];
   if (byLabel['vestido']) {
@@ -1587,7 +1648,7 @@ function describeOutfit(pieces, tags) {
       if (byLabel['abrigo']) bits.push('abrigo');
       sentence += bits.length
         ? ` Hoy hace frío (${range}), así que preferí ${joinList(bits)}.`
-        : ` Hoy hace frío (${range}), aunque esta combinación no fue la más abrigadora.`;
+        : ` Hoy hace frío (${range}).`;
     } else if (weatherInfo.isHot) {
       const bits = [];
       if (byLabel['top'] && byLabel['top'].sleeve !== 'larga') bits.push('manga corta');
@@ -1596,6 +1657,11 @@ function describeOutfit(pieces, tags) {
         ? ` Hoy hace calor (${range}), así que preferí ${joinList(bits)} y evité el abrigo.`
         : ` Hoy hace calor (${range}).`;
     }
+  }
+
+  const missing = describeMissingForWeather(weatherGaps || []);
+  if (missing) {
+    sentence += ` No te sugerí ${missing} porque no tengo ninguna guardada que calce con el clima de hoy — agrégala y la próxima vez la puedo usar.`;
   }
   return sentence;
 }
@@ -1708,30 +1774,39 @@ async function buildOutfit() {
   document.getElementById('guessTag').textContent = tags.join(' · ');
 
   const pieces = [];
-  const dress = Math.random() < 0.35 ? pickForCategory(items, 'dress', tags, chatState.excludedIds.vestido) : null;
-  if (dress) {
-    pieces.push(['vestido', dress]);
-  } else {
-    const top = pickForCategory(items, 'top', tags, chatState.excludedIds.top);
-    const bottom = pickForCategory(items, 'bottom', tags, chatState.excludedIds.bottom);
-    if (top) pieces.push(['top', top]);
-    if (bottom) pieces.push(['bottom', bottom]);
-  }
-  const shoes = pickForCategory(items, 'shoes', tags, chatState.excludedIds.calzado);
-  if (shoes) pieces.push(['calzado', shoes]);
+  /* Etiquetas de lo que faltó por no calzar con el clima de hoy (para
+     avisar honesto en vez de mostrar algo que no corresponde). */
+  const weatherGaps = [];
 
-  /* Con frío casi siempre suma abrigo; con calor casi nunca — salvo que
-     el usuario haya pedido explícitamente con/sin abrigo en el chat. */
-  const abrigoChance = weatherInfo ? (weatherInfo.isCold ? 0.9 : (weatherInfo.isHot ? 0.05 : 0.5)) : 0.5;
+  const tryDress = Math.random() < 0.35;
+  const dressRes = tryDress ? pickForCategory(items, 'dress', tags, chatState.excludedIds.vestido) : { item: null, weatherMismatch: false };
+  if (dressRes.weatherMismatch) weatherGaps.push('vestido');
+  if (dressRes.item) {
+    pieces.push(['vestido', dressRes.item]);
+  } else {
+    const topRes = pickForCategory(items, 'top', tags, chatState.excludedIds.top);
+    const bottomRes = pickForCategory(items, 'bottom', tags, chatState.excludedIds.bottom);
+    if (topRes.weatherMismatch) weatherGaps.push('top');
+    if (bottomRes.weatherMismatch) weatherGaps.push('bottom');
+    if (topRes.item) pieces.push(['top', topRes.item]);
+    if (bottomRes.item) pieces.push(['bottom', bottomRes.item]);
+  }
+  const shoesRes = pickForCategory(items, 'shoes', tags, chatState.excludedIds.calzado);
+  if (shoesRes.item) pieces.push(['calzado', shoesRes.item]);
+
+  /* Con frío casi siempre suma abrigo; con calor nunca (no tiene sentido
+     sugerir abrigo con calor) — salvo que el usuario haya pedido
+     explícitamente con/sin abrigo en el chat. */
+  const abrigoChance = weatherInfo ? (weatherInfo.isCold ? 0.9 : (weatherInfo.isHot ? 0 : 0.5)) : 0.5;
   const wantAbrigo = chatState.forcedAbrigo !== null ? chatState.forcedAbrigo : Math.random() < abrigoChance;
   if (wantAbrigo) {
-    const outer = pickForCategory(items, 'outerwear', tags, chatState.excludedIds.abrigo);
-    if (outer) pieces.push(['abrigo', outer]);
+    const outerRes = pickForCategory(items, 'outerwear', tags, chatState.excludedIds.abrigo);
+    if (outerRes.item) pieces.push(['abrigo', outerRes.item]);
   }
   const wantAccesorio = chatState.forcedAccesorio !== null ? chatState.forcedAccesorio : Math.random() < 0.4;
   if (wantAccesorio) {
-    const acc = pickForCategory(items, 'accessory', tags, chatState.excludedIds.accesorio);
-    if (acc) pieces.push(['accesorio', acc]);
+    const accRes = pickForCategory(items, 'accessory', tags, chatState.excludedIds.accesorio);
+    if (accRes.item) pieces.push(['accesorio', accRes.item]);
   }
   chatState.excludedIds = {};
 
@@ -1754,7 +1829,10 @@ async function buildOutfit() {
 
   if (!pieces.length) {
     empty.style.display = 'flex';
-    empty.innerHTML = '<div>no hay suficientes prendas para esa combinación todavía</div>';
+    const missing = describeMissingForWeather(weatherGaps);
+    empty.innerHTML = missing
+      ? `<div>no tengo ${missing} guardada para el clima de hoy — agrega una y lo vuelvo a intentar</div>`
+      : '<div>no hay suficientes prendas para esa combinación todavía</div>';
     result.style.display = 'none';
     shuffleRow.style.display = 'none';
     return;
@@ -1805,7 +1883,7 @@ async function buildOutfit() {
   requestAnimationFrame(() => renderCallouts(pieces));
 
   const changePrefix = pendingChangeNotes.length ? 'Listo, ' + joinList(pendingChangeNotes) + '. ' : '';
-  const explanation = changePrefix + describeOutfit(pieces, tags);
+  const explanation = changePrefix + describeOutfit(pieces, tags, weatherGaps);
   pendingChangeNotes = [];
   addChatMessage('assistant', explanation);
 }
