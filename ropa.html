@@ -726,10 +726,92 @@ function styleWeightForItem(item) {
   return best;
 }
 
-function weightedPick(pool) {
+/* ---------------- Combinación por color (25 de agosto de 2026) ----------------
+   El usuario pidió que las sugerencias también tomen en cuenta el color, no
+   solo la ocasión. Cada prenda ya guarda un color dominante (el que se saca
+   automáticamente de la foto para dibujarla en el maniquí), así que no hace
+   falta pedirle al usuario que etiquete colores a mano — ya existe el dato,
+   solo faltaba usarlo para decidir.
+
+   La regla es la misma que cualquier persona usa al vestirse, sin inventar
+   nada específico del clóset del usuario:
+   - Un color neutro (negro, blanco, gris, beige, café, azul marino — poca
+     saturación, o muy oscuro/muy claro) casi siempre combina con cualquier
+     otra cosa.
+   - Neutro + color (por ejemplo, base negra con un acento de color) es la
+     combinación más segura de todas — y es, además, el patrón que más se
+     repitió en las 24 fotos reales del usuario (base negra + acento
+     mostaza/salvia/rojo), así que el peso más alto no es arbitrario.
+   - Dos colores no neutros juntos dependen de qué tan cerca o lejos están en
+     el círculo cromático: muy cerca (análogos) o casi opuestos
+     (complementarios) suelen verse bien; a media distancia es más probable
+     que choquen, así que se penaliza un poco.
+
+   Esto es un sesgo suave sobre lo que el usuario ya tiene guardado (igual que
+   STYLE_PROFILE arriba) — nunca bloquea una combinación, solo la hace menos
+   probable si el color choca. No se intentó ir más allá (por ejemplo,
+   reconocer estampados como animal print o floral, o "estilo de manga" como
+   firma) porque el clóset no guarda esos atributos de forma estructurada,
+   solo el color dominante — igual que se documentó para STYLE_PROFILE. */
+function hexToHsl(hex) {
+  if (!hex || typeof hex !== 'string') return null;
+  const m = hex.replace('#', '');
+  if (m.length !== 6) return null;
+  const r = parseInt(m.slice(0, 2), 16) / 255;
+  const g = parseInt(m.slice(2, 4), 16) / 255;
+  const b = parseInt(m.slice(4, 6), 16) / 255;
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) return null;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0;
+  const l = (max + min) / 2;
+  let s = 0;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h *= 60;
+  }
+  return { h, s, l };
+}
+
+function isNeutralColor(hsl) {
+  if (!hsl) return true;
+  return hsl.s < 0.15 || hsl.l < 0.12 || hsl.l > 0.92;
+}
+
+/* Devuelve un multiplicador de qué tan bien combinan dos colores (no una
+   probabilidad exacta, solo un sesgo relativo): 1 = neutral, sin datos. */
+function colorCompat(hexA, hexB) {
+  const a = hexToHsl(hexA), b = hexToHsl(hexB);
+  if (!a || !b) return 1;
+  const aNeutral = isNeutralColor(a), bNeutral = isNeutralColor(b);
+  if (aNeutral && bNeutral) return 1.15;
+  if (aNeutral || bNeutral) return 1.3;
+  let diff = Math.abs(a.h - b.h);
+  if (diff > 180) diff = 360 - diff;
+  if (diff < 40) return 1.05;
+  if (diff >= 150) return 1.15;
+  return 0.7;
+}
+
+/* anchorColors: colores de las prendas ya elegidas en este mismo outfit (si
+   las hay), para preferir una prenda que combine con lo que ya se escogió. */
+function colorWeightForItem(item, anchorColors) {
+  if (!anchorColors || !anchorColors.length || !item.color) return 1;
+  let total = 0;
+  for (const c of anchorColors) total += colorCompat(item.color, c);
+  return total / anchorColors.length;
+}
+
+function weightedPick(pool, anchorColors) {
   if (pool.length === 1) return pool[0];
-  const weights = pool.map(styleWeightForItem);
+  const weights = pool.map(it => styleWeightForItem(it) * colorWeightForItem(it, anchorColors));
   const total = weights.reduce((a, b) => a + b, 0);
+  if (!(total > 0)) return pool[Math.floor(Math.random() * pool.length)];
   let r = Math.random() * total;
   for (let i = 0; i < pool.length; i++) {
     r -= weights[i];
@@ -1425,7 +1507,7 @@ document.getElementById('importClosetInput').addEventListener('change', async (e
 });
 
 /* ---------------- Combinar ---------------- */
-function pickForCategory(items, category, tags, excludeId) {
+function pickForCategory(items, category, tags, excludeId, anchorColors) {
   let inCat = items.filter(i => i.category === category);
   if (!inCat.length) return { item: null, weatherMismatch: false };
 
@@ -1469,7 +1551,7 @@ function pickForCategory(items, category, tags, excludeId) {
 
   const matching = inCat.filter(i => i.tags.some(t => tags.includes(t)));
   const pool = matching.length ? matching : inCat;
-  return { item: weightedPick(pool), weatherMismatch: false };
+  return { item: weightedPick(pool, anchorColors), weatherMismatch: false };
 }
 
 let lastGuessedTags = null;
@@ -1858,21 +1940,36 @@ async function buildOutfit() {
      avisar honesto en vez de mostrar algo que no corresponde). */
   const weatherGaps = [];
 
+  /* Los colores de las prendas ya elegidas se van guardando aquí para que
+     la siguiente prenda se elija con sesgo hacia lo que combina con ellas
+     (ver colorCompat arriba) — top primero, luego bottom se inclina hacia
+     lo que combina con el top, luego zapatos con lo ya elegido, etc. */
+  const anchorColors = [];
   const tryDress = Math.random() < 0.35;
-  const dressRes = tryDress ? pickForCategory(items, 'dress', tags, chatState.excludedIds.vestido) : { item: null, weatherMismatch: false };
+  const dressRes = tryDress ? pickForCategory(items, 'dress', tags, chatState.excludedIds.vestido, anchorColors) : { item: null, weatherMismatch: false };
   if (dressRes.weatherMismatch) weatherGaps.push('vestido');
   if (dressRes.item) {
     pieces.push(['vestido', dressRes.item]);
+    if (dressRes.item.color) anchorColors.push(dressRes.item.color);
   } else {
-    const topRes = pickForCategory(items, 'top', tags, chatState.excludedIds.top);
-    const bottomRes = pickForCategory(items, 'bottom', tags, chatState.excludedIds.bottom);
+    const topRes = pickForCategory(items, 'top', tags, chatState.excludedIds.top, anchorColors);
     if (topRes.weatherMismatch) weatherGaps.push('top');
+    if (topRes.item) {
+      pieces.push(['top', topRes.item]);
+      if (topRes.item.color) anchorColors.push(topRes.item.color);
+    }
+    const bottomRes = pickForCategory(items, 'bottom', tags, chatState.excludedIds.bottom, anchorColors);
     if (bottomRes.weatherMismatch) weatherGaps.push('bottom');
-    if (topRes.item) pieces.push(['top', topRes.item]);
-    if (bottomRes.item) pieces.push(['bottom', bottomRes.item]);
+    if (bottomRes.item) {
+      pieces.push(['bottom', bottomRes.item]);
+      if (bottomRes.item.color) anchorColors.push(bottomRes.item.color);
+    }
   }
-  const shoesRes = pickForCategory(items, 'shoes', tags, chatState.excludedIds.calzado);
-  if (shoesRes.item) pieces.push(['calzado', shoesRes.item]);
+  const shoesRes = pickForCategory(items, 'shoes', tags, chatState.excludedIds.calzado, anchorColors);
+  if (shoesRes.item) {
+    pieces.push(['calzado', shoesRes.item]);
+    if (shoesRes.item.color) anchorColors.push(shoesRes.item.color);
+  }
 
   /* Con frío casi siempre suma abrigo; con calor nunca (no tiene sentido
      sugerir abrigo con calor) — salvo que el usuario haya pedido
@@ -1880,12 +1977,15 @@ async function buildOutfit() {
   const abrigoChance = weatherInfo ? (weatherInfo.isCold ? 0.9 : (weatherInfo.isHot ? 0 : 0.5)) : 0.5;
   const wantAbrigo = chatState.forcedAbrigo !== null ? chatState.forcedAbrigo : Math.random() < abrigoChance;
   if (wantAbrigo) {
-    const outerRes = pickForCategory(items, 'outerwear', tags, chatState.excludedIds.abrigo);
-    if (outerRes.item) pieces.push(['abrigo', outerRes.item]);
+    const outerRes = pickForCategory(items, 'outerwear', tags, chatState.excludedIds.abrigo, anchorColors);
+    if (outerRes.item) {
+      pieces.push(['abrigo', outerRes.item]);
+      if (outerRes.item.color) anchorColors.push(outerRes.item.color);
+    }
   }
   const wantAccesorio = chatState.forcedAccesorio !== null ? chatState.forcedAccesorio : Math.random() < 0.4;
   if (wantAccesorio) {
-    const accRes = pickForCategory(items, 'accessory', tags, chatState.excludedIds.accesorio);
+    const accRes = pickForCategory(items, 'accessory', tags, chatState.excludedIds.accesorio, anchorColors);
     if (accRes.item) pieces.push(['accesorio', accRes.item]);
   }
   chatState.excludedIds = {};
