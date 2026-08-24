@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-08-24T13:24:13.564101+00:00",
+  "goal_weight": 85.0,
+  "start_weight": 102.0,
+  "weight_unit": "kg",
+  "days": [
+    {
+      "date": "2026-08-22",
+      "weight": null,
+      "weight_unit": null,
+      "goal_weight": null,
+      "start_weight": null,
+      "food_calories": null,
+      "exercise_calories_loseit": null,
+      "calorie_budget": null,
+      "net_calories": null,
+      "nothing_logged": null,
+      "steps": 9969,
+      "steps_goal": null,
+      "calories_total_garmin": 1948.0,
+      "calories_active_garmin": 159.0,
+      "resting_heart_rate": 49,
+      "sleep_seconds": 25260,
+      "sleep_score": 78,
+      "avg_stress_level": 21,
+      "activity_minutes": 38.7,
+      "activity_count": 1
+    },
+    {
+      "date": "2026-08-23",
+      "weight": 91.0,
+      "weight_unit": "kg",
+      "goal_weight": 85.0,
+      "start_weight": 102.0,
+      "food_calories": 0.0,
+      "exercise_calories_loseit": 0.0,
+      "calorie_budget": 1667.0,
+      "net_calories": 0.0,
+      "nothing_logged": true,
+      "steps": null,
+      "steps_goal": 2666.0,
+      "calories_total_garmin": null,
+      "calories_active_garmin": null,
+      "resting_heart_rate": null,
+      "sleep_seconds": null,
+      "sleep_score": null,
+      "avg_stress_level": null,
+      "activity_minutes": 0,
+      "activity_count": 0
+    }
+  ]
+}
