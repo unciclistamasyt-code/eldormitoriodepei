@@ -682,14 +682,37 @@ function guessTags(text) {
    - @lailanysota — "elegante y formal" → refuerza elegante y formal.
 
    Para agregar más cuentas en el futuro: solo hay que decirle a Claude la
-   cuenta y por qué te gusta, y se ajustan los pesos de abajo. */
+   cuenta y por qué te gusta, y se ajustan los pesos de abajo.
+
+   Recalibrado el 24 de agosto de 2026 con 24 fotos reales del usuario (cada
+   una con su ocasión) — el detalle completo de cada foto queda en el
+   proyecto (Claude), aquí solo el resumen que cambió los pesos:
+   - "casual" salió en casi todas las fotos, y muy seguido combinado con
+     trabajo/oficina en la misma foto (el usuario aclaró varias veces
+     "casual para salir o ir a la oficina") — se mantiene como el más alto.
+   - "trabajo" resultó mucho más frecuente de lo que las cuentas de
+     Instagram solas sugerían (~13 de 24 fotos), así que subió de 1.15 a
+     1.25.
+   - "elegante" se mantiene alto — confirmado en varias fotos de oficina/
+     conferencia (faldas largas plisadas, blazer, vestido de gala informal).
+   - "formal" se mantiene igual — menos fotos puramente formales que
+     elegante/trabajo.
+   - "deportivo" subió de 1.0 (neutral, sin evidencia) a 1.1: dos fotos
+     mostraron ropa de gym/pilates explícita, así que ya no es un vacío
+     total, aunque sigue siendo la etiqueta menos representada.
+   No se intentó codificar los patrones de color/estampado que se notaron
+   (base negra muy recurrente, acentos mostaza/salvia/rojo, animal print,
+   mangas con volumen/hombro descubierto como firma) porque el clóset no
+   guarda esos atributos de forma estructurada — solo tags de ocasión y el
+   color dominante de cada foto. Quedan documentados en el proyecto como
+   contexto para quien retome esto más adelante. */
 const STYLE_PROFILE = {
   tagWeights: {
     casual: 1.3,
     elegante: 1.3,
-    trabajo: 1.15,
+    trabajo: 1.25,
     formal: 1.15,
-    deportivo: 1.0
+    deportivo: 1.1
   }
 };
 
