@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>&nbsp;</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content=" " />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+<style>
+  :root { --health: #8fae7c; }
+
+  .pageTitle { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); }
+
+  .content { flex: 1; overflow-y: auto; padding-bottom: 24px; }
+
+  /* ---- estado vacío / cargando ---- */
+  .stateMsg {
+    margin-top: 60px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13.5px;
+    line-height: 1.6;
+    padding: 0 12px;
+  }
+  .stateMsg .big { font-size: 15px; color: var(--text); margin-bottom: 8px; }
+
+  /* ---- hero ---- */
+  .hero {
+    padding: 20px 0 14px;
+    text-align: center;
+  }
+  .hero .weight { font-size: 44px; font-weight: 600; letter-spacing: -0.02em; }
+  .hero .weight small { font-size: 18px; font-weight: 500; color: var(--text-dim); margin-left: 2px; }
+  .hero .sub { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+  .hero .badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--health) 18%, transparent);
+    color: var(--health);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---- gráfica ---- */
+  .chartCard {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 12px 10px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .chartCard .cardTitle { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); padding: 0 4px 10px; }
+  .chartSvgWrap { position: relative; }
+  .chartSvgWrap svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart-line { fill: none; stroke: var(--health); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .chart-goal { fill: none; stroke: var(--text-dim); stroke-width: 1.2; stroke-dasharray: 3 4; }
+  .chart-dot { fill: var(--health); }
+  .chart-dot-last { fill: var(--bg); stroke: var(--health); stroke-width: 2.5; }
+  .chart-grid { stroke: var(--line); stroke-width: 1; }
+  .chart-axis-label { fill: var(--text-dim); font-size: 9.5px; }
+  .chart-crosshair { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0; pointer-events: none; }
+  .chartTooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 9px;
+    font-size: 11.5px;
+    line-height: 1.4;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    transform: translate(-50%, -100%);
+    z-index: 5;
+  }
+  .chartTooltip .t-date { color: var(--text-dim); font-size: 10px; }
+  .chartLegend { display: flex; gap: 16px; padding: 6px 4px 0; font-size: 11px; color: var(--text-dim); }
+  .chartLegend span { display: inline-flex; align-items: center; gap: 5px; }
+  .chartLegend i { width: 12px; height: 2px; border-radius: 2px; display: inline-block; }
+  .chartLegend i.solid { background: var(--health); }
+  .chartLegend i.dashed { background: repeating-linear-gradient(90deg, var(--text-dim) 0 3px, transparent 3px 6px); }
+
+  /* ---- pronóstico ---- */
+  .forecastCard {
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 18px;
+  }
+  .forecastTitle { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+  .forecastEta { font-size: 14px; line-height: 1.55; }
+  .forecastEta b { color: var(--health); }
+
+  /* ---- highlights ---- */
+  .highlightsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .stat .n { font-size: 19px; font-weight: 600; }
+  .stat .l { font-size: 10.5px; color: var(--text-dim); margin-top: 3px; letter-spacing: 0.01em; }
+
+  /* ---- tips ---- */
+  .tipsCard {
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 18px;
+  }
+  .tipsTitle { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+  .tipsCard p { font-size: 13.5px; line-height: 1.6; margin: 0 0 8px; }
+  .tipsCard p:last-child { margin-bottom: 0; }
+  .tipsCard .muted { color: var(--text-dim); font-size: 12px; }
+
+  /* ---- registro reciente ---- */
+  .recentTitle { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); margin: 4px 0 8px; }
+  .recentRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .recentRow:last-child { border-bottom: none; }
+  .recentRow .d { color: var(--text-dim); font-size: 11.5px; min-width: 56px; }
+  .recentRow .w { font-weight: 500; }
+  .recentRow .extra { color: var(--text-dim); font-size: 11.5px; text-align: right; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="topbar">
+      <a class="back" href="index.html" aria-label="regresar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5 L8 12 L15 19"/></svg>
+      </a>
+      <div class="pageTitle">salud</div>
+      <div style="width:32px;"></div>
+    </div>
+
+    <div class="content fade-in" id="content">
+      <div class="stateMsg" id="loadingMsg">cargando…</div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  var contentEl = document.getElementById('content');
+
+  function setEmptyState(title, sub) {
+    contentEl.innerHTML = '';
+    var wrap = document.createElement('div');
+    wrap.className = 'stateMsg';
+    wrap.innerHTML = '<div class="big">' + title + '</div><div>' + sub + '</div>';
+    contentEl.appendChild(wrap);
+  }
+
+  function fmtDate(dateStr) {
+    var d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('es', { day: 'numeric', month: 'short' });
+  }
+  function fmtDateLong(dateStr) {
+    var d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function round1(n) { return Math.round(n * 10) / 10; }
+
+  /* Regresión lineal simple por mínimos cuadrados: puntos [{x,y}] -> {slope, intercept} */
+  function linreg(points) {
+    var n = points.length;
+    var sx = 0, sy = 0, sxy = 0, sxx = 0;
+    points.forEach(function (p) { sx += p.x; sy += p.y; sxy += p.x * p.y; sxx += p.x * p.x; });
+    var denom = n * sxx - sx * sx;
+    if (denom === 0) return null;
+    var slope = (n * sxy - sx * sy) / denom;
+    var intercept = (sy - slope * sx) / n;
+    return { slope: slope, intercept: intercept };
+  }
+
+  function daysBetween(a, b) {
+    var da = new Date(a + 'T00:00:00'), db = new Date(b + 'T00:00:00');
+    return Math.round((db - da) / 86400000);
+  }
+
+  fetch('data/health.json', { cache: 'no-store' })
+    .then(function (res) {
+      if (!res.ok) throw new Error('no data yet');
+      return res.json();
+    })
+    .then(render)
+    .catch(function () {
+      setEmptyState(
+        'Todavía no hay datos publicados',
+        'En cuanto corras el sincronizador de Garmin y Lose It! en tu Mac por primera vez, esta página se va a llenar sola.'
+      );
+    });
+
+  function render(data) {
+    var days = (data.days || []).slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    if (!days.length) {
+      setEmptyState('Todavía no hay días registrados', 'En cuanto tengas el primer día sincronizado, aparece aquí.');
+      return;
+    }
+
+    var weightDays = days.filter(function (d) { return typeof d.weight === 'number'; });
+    var unit = data.weight_unit || (weightDays[0] && weightDays[0].weight_unit) || 'kg';
+    var goalWeight = data.goal_weight;
+    var startWeight = data.start_weight;
+    var latest = weightDays.length ? weightDays[weightDays.length - 1] : null;
+
+    contentEl.innerHTML = '';
+
+    /* ---- hero ---- */
+    var hero = document.createElement('div');
+    hero.className = 'hero';
+    if (latest) {
+      var lost = (typeof startWeight === 'number') ? round1(startWeight - latest.weight) : null;
+      hero.innerHTML =
+        '<div class="weight">' + round1(latest.weight) + '<small>' + unit + '</small></div>' +
+        '<div class="sub">al ' + fmtDate(latest.date) + '</div>' +
+        (lost !== null ? '<div class="badge">' + (lost >= 0 ? 'has bajado ' + lost : 'has subido ' + Math.abs(lost)) + ' ' + unit + '</div>' : '');
+    } else {
+      hero.innerHTML = '<div class="sub">Todavía no hay un peso registrado — en cuanto Lose It! te mande el primer reporte con peso, aparece aquí.</div>';
+    }
+    contentEl.appendChild(hero);
+
+    /* ---- gráfica ---- */
+    if (weightDays.length >= 2) {
+      contentEl.appendChild(buildChartCard(weightDays, goalWeight, unit));
+    }
+
+    /* ---- pronóstico ---- */
+    contentEl.appendChild(buildForecastCard(weightDays, goalWeight, unit));
+
+    /* ---- highlights ---- */
+    contentEl.appendChild(buildHighlights(days, weightDays, startWeight, unit));
+
+    /* ---- tips ---- */
+    contentEl.appendChild(buildTipsCard(days));
+
+    /* ---- registro reciente ---- */
+    contentEl.appendChild(buildRecentList(days));
+  }
+
+  /* ================= GRÁFICA ================= */
+  function buildChartCard(weightDays, goalWeight, unit) {
+    var card = document.createElement('div');
+    card.className = 'chartCard';
+
+    var title = document.createElement('div');
+    title.className = 'cardTitle';
+    title.textContent = 'tendencia de peso';
+    card.appendChild(title);
+
+    var svgWrap = document.createElement('div');
+    svgWrap.className = 'chartSvgWrap';
+
+    var W = 320, H = 160, padL = 30, padR = 10, padT = 12, padB = 20;
+    var weights = weightDays.map(function (d) { return d.weight; });
+    var allVals = weights.slice();
+    if (typeof goalWeight === 'number') allVals.push(goalWeight);
+    var minV = Math.min.apply(null, allVals), maxV = Math.max.apply(null, allVals);
+    if (minV === maxV) { minV -= 1; maxV += 1; }
+    var vSpan = maxV - minV;
+    minV -= vSpan * 0.08; maxV += vSpan * 0.08;
+
+    var n = weightDays.length;
+    function xAt(i) { return padL + (n === 1 ? 0 : (i / (n - 1)) * (W - padL - padR)); }
+    function yAt(v) { return padT + (1 - (v - minV) / (maxV - minV)) * (H - padT - padB); }
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    /* gridlines horizontales (3) */
+    for (var g = 0; g <= 2; g++) {
+      var gv = minV + (vSpan * 1.16) * (g / 2);
+      var gy = yAt(gv);
+      var line = document.createElementNS(svgNS, 'line');
+      line.setAttribute('class', 'chart-grid');
+      line.setAttribute('x1', padL); line.setAttribute('x2', W - padR);
+      line.setAttribute('y1', gy); line.setAttribute('y2', gy);
+      svg.appendChild(line);
+    }
+
+    /* línea de meta */
+    if (typeof goalWeight === 'number') {
+      var gy2 = yAt(goalWeight);
+      var goalLine = document.createElementNS(svgNS, 'line');
+      goalLine.setAttribute('class', 'chart-goal');
+      goalLine.setAttribute('x1', padL); goalLine.setAttribute('x2', W - padR);
+      goalLine.setAttribute('y1', gy2); goalLine.setAttribute('y2', gy2);
+      svg.appendChild(goalLine);
+    }
+
+    /* línea de peso */
+    var pathD = weightDays.map(function (d, i) {
+      return (i === 0 ? 'M' : 'L') + xAt(i).toFixed(1) + ' ' + yAt(d.weight).toFixed(1);
+    }).join(' ');
+    var path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('class', 'chart-line');
+    path.setAttribute('d', pathD);
+    svg.appendChild(path);
+
+    /* puntos */
+    weightDays.forEach(function (d, i) {
+      var c = document.createElementNS(svgNS, 'circle');
+      c.setAttribute('class', i === n - 1 ? 'chart-dot-last' : 'chart-dot');
+      c.setAttribute('cx', xAt(i)); c.setAttribute('cy', yAt(d.weight));
+      c.setAttribute('r', i === n - 1 ? 4 : 2.5);
+      svg.appendChild(c);
+    });
+
+    /* etiquetas de fecha (primera, última, y media si hay espacio) */
+    [0, n - 1].forEach(function (i) {
+      var t = document.createElementNS(svgNS, 'text');
+      t.setAttribute('class', 'chart-axis-label');
+      t.setAttribute('x', xAt(i));
+      t.setAttribute('y', H - 4);
+      t.setAttribute('text-anchor', i === 0 ? 'start' : 'end');
+      t.textContent = fmtDate(weightDays[i].date);
+      svg.appendChild(t);
+    });
+
+    /* crosshair */
+    var crosshair = document.createElementNS(svgNS, 'line');
+    crosshair.setAttribute('class', 'chart-crosshair');
+    crosshair.setAttribute('y1', padT); crosshair.setAttribute('y2', H - padB);
+    svg.appendChild(crosshair);
+
+    svgWrap.appendChild(svg);
+
+    var tooltip = document.createElement('div');
+    tooltip.className = 'chartTooltip';
+    svgWrap.appendChild(tooltip);
+
+    function pointerToIndex(clientX) {
+      var rect = svg.getBoundingClientRect();
+      var relX = (clientX - rect.left) / rect.width * W;
+      var best = 0, bestDist = Infinity;
+      for (var i = 0; i < n; i++) {
+        var dist = Math.abs(xAt(i) - relX);
+        if (dist < bestDist) { bestDist = dist; best = i; }
+      }
+      return best;
+    }
+
+    function showTooltip(i) {
+      var d = weightDays[i];
+      crosshair.style.opacity = 1;
+      crosshair.setAttribute('x1', xAt(i)); crosshair.setAttribute('x2', xAt(i));
+      var rect = svg.getBoundingClientRect();
+      var px = (xAt(i) / W) * rect.width;
+      var py = (yAt(d.weight) / H) * rect.height;
+      tooltip.style.left = px + 'px';
+      tooltip.style.top = (py - 8) + 'px';
+      tooltip.style.opacity = 1;
+      tooltip.innerHTML = '<div class="t-date">' + fmtDate(d.date) + '</div>' + round1(d.weight) + ' ' + (d.weight_unit || '');
+    }
+    function hideTooltip() {
+      crosshair.style.opacity = 0;
+      tooltip.style.opacity = 0;
+    }
+
+    svg.addEventListener('pointermove', function (e) { showTooltip(pointerToIndex(e.clientX)); });
+    svg.addEventListener('pointerleave', hideTooltip);
+    svg.addEventListener('pointerdown', function (e) { showTooltip(pointerToIndex(e.clientX)); });
+
+    card.appendChild(svgWrap);
+
+    if (typeof goalWeight === 'number') {
+      var legend = document.createElement('div');
+      legend.className = 'chartLegend';
+      legend.innerHTML = '<span><i class="solid"></i>tu peso</span><span><i class="dashed"></i>meta (' + round1(goalWeight) + ' ' + unit + ')</span>';
+      card.appendChild(legend);
+    }
+
+    return card;
+  }
+
+  /* ================= PRONÓSTICO ================= */
+  var MIN_POINTS = 3;
+  var MIN_SPAN_DAYS = 5;
+
+  function buildForecastCard(weightDays, goalWeight, unit) {
+    var card = document.createElement('div');
+    card.className = 'forecastCard';
+    card.innerHTML = '<div class="forecastTitle">pronóstico de meta</div>';
+
+    var eta = document.createElement('div');
+    eta.className = 'forecastEta';
+
+    if (typeof goalWeight !== 'number') {
+      eta.textContent = 'No encontré una meta de peso en tus reportes de Lose It! todavía.';
+    } else if (weightDays.length < MIN_POINTS || daysBetween(weightDays[0].date, weightDays[weightDays.length - 1].date) < MIN_SPAN_DAYS) {
+      var have = weightDays.length;
+      eta.textContent = 'Todavía no tengo suficiente historial para calcular una fecha honesta (llevas ' + have + ' día' + (have === 1 ? '' : 's') + ' de peso registrado). En cuanto tengas más días, esto se va a ir afinando solo.';
+    } else {
+      var day0 = weightDays[0].date;
+      var points = weightDays.map(function (d) { return { x: daysBetween(day0, d.date), y: d.weight }; });
+      var reg = linreg(points);
+      var latestWeight = weightDays[weightDays.length - 1].weight;
+
+      if (latestWeight <= goalWeight) {
+        eta.innerHTML = '<b>¡Ya llegaste a tu meta!</b> Tu peso más reciente (' + round1(latestWeight) + ' ' + unit + ') está en o por debajo de tu meta de ' + round1(goalWeight) + ' ' + unit + '.';
+      } else if (!reg || reg.slope >= -0.001) {
+        eta.textContent = 'En el periodo registrado tu peso no está bajando de forma consistente, así que no puedo calcular una fecha estimada todavía sin inventar un número.';
+      } else {
+        var xGoal = (goalWeight - reg.intercept) / reg.slope;
+        var daysFromDay0 = Math.round(xGoal);
+        var etaDateObj = new Date(day0 + 'T00:00:00');
+        etaDateObj.setDate(etaDateObj.getDate() + daysFromDay0);
+        var etaDateStr = etaDateObj.toISOString().slice(0, 10);
+        var weeklyRate = Math.abs(reg.slope * 7);
+        eta.innerHTML = 'A tu ritmo actual (~' + round1(weeklyRate) + ' ' + unit + '/semana), llegarías a tu meta de ' + round1(goalWeight) + ' ' + unit + ' alrededor del <b>' + fmtDateLong(etaDateStr) + '</b>. Es una proyección basada en tu tendencia, no una promesa.';
+      }
+    }
+    card.appendChild(eta);
+    return card;
+  }
+
+  /* ================= HIGHLIGHTS ================= */
+  function buildHighlights(days, weightDays, startWeight, unit) {
+    var wrap = document.createElement('div');
+    wrap.className = 'highlightsGrid';
+
+    var daysTracked = weightDays.length;
+    var lostSoFar = (typeof startWeight === 'number' && weightDays.length)
+      ? round1(startWeight - weightDays[weightDays.length - 1].weight) : null;
+
+    var weeklyRateText = '—';
+    if (weightDays.length >= MIN_POINTS && daysBetween(weightDays[0].date, weightDays[weightDays.length - 1].date) >= MIN_SPAN_DAYS) {
+      var day0 = weightDays[0].date;
+      var points = weightDays.map(function (d) { return { x: daysBetween(day0, d.date), y: d.weight }; });
+      var reg = linreg(points);
+      if (reg && reg.slope < 0) weeklyRateText = round1(Math.abs(reg.slope * 7)) + ' ' + unit;
+    }
+
+    var stats = [
+      { n: daysTracked, l: 'días con peso' },
+      { n: (lostSoFar !== null ? (lostSoFar >= 0 ? '-' : '+') + Math.abs(lostSoFar) : '—'), l: 'total ' + unit },
+      { n: weeklyRateText, l: 'ritmo / semana' }
+    ];
+    stats.forEach(function (s) {
+      var el = document.createElement('div');
+      el.className = 'stat';
+      el.innerHTML = '<div class="n">' + s.n + '</div><div class="l">' + s.l + '</div>';
+      wrap.appendChild(el);
+    });
+    return wrap;
+  }
+
+  /* ================= TIPS ================= */
+  function buildTipsCard(days) {
+    var card = document.createElement('div');
+    card.className = 'tipsCard';
+    card.innerHTML = '<div class="tipsTitle">tips para ti</div>';
+
+    /* Agrupa por semanas de 7 días desde el primer día con datos, y busca
+       una correlación simple entre minutos de actividad y cambio de peso
+       esa semana — solo si hay suficientes semanas con ambos datos como
+       para que signifique algo, nunca inventa un número con poca data. */
+    var day0 = days[0].date;
+    var buckets = {};
+    days.forEach(function (d) {
+      var idx = Math.floor(daysBetween(day0, d.date) / 7);
+      if (!buckets[idx]) buckets[idx] = [];
+      buckets[idx].push(d);
+    });
+
+    var weekPairs = [];
+    Object.keys(buckets).forEach(function (k) {
+      var wk = buckets[k];
+      var withWeight = wk.filter(function (d) { return typeof d.weight === 'number'; });
+      var withActivity = wk.filter(function (d) { return typeof d.activity_minutes === 'number'; });
+      if (withWeight.length >= 3 && withActivity.length >= 4) {
+        var weightChange = withWeight[withWeight.length - 1].weight - withWeight[0].weight;
+        var totalMinutes = withActivity.reduce(function (s, d) { return s + d.activity_minutes; }, 0);
+        weekPairs.push({ x: totalMinutes, y: weightChange });
+      }
+    });
+
+    if (weekPairs.length >= 3) {
+      var reg = linreg(weekPairs);
+      if (reg && reg.slope < 0) {
+        var kgPer10MinDay = Math.abs(reg.slope) * 70; // 10 min/día = 70 min/semana
+        var p = document.createElement('p');
+        p.innerHTML = 'En tus últimas ' + weekPairs.length + ' semanas con datos, las semanas con más actividad se relacionaron con más pérdida de peso: cada 10 minutos extra de actividad por día se asoció con aproximadamente <b>' + round1(kgPer10MinDay) + ' kg</b> más de pérdida esa semana.';
+        card.appendChild(p);
+        var note = document.createElement('p');
+        note.className = 'muted';
+        note.textContent = 'Esto es una correlación observada en tus propios datos, no una garantía — entre más semanas acumules, más confiable se vuelve.';
+        card.appendChild(note);
+      } else {
+        var p2 = document.createElement('p');
+        p2.textContent = 'Todavía no veo una relación clara entre tu actividad y tu peso en las semanas registradas — puede que otros factores (comida, sueño, estrés) estén pesando más por ahora.';
+        card.appendChild(p2);
+      }
+    } else {
+      var need = 3 - weekPairs.length;
+      var p3 = document.createElement('p');
+      p3.textContent = 'Todavía estoy recopilando datos tuyos para darte un tip personalizado y con base real (necesito al menos 3 semanas con peso y actividad registrados casi todos los días). Sigue sincronizando y esto va a aparecer solo.';
+      card.appendChild(p3);
+    }
+
+    return card;
+  }
+
+  /* ================= REGISTRO RECIENTE ================= */
+  function buildRecentList(days) {
+    var wrap = document.createElement('div');
+    var title = document.createElement('div');
+    title.className = 'recentTitle';
+    title.textContent = 'registro reciente';
+    wrap.appendChild(title);
+
+    var recent = days.slice(-10).reverse();
+    recent.forEach(function (d) {
+      var row = document.createElement('div');
+      row.className = 'recentRow';
+      var w = (typeof d.weight === 'number') ? round1(d.weight) + ' ' + (d.weight_unit || '') : '—';
+      var extraParts = [];
+      if (typeof d.steps === 'number') extraParts.push(d.steps + ' pasos');
+      if (typeof d.food_calories === 'number') extraParts.push(Math.round(d.food_calories) + ' kcal');
+      row.innerHTML =
+        '<span class="d">' + fmtDate(d.date) + '</span>' +
+        '<span class="w">' + w + '</span>' +
+        '<span class="extra">' + (extraParts.join(' · ') || '—') + '</span>';
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+})();
+</script>
+</body>
+</html>

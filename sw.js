@@ -1,4 +1,4 @@
-const CACHE = 'app-v31';
+const CACHE = 'app-v32';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const ASSETS = [
   './ropa.html',
   './golf.html',
   './menu.html',
+  './salud.html',
   './videos/fettuccine.webm',
   './videos/fettuccine.mp4',
   './img/fettuccine-poster.jpg',
@@ -84,6 +85,23 @@ self.addEventListener('fetch', (e) => {
     // the network directly — serving a cached full-body response instead of a
     // real 206 Partial Content breaks media playback in Chrome/Safari.
     e.respondWith(fetch(e.request));
+    return;
+  }
+  if (new URL(e.request.url).pathname.indexOf('/data/') !== -1) {
+    // Datos de salud (health.json): cambian todos los días y salud.html ya
+    // pide con cache:'no-store', pero por si acaso — red primero, con la
+    // última copia cacheada como respaldo si no hay conexión.
+    e.respondWith(
+      fetch(e.request)
+        .then((res) => {
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(e.request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
     return;
   }
   e.respondWith(
