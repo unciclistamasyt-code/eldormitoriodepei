@@ -658,6 +658,63 @@ function guessTags(text) {
   return found.length ? found : ['casual'];
 }
 
+/* ---------------- Perfil de estilo (inspiración del usuario) ----------------
+   El usuario nos contó, en conversación (24 de agosto de 2026), cuentas de
+   Instagram cuyo estilo le gusta y por qué. No hay forma de "ver" esas fotos
+   desde esta app estática, así que en vez de eso se traduce lo que dijo en
+   pesos sobre las mismas etiquetas (tags) que ya usa el clóset — así, al
+   armar un outfit, las prendas con esas etiquetas tienen más probabilidad de
+   salir elegidas que antes (antes era 100% al azar dentro del pool
+   disponible). Sigue siendo honesto: nunca inventa ropa que no tengas, solo
+   inclina la selección entre lo que sí tienes.
+
+   Fuente (verbatim, para referencia si se quiere ajustar después):
+   - @valebritto — "relajado pero styled" → refuerza casual, un poco elegante.
+   - @danielasalazarc_ — "casual y elegante pero siempre se ve bien
+     combinado" → refuerza casual y elegante.
+   - @eugeniasiso — "en general, a veces un poco más arriesgada de lo que me
+     gusta pero me gusta en general" → sin tag claro que capture "arriesgado";
+     no se le da peso extra a ninguna etiqueta por esta cuenta, para no
+     empujar hacia combinaciones más atrevidas de lo que el usuario pidió.
+   - @cristipazminoa — "buen estilo para la oficina y elegante" → refuerza
+     trabajo y elegante.
+   - @anayvirginia_ — "estilos casuales" → refuerza casual.
+   - @lailanysota — "elegante y formal" → refuerza elegante y formal.
+
+   Para agregar más cuentas en el futuro: solo hay que decirle a Claude la
+   cuenta y por qué te gusta, y se ajustan los pesos de abajo. */
+const STYLE_PROFILE = {
+  tagWeights: {
+    casual: 1.3,
+    elegante: 1.3,
+    trabajo: 1.15,
+    formal: 1.15,
+    deportivo: 1.0
+  }
+};
+
+function styleWeightForItem(item) {
+  if (!item.tags || !item.tags.length) return 1;
+  let best = 1;
+  for (const t of item.tags) {
+    const w = STYLE_PROFILE.tagWeights[t] || 1;
+    if (w > best) best = w;
+  }
+  return best;
+}
+
+function weightedPick(pool) {
+  if (pool.length === 1) return pool[0];
+  const weights = pool.map(styleWeightForItem);
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+
 /* ---------------- Clima (para ajustar el outfit al día) ----------------
    Open-Meteo: gratis, sin API key, funciona directo desde el navegador.
    Se usa la ubicación del dispositivo (con permiso) para pedir la
@@ -1389,7 +1446,7 @@ function pickForCategory(items, category, tags, excludeId) {
 
   const matching = inCat.filter(i => i.tags.some(t => tags.includes(t)));
   const pool = matching.length ? matching : inCat;
-  return { item: pool[Math.floor(Math.random() * pool.length)], weatherMismatch: false };
+  return { item: weightedPick(pool), weatherMismatch: false };
 }
 
 let lastGuessedTags = null;
