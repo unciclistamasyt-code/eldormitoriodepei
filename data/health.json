@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T22:49:16.192936+00:00",
+  "generated_at": "2026-08-25T23:49:18.224768+00:00",
   "goal_weight": 85.0,
   "start_weight": 102.0,
   "weight_unit": "kg",
@@ -84,6 +84,32 @@
         "fiber_g": 30.0,
         "sodium_mg": 3499.1
       }
+    },
+    {
+      "date": "2026-08-25",
+      "weight": null,
+      "weight_unit": null,
+      "goal_weight": null,
+      "start_weight": null,
+      "food_calories": null,
+      "exercise_calories_loseit": null,
+      "calorie_budget": null,
+      "net_calories": null,
+      "nothing_logged": null,
+      "steps": 10978,
+      "steps_goal": null,
+      "calories_total_garmin": 2098.0,
+      "calories_active_garmin": 310.0,
+      "resting_heart_rate": 55,
+      "sleep_seconds": 26700,
+      "sleep_score": 76,
+      "avg_stress_level": 28,
+      "activity_minutes": 38.0,
+      "activity_count": 1,
+      "activities_by_type": {
+        "walking": 38.0
+      },
+      "food_macros": null
     }
   ]
 }
