@@ -1882,6 +1882,10 @@ document.getElementById('importClosetInput').addEventListener('change', async (e
 });
 
 /* ---------------- Combinar ---------------- */
+/* Ocasiones donde un short nunca es apropiado, sin importar el clima —
+   usado dentro de pickForCategory para la categoría bottom. */
+const NEVER_SHORTS_TAGS = ['trabajo', 'formal', 'elegante'];
+
 function pickForCategory(items, category, tags, excludeId, anchorColors) {
   let inCat = items.filter(i => i.category === category);
   if (!inCat.length) return { item: null, weatherMismatch: false };
@@ -1903,23 +1907,39 @@ function pickForCategory(items, category, tags, excludeId, anchorColors) {
     const wantSleeve = weatherInfo.isCold ? 'larga' : (weatherInfo.isHot ? 'corta' : null);
     if (wantSleeve) {
       const bySleeve = inCat.filter(i => (i.sleeve || 'corta') === wantSleeve);
-      if (!bySleeve.length) return { item: null, weatherMismatch: true };
+      if (!bySleeve.length) return { item: null, weatherMismatch: true, missingLabel: 'un top de manga ' + wantSleeve };
       inCat = bySleeve;
     }
   }
-  if (weatherInfo && category === 'bottom') {
-    const wantLength = weatherInfo.isHot ? 'corto' : (weatherInfo.isCold ? 'largo' : null);
-    if (wantLength) {
-      const byLength = inCat.filter(i => (i.length || 'largo') === wantLength);
-      if (!byLength.length) return { item: null, weatherMismatch: true };
-      inCat = byLength;
+  if (category === 'bottom') {
+    /* Ciertas ocasiones nunca deberían sugerir short, sin importar qué tan
+       caliente esté el día — el calor puede pedir una tela más ligera, pero
+       no shorts para ir a la oficina o a algo formal/elegante. El usuario
+       lo reportó (verbatim, 25 de agosto de 2026): "la app de ropa me esta
+       diciendo que solo se puede short por el clima para ir al trabajo en
+       donde no puedo ir a trabajar en shorts... que tambien exista la
+       coherencia que trabajo es formal lo cual sugiere no short". Esta
+       regla corre siempre (incluso sin datos de clima, o con clima
+       templado) porque la incoherencia es de ocasión, no solo de clima. */
+    const dressyOccasion = tags.some(t => NEVER_SHORTS_TAGS.includes(t));
+    if (dressyOccasion) {
+      const withoutShorts = inCat.filter(i => (i.length || 'largo') !== 'corto');
+      if (!withoutShorts.length) return { item: null, weatherMismatch: true, missingLabel: 'un pantalón' };
+      inCat = withoutShorts;
+    } else if (weatherInfo) {
+      const wantLength = weatherInfo.isHot ? 'corto' : (weatherInfo.isCold ? 'largo' : null);
+      if (wantLength) {
+        const byLength = inCat.filter(i => (i.length || 'largo') === wantLength);
+        if (!byLength.length) return { item: null, weatherMismatch: true, missingLabel: wantLength === 'corto' ? 'un short' : 'un pantalón' };
+        inCat = byLength;
+      }
     }
   }
   if (weatherInfo && category === 'dress') {
     const wantWeight = weatherInfo.isCold ? 'abrigado' : (weatherInfo.isHot ? 'ligero' : null);
     if (wantWeight) {
       const byWeight = inCat.filter(i => (i.weight || 'ligero') === wantWeight);
-      if (!byWeight.length) return { item: null, weatherMismatch: true };
+      if (!byWeight.length) return { item: null, weatherMismatch: true, missingLabel: 'un vestido ' + wantWeight };
       inCat = byWeight;
     }
   }
@@ -2149,15 +2169,12 @@ function joinList(arr) {
    (ver weatherMismatch en pickForCategory) a una frase honesta, en vez de
    mostrar una prenda que no corresponde. */
 function describeMissingForWeather(gaps) {
-  if (!gaps.length || !weatherInfo) return '';
-  const isCold = weatherInfo.isCold;
-  const labels = gaps.map(function (g) {
-    if (g === 'top') return isCold ? 'un top de manga larga' : 'un top de manga corta';
-    if (g === 'bottom') return isCold ? 'un pantalón' : 'un short';
-    if (g === 'vestido') return isCold ? 'un vestido abrigado' : 'un vestido ligero';
-    return g;
-  });
-  return joinList(labels);
+  /* gaps ya llega como texto listo para mostrar ("un pantalón", "un top de
+     manga larga") — pickForCategory arma esa etiqueta según cuál fue el
+     motivo real (clima, ocasión, o ambos), así que aquí no hace falta
+     volver a adivinarla a partir de weatherInfo. */
+  if (!gaps.length) return '';
+  return joinList(gaps);
 }
 
 function describeOutfit(pieces, tags, weatherGaps) {
@@ -2198,7 +2215,7 @@ function describeOutfit(pieces, tags, weatherGaps) {
 
   const missing = describeMissingForWeather(weatherGaps || []);
   if (missing) {
-    sentence += ` No te sugerí ${missing} porque no tengo ninguna guardada que calce con el clima de hoy — agrégala y la próxima vez la puedo usar.`;
+    sentence += ` No te sugerí ${missing} porque no tengo ninguna guardada que calce con el clima o la ocasión de hoy — agrégala y la próxima vez la puedo usar.`;
   }
   return sentence;
 }
@@ -2311,8 +2328,12 @@ async function buildOutfit() {
   document.getElementById('guessTag').textContent = tags.join(' · ');
 
   const pieces = [];
-  /* Etiquetas de lo que faltó por no calzar con el clima de hoy (para
-     avisar honesto en vez de mostrar algo que no corresponde). */
+  /* Descripciones de lo que faltó por no calzar con el clima y/o la
+     ocasión de hoy (para avisar honesto en vez de mostrar algo que no
+     corresponde) — cada entrada ya viene como texto listo para mostrar
+     ("un pantalón", "un top de manga larga"), no solo el nombre de la
+     categoría, porque desde el fix de NEVER_SHORTS_TAGS el motivo puede
+     ser de ocasión y no solo de clima. */
   const weatherGaps = [];
 
   /* Los colores de las prendas ya elegidas se van guardando aquí para que
@@ -2322,19 +2343,19 @@ async function buildOutfit() {
   const anchorColors = [];
   const tryDress = Math.random() < 0.35;
   const dressRes = tryDress ? pickForCategory(items, 'dress', tags, chatState.excludedIds.vestido, anchorColors) : { item: null, weatherMismatch: false };
-  if (dressRes.weatherMismatch) weatherGaps.push('vestido');
+  if (dressRes.weatherMismatch) weatherGaps.push(dressRes.missingLabel || 'un vestido');
   if (dressRes.item) {
     pieces.push(['vestido', dressRes.item]);
     if (dressRes.item.color) anchorColors.push(dressRes.item.color);
   } else {
     const topRes = pickForCategory(items, 'top', tags, chatState.excludedIds.top, anchorColors);
-    if (topRes.weatherMismatch) weatherGaps.push('top');
+    if (topRes.weatherMismatch) weatherGaps.push(topRes.missingLabel || 'un top');
     if (topRes.item) {
       pieces.push(['top', topRes.item]);
       if (topRes.item.color) anchorColors.push(topRes.item.color);
     }
     const bottomRes = pickForCategory(items, 'bottom', tags, chatState.excludedIds.bottom, anchorColors);
-    if (bottomRes.weatherMismatch) weatherGaps.push('bottom');
+    if (bottomRes.weatherMismatch) weatherGaps.push(bottomRes.missingLabel || 'un bottom');
     if (bottomRes.item) {
       pieces.push(['bottom', bottomRes.item]);
       if (bottomRes.item.color) anchorColors.push(bottomRes.item.color);
@@ -2386,7 +2407,7 @@ async function buildOutfit() {
     empty.style.display = 'flex';
     const missing = describeMissingForWeather(weatherGaps);
     empty.innerHTML = missing
-      ? `<div>no tengo ${missing} guardada para el clima de hoy — agrega una y lo vuelvo a intentar</div>`
+      ? `<div>no tengo ${missing} guardada que calce con el clima o la ocasión de hoy — agrega una y lo vuelvo a intentar</div>`
       : '<div>no hay suficientes prendas para esa combinación todavía</div>';
     result.style.display = 'none';
     shuffleRow.style.display = 'none';
