@@ -33,6 +33,8 @@
     justify-content: center;
     margin-top: 4px;
     margin-bottom: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .tab {
     font-size: 12px;
@@ -41,6 +43,7 @@
     color: var(--text-dim);
     padding: 6px 2px;
     border-bottom: 1px solid transparent;
+    flex-shrink: 0;
   }
   .tab.active {
     color: var(--text);
@@ -200,6 +203,8 @@
   .shuffleRow {
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 16px;
     margin-top: 22px;
   }
   .shuffleBtn {
@@ -210,6 +215,24 @@
   }
   .shuffleBtn svg { width: 22px; height: 22px; }
   .shuffleBtn:active { transform: scale(0.94); }
+
+  /* ---- Marcar como usado hoy (seguimiento de uso, 26 de agosto de 2026) ---- */
+  .wearTodayBtn {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+    max-width: 150px;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .wearTodayBtn.active {
+    color: var(--bg);
+    background: var(--text);
+    border-color: var(--text);
+  }
 
   .chatPanel {
     margin-top: 26px;
@@ -484,6 +507,150 @@
     color: var(--text-dim);
     border: 1px solid var(--line);
   }
+
+  /* ---- Uso: badge de uso en cada prenda del clóset (26 de agosto de 2026) ---- */
+  .closetGrid .item .wearBadge {
+    position: absolute;
+    top: 4px; left: 4px;
+    font-size: 9px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text);
+    background: rgba(10,10,12,0.75);
+    border-radius: 999px;
+    padding: 3px 8px;
+  }
+  .closetGrid .item .wearBadge.dim { color: #9a9a9a; }
+
+  /* ---- Uso: calendario de outfits ---- */
+  .calendarRow {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 2px;
+    border-bottom: 1px solid var(--line);
+  }
+  .calendarRow:last-child { border-bottom: none; }
+  .calRowTop { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .calDate { font-size: 12.5px; color: var(--text); }
+  .calAction {
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 10px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .calAction:disabled { opacity: 0.3; }
+  .calThumbs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .calThumbs img {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--line);
+  }
+  .calEmpty { font-size: 11.5px; color: var(--text-dim); }
+  .calPlannedTag {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 8px;
+  }
+
+  /* ---- Uso: recordatorio de piezas sin usar ---- */
+  .reminderItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 2px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .reminderItem:last-child { border-bottom: none; }
+  .reminderItem img {
+    width: 42px; height: 42px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .reminderItem b { color: var(--text); }
+
+  /* ---- Sets: cápsula / listas de empaque ---- */
+  .numberInput {
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+  }
+  .setDeleteBtn {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+  }
+
+  /* ---- Modal chico genérico (editar precio de una prenda) ---- */
+  .miniModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .miniModal.show { display: flex; }
+  .miniModalCard {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .miniModalTitle {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .miniModalStats {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .miniModalCard input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    margin-bottom: 14px;
+  }
+  .miniModalBtns { display: flex; gap: 10px; }
+  .miniModalBtns button { flex: 1; padding: 11px; border-radius: 10px; font-size: 13px; }
+  #priceModalSave { background: var(--text); color: var(--bg); }
+  #priceModalCancel { border: 1px solid var(--line); color: var(--text-dim); background: transparent; }
 </style>
 </head>
 <body>
@@ -500,6 +667,8 @@
       <div class="tab" data-view="closet">clóset</div>
       <div class="tab" data-view="agregar">agregar</div>
       <div class="tab" data-view="probador">probador</div>
+      <div class="tab" data-view="uso">uso</div>
+      <div class="tab" data-view="sets">sets</div>
     </div>
 
     <!-- COMBINAR -->
@@ -557,6 +726,7 @@
         <button class="shuffleBtn" id="shuffleBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 3l4 4-4 4"/><path d="M3 7h6a4 4 0 0 1 4 4"/><path d="M17 21l4-4-4-4"/><path d="M3 17h6a4 4 0 0 0 4-4"/></svg>
         </button>
+        <button class="wearTodayBtn" id="wearTodayBtn" type="button">usé este outfit hoy</button>
       </div>
 
       <div class="chatPanel" id="chatPanel" style="display:none;">
@@ -619,6 +789,11 @@
         <div class="chipRow" id="tagChips"></div>
       </div>
 
+      <div class="fieldGroup">
+        <div class="fieldLabel">precio de compra (opcional — solo para calcular costo por uso, se queda en este dispositivo)</div>
+        <input class="numberInput" type="number" id="priceInput" min="0" step="0.01" placeholder="ej. 45000" />
+      </div>
+
       <button class="saveBtn" id="saveItemBtn" disabled>guardar prenda</button>
     </div>
 
@@ -650,10 +825,80 @@
 
       <button class="saveBtn probadorResetBtn" id="probadorResetBtn" style="display:none;">probar otra prenda</button>
     </div>
+
+    <!-- USO: seguimiento de uso + calendario + recordatorio de piezas sin usar -->
+    <div class="view" id="view-uso">
+      <div class="catFilter" id="usoSubtabs">
+        <div class="chip active" data-usosub="calendario">calendario</div>
+        <div class="chip" data-usosub="recordatorio">sin usar</div>
+      </div>
+
+      <div id="usoCalendarSection">
+        <div class="photoHint">toca "usé este outfit hoy" en Combinar para registrar el día, o usa el botón de aquí abajo para planear un día futuro con el outfit que armaste ahí</div>
+        <div id="calendarList"></div>
+      </div>
+
+      <div id="usoReminderSection" style="display:none;">
+        <div class="photoHint">prendas que no has marcado como usadas hace tiempo, o nunca</div>
+        <div id="reminderList"></div>
+      </div>
+    </div>
+
+    <!-- SETS: armario cápsula + listas de empaque -->
+    <div class="view" id="view-sets">
+      <div class="catFilter" id="setsSubtabs">
+        <div class="chip active" data-setssub="capsula">cápsula</div>
+        <div class="chip" data-setssub="empacar">empacar</div>
+      </div>
+
+      <div id="capsulaSection">
+        <div class="photoHint">elige para qué ocasión (opcional) y cuántas prendas quieres — arma el set más chico posible que combine bien entre sí</div>
+        <div class="fieldGroup">
+          <div class="fieldLabel">ocasión (puedes elegir varias, o ninguna para todo el clóset)</div>
+          <div class="chipRow" id="capsulaTagChips"></div>
+        </div>
+        <div class="fieldGroup">
+          <div class="fieldLabel">tamaño de la cápsula</div>
+          <input class="numberInput" type="number" id="capsulaSizeInput" min="4" max="40" value="12" />
+        </div>
+        <button class="saveBtn" id="capsulaGenBtn" type="button">generar cápsula</button>
+        <div class="probadorResult" id="capsulaResult" style="display:none;"></div>
+        <button class="saveBtn probadorResetBtn" id="capsulaSaveBtn" type="button" style="display:none;">guardar esta cápsula</button>
+        <div id="capsulaSavedList"></div>
+      </div>
+
+      <div id="empacarSection" style="display:none;">
+        <div class="photoHint">dinos cuántos días es el viaje y para qué ocasión — arma un set compacto que combine lo suficiente para todos los días</div>
+        <div class="fieldGroup">
+          <div class="fieldLabel">días de viaje</div>
+          <input class="numberInput" type="number" id="empacarDaysInput" min="1" max="30" value="5" />
+        </div>
+        <div class="fieldGroup">
+          <div class="fieldLabel">ocasión (puedes elegir varias, o ninguna)</div>
+          <div class="chipRow" id="empacarTagChips"></div>
+        </div>
+        <button class="saveBtn" id="empacarGenBtn" type="button">generar lista de empaque</button>
+        <div class="probadorResult" id="empacarResult" style="display:none;"></div>
+        <button class="saveBtn probadorResetBtn" id="empacarSaveBtn" type="button" style="display:none;">guardar esta lista</button>
+        <div id="empacarSavedList"></div>
+      </div>
+    </div>
   </div>
 
   <div class="photoLightbox" id="photoLightbox">
     <img id="lightboxImg" src="" alt="" />
+  </div>
+
+  <div class="miniModal" id="priceModal">
+    <div class="miniModalCard">
+      <div class="miniModalTitle" id="priceModalTitle"></div>
+      <div class="miniModalStats" id="priceModalStats"></div>
+      <input type="number" id="priceModalInput" min="0" step="0.01" placeholder="precio de compra (opcional)" />
+      <div class="miniModalBtns">
+        <button id="priceModalCancel" type="button">cerrar</button>
+        <button id="priceModalSave" type="button">guardar</button>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -667,8 +912,19 @@ const STORE = 'items';
    anterior, así que si editas la misma prenda varias veces sin conexión solo
    se guarda "hay que sincronizar esta prenda", no un historial. */
 const OUTBOX_STORE = 'outbox';
+/* LOG_STORE y SETS_STORE — nuevos, 26 de agosto de 2026, para seguimiento de
+   uso / calendario / recordatorio de piezas sin usar / cápsula / listas de
+   empaque. A diferencia del clóset, esto NO se sincroniza con Supabase (se
+   queda solo en este dispositivo) — es un log de comportamiento, no datos
+   del clóset en sí, y mantenerlo simple evitó tener que tocar el schema de
+   Supabase para esta entrega. Un renglón por día en LOG_STORE (clave =
+   fecha 'YYYY-MM-DD'): {date, itemIds, status: 'worn'|'planned', ts}. Un
+   renglón por set guardado en SETS_STORE: {id, type: 'capsula'|'empacar',
+   name, itemIds, days?, tags?, createdAt}. */
+const LOG_STORE = 'outfit_log';
+const SETS_STORE = 'saved_sets';
 let dbPromise = new Promise((resolve, reject) => {
-  const req = indexedDB.open(DB_NAME, 2);
+  const req = indexedDB.open(DB_NAME, 3);
   req.onupgradeneeded = (ev) => {
     const db = req.result;
     if (!db.objectStoreNames.contains(STORE)) {
@@ -676,6 +932,12 @@ let dbPromise = new Promise((resolve, reject) => {
     }
     if (!db.objectStoreNames.contains(OUTBOX_STORE)) {
       db.createObjectStore(OUTBOX_STORE, { keyPath: 'itemId' });
+    }
+    if (!db.objectStoreNames.contains(LOG_STORE)) {
+      db.createObjectStore(LOG_STORE, { keyPath: 'date' });
+    }
+    if (!db.objectStoreNames.contains(SETS_STORE)) {
+      db.createObjectStore(SETS_STORE, { keyPath: 'id' });
     }
   };
   req.onsuccess = () => resolve(req.result);
@@ -736,6 +998,112 @@ async function outboxDelete(itemId) {
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
+}
+
+/* ---------------- LOG_STORE: seguimiento de uso + calendario ---------------- */
+async function logPut(entry) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LOG_STORE, 'readwrite');
+    tx.objectStore(LOG_STORE).put(entry);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function logGetAll() {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LOG_STORE, 'readonly');
+    const req = tx.objectStore(LOG_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function logGet(date) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LOG_STORE, 'readonly');
+    const req = tx.objectStore(LOG_STORE).get(date);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function logDelete(date) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LOG_STORE, 'readwrite');
+    tx.objectStore(LOG_STORE).delete(date);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/* ---------------- SETS_STORE: cápsulas y listas de empaque guardadas ---------------- */
+async function setPut(setObj) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(SETS_STORE, 'readwrite');
+    tx.objectStore(SETS_STORE).put(setObj);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function setGetAll() {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(SETS_STORE, 'readonly');
+    const req = tx.objectStore(SETS_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function setDeleteSaved(id) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(SETS_STORE, 'readwrite');
+    tx.objectStore(SETS_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/* ---------------- Fechas (local, sin librerías) ---------------- */
+function fmtYMD(d) {
+  const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function todayStr() { return fmtYMD(new Date()); }
+function addDaysStr(baseStr, delta) {
+  const [y, m, d] = baseStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + delta);
+  return fmtYMD(dt);
+}
+function daysBetweenStr(a, b) {
+  const [ay, am, ad] = a.split('-').map(Number), [by, bm, bd] = b.split('-').map(Number);
+  return Math.round((new Date(by, bm - 1, bd) - new Date(ay, am - 1, ad)) / 86400000);
+}
+const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+function fmtDateEs(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return `${d} ${MESES_CORTOS[m - 1]}`;
+}
+
+/* itemIds "usados" (status: 'worn', nunca en el futuro) → {count, lastWorn}
+   por prenda. Las entradas 'planned' de días futuros no cuentan como uso
+   real todavía — evita que planear algo suba el contador antes de tiempo. */
+function computeWearStats(logEntries) {
+  const stats = {};
+  const today = todayStr();
+  (logEntries || []).forEach(e => {
+    if (e.status !== 'worn' || e.date > today) return;
+    (e.itemIds || []).forEach(id => {
+      if (!stats[id]) stats[id] = { count: 0, lastWorn: null };
+      stats[id].count++;
+      if (!stats[id].lastWorn || e.date > stats[id].lastWorn) stats[id].lastWorn = e.date;
+    });
+  });
+  return stats;
 }
 
 /* ---------------- Sincronización con Supabase (26 de agosto de 2026) ----------------
@@ -963,7 +1331,12 @@ async function pullFromSupabase() {
         length: row.length,
         weight: row.weight,
         createdAt: row.created_at,
-        updatedAt: row.updated_at
+        updatedAt: row.updated_at,
+        /* price: nunca se sincroniza con Supabase (ver comentario en
+           LOG_STORE/SETS_STORE) — si no se preserva aquí, un pull que trae
+           una prenda actualizada desde otro dispositivo borraría el precio
+           que se haya puesto localmente en este. */
+        price: existing ? (existing.price || null) : null
       });
     }
     setSyncStatus('sincronizado');
@@ -1433,7 +1806,37 @@ function switchView(name) {
   if (name === 'combinar' && lastOutfitPieces) {
     requestAnimationFrame(() => renderCallouts(lastOutfitPieces));
   }
+  if (name === 'uso') {
+    renderCalendar();
+    renderReminders();
+  }
+  if (name === 'sets') {
+    renderSavedSets('capsula', document.getElementById('capsulaSavedList'));
+    renderSavedSets('empacar', document.getElementById('empacarSavedList'));
+  }
 }
+
+/* ---------------- Subtabs de "uso" y "sets" (26 de agosto de 2026) ----------------
+   Mismo patrón visual que catFilter (clóset), pero solo alternan qué bloque
+   de la vista se ve — no filtran nada. */
+document.querySelectorAll('#usoSubtabs .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#usoSubtabs .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const sub = chip.dataset.usosub;
+    document.getElementById('usoCalendarSection').style.display = sub === 'calendario' ? 'block' : 'none';
+    document.getElementById('usoReminderSection').style.display = sub === 'recordatorio' ? 'block' : 'none';
+  });
+});
+document.querySelectorAll('#setsSubtabs .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#setsSubtabs .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const sub = chip.dataset.setssub;
+    document.getElementById('capsulaSection').style.display = sub === 'capsula' ? 'block' : 'none';
+    document.getElementById('empacarSection').style.display = sub === 'empacar' ? 'block' : 'none';
+  });
+});
 
 /* ---------------- Agregar prenda ---------------- */
 let selectedCategory = null;
@@ -1797,6 +2200,10 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
     sleeve: selectedCategory === 'top' ? selectedSleeve : null,
     length: selectedCategory === 'bottom' ? selectedBottomLength : null,
     weight: selectedCategory === 'dress' ? selectedDressWeight : null,
+    price: (function () {
+      const v = parseFloat(document.getElementById('priceInput').value);
+      return (isFinite(v) && v > 0) ? v : null;
+    })(),
     createdAt: Date.now()
   };
   item.updatedAt = item.createdAt;
@@ -1821,6 +2228,7 @@ document.getElementById('saveItemBtn').addEventListener('click', async () => {
   document.getElementById('photoPickerLabel').style.display = 'block';
   document.getElementById('photoInput').value = '';
   document.getElementById('aiErrorMsg').style.display = 'none';
+  document.getElementById('priceInput').value = '';
   validateForm();
 
   if (navigator.vibrate) navigator.vibrate(15);
@@ -2043,6 +2451,8 @@ async function renderCloset() {
   });
 
   const items = await dbGetAll();
+  const log = await logGetAll();
+  const wearStats = computeWearStats(log);
   const filtered = closetFilter === 'all' ? items : items.filter(i => i.category === closetFilter);
   const grid = document.getElementById('closetGrid');
   grid.innerHTML = '';
@@ -2068,7 +2478,18 @@ async function renderCloset() {
     } else if (item.category === 'dress') {
       attrHtml = `<div class="sleeveBadge">${item.weight === 'abrigado' ? 'abrigado' : 'ligero'}</div>`;
     }
-    el.innerHTML = `<img src="${item.photo}" /><div class="del">×</div>${attrHtml}`;
+    /* Badge de uso (seguimiento de uso, 26 de agosto de 2026) — toca para
+       ver el historial completo y, opcionalmente, poner/editar el precio
+       de compra para calcular costo por uso. */
+    const st = wearStats[item.id];
+    const wearHtml = (st && st.count)
+      ? `<div class="wearBadge">${st.count} uso${st.count === 1 ? '' : 's'}${item.price ? ' · $' + Math.round(item.price / st.count) + '/uso' : ''}</div>`
+      : `<div class="wearBadge dim">sin usar</div>`;
+    el.innerHTML = `<img src="${item.photo}" /><div class="del">×</div>${attrHtml}${wearHtml}`;
+    el.querySelector('.wearBadge').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openPriceModal(item, st);
+    });
     el.querySelector('.del').addEventListener('click', async (e) => {
       e.stopPropagation();
       await dbDelete(item.id);
@@ -2098,6 +2519,44 @@ async function renderCloset() {
     grid.appendChild(el);
   });
 }
+
+/* ---------------- Modal de precio / estadísticas de uso ---------------- */
+function openPriceModal(item, stats) {
+  document.getElementById('priceModalTitle').textContent = CATEGORY_LABEL[item.category] || item.category;
+  const count = stats ? stats.count : 0;
+  const lastWorn = (stats && stats.lastWorn) ? fmtDateEs(stats.lastWorn) : 'nunca';
+  const costPerWear = (item.price && count) ? ('$' + Math.round(item.price / count)) : '—';
+  document.getElementById('priceModalStats').innerHTML =
+    `usos: <b>${count}</b> · último uso: <b>${lastWorn}</b> · costo por uso: <b>${costPerWear}</b>`;
+  document.getElementById('priceModalInput').value = item.price || '';
+  document.getElementById('priceModal').dataset.itemId = item.id;
+  document.getElementById('priceModal').classList.add('show');
+}
+document.getElementById('priceModalCancel').addEventListener('click', () => {
+  document.getElementById('priceModal').classList.remove('show');
+});
+document.getElementById('priceModal').addEventListener('click', (e) => {
+  if (e.target.id === 'priceModal') document.getElementById('priceModal').classList.remove('show');
+});
+document.getElementById('priceModalSave').addEventListener('click', async () => {
+  const id = document.getElementById('priceModal').dataset.itemId;
+  const v = parseFloat(document.getElementById('priceModalInput').value);
+  const items = await dbGetAll();
+  const item = items.find(i => i.id === id);
+  if (item) {
+    item.price = (isFinite(v) && v > 0) ? v : null;
+    item.updatedAt = Date.now();
+    await dbAdd(item);
+    /* El precio nunca viaja a Supabase (pushItemUpsert solo manda los
+       campos que ya existen en la tabla closet_items) — llamar
+       syncQueueUpsert aquí es inofensivo (re-sincroniza el resto de los
+       datos igual que siempre) pero no expone ni depende del precio. */
+    syncQueueUpsert(item);
+  }
+  document.getElementById('priceModal').classList.remove('show');
+  renderCloset();
+  if (navigator.vibrate) navigator.vibrate(15);
+});
 
 /* ---------------- Respaldo del clóset (exportar / restaurar) ----------------
    El clóset vive solo en IndexedDB, que es almacenamiento por-origen: si
@@ -2385,6 +2844,144 @@ document.getElementById('photoLightbox').addEventListener('click', () => {
   document.getElementById('photoLightbox').classList.remove('show');
 });
 
+/* ---------------- Calendario de outfits (26 de agosto de 2026) ----------------
+   Muestra 13 días (6 antes de hoy, hoy, 6 después). Para un día sin
+   registro, el botón usa el outfit que esté armado ahora mismo en
+   Combinar (lastOutfitPieces) — días de hoy o pasados quedan como "worn"
+   (cuenta para el seguimiento de uso), días futuros quedan "planned" (no
+   cuenta todavía). No hay un selector de prendas aparte: se reutiliza el
+   outfit ya armado para no duplicar esa UI. */
+async function renderCalendar() {
+  const wrap = document.getElementById('calendarList');
+  wrap.innerHTML = '';
+  const items = await dbGetAll();
+  const itemsById = Object.fromEntries(items.map(i => [i.id, i]));
+  const log = await logGetAll();
+  const logByDate = Object.fromEntries(log.map(e => [e.date, e]));
+  const today = todayStr();
+  const hasCurrentOutfit = !!(lastOutfitPieces && lastOutfitPieces.length);
+
+  for (let i = -6; i <= 6; i++) {
+    const date = addDaysStr(today, i);
+    const entry = logByDate[date];
+    const row = document.createElement('div');
+    row.className = 'calendarRow';
+
+    const top = document.createElement('div');
+    top.className = 'calRowTop';
+    const dEl = document.createElement('span');
+    dEl.className = 'calDate';
+    dEl.textContent = fmtDateEs(date) + (date === today ? ' · hoy' : '');
+    top.appendChild(dEl);
+
+    const actionBtn = document.createElement('button');
+    actionBtn.className = 'calAction';
+    actionBtn.type = 'button';
+    if (entry) {
+      actionBtn.textContent = 'quitar';
+      actionBtn.addEventListener('click', async () => {
+        await logDelete(date);
+        renderCalendar();
+        renderCloset();
+        if (date === today) refreshWearTodayBtn();
+      });
+    } else {
+      actionBtn.textContent = date > today ? 'planear con el outfit actual' : 'asignar el outfit actual';
+      actionBtn.disabled = !hasCurrentOutfit;
+      actionBtn.addEventListener('click', async () => {
+        if (!lastOutfitPieces || !lastOutfitPieces.length) return;
+        const itemIds = lastOutfitPieces.map(p => p[1].id);
+        await logPut({ date, itemIds, status: date > today ? 'planned' : 'worn', ts: Date.now() });
+        renderCalendar();
+        renderCloset();
+        if (date === today) refreshWearTodayBtn();
+        if (navigator.vibrate) navigator.vibrate(15);
+      });
+    }
+    top.appendChild(actionBtn);
+    row.appendChild(top);
+
+    const thumbs = document.createElement('div');
+    thumbs.className = 'calThumbs';
+    if (entry && entry.itemIds && entry.itemIds.length) {
+      entry.itemIds.forEach(id => {
+        const it = itemsById[id];
+        if (!it) return;
+        const img = document.createElement('img');
+        img.src = it.photo;
+        img.addEventListener('click', () => openLightbox(it.photo));
+        thumbs.appendChild(img);
+      });
+      if (entry.status === 'planned') {
+        const tag = document.createElement('span');
+        tag.className = 'calPlannedTag';
+        tag.textContent = 'planeado';
+        thumbs.appendChild(tag);
+      }
+    } else {
+      const empty = document.createElement('span');
+      empty.className = 'calEmpty';
+      empty.textContent = 'sin registro';
+      thumbs.appendChild(empty);
+    }
+    row.appendChild(thumbs);
+    wrap.appendChild(row);
+  }
+}
+
+/* ---------------- Recordatorio de piezas sin usar (26 de agosto de 2026) ----------------
+   "Sin usar" = nunca marcada como usada Y agregada hace 14+ días (para no
+   avisar de algo que acabas de guardar), O marcada como usada alguna vez
+   pero no en los últimos 60 días. Ordenado de más a menos tiempo sin uso. */
+const STALE_THRESHOLD_DAYS = 60;
+const NEW_ITEM_GRACE_DAYS = 14;
+
+async function computeStaleItems() {
+  const items = await dbGetAll();
+  const log = await logGetAll();
+  const stats = computeWearStats(log);
+  const today = todayStr();
+  const results = items.map(item => {
+    const st = stats[item.id];
+    if (st && st.lastWorn) {
+      return { item, days: daysBetweenStr(st.lastWorn, today), everWorn: true };
+    }
+    const addedStr = fmtYMD(new Date(item.createdAt));
+    return { item, days: daysBetweenStr(addedStr, today), everWorn: false };
+  }).filter(x => (x.everWorn && x.days >= STALE_THRESHOLD_DAYS) || (!x.everWorn && x.days >= NEW_ITEM_GRACE_DAYS))
+    .sort((a, b) => b.days - a.days);
+  return results;
+}
+
+async function renderReminders() {
+  const wrap = document.getElementById('reminderList');
+  wrap.innerHTML = '';
+  const stale = await computeStaleItems();
+  if (!stale.length) {
+    const empty = document.createElement('div');
+    empty.className = 'emptyState';
+    empty.style.padding = '30px 0';
+    empty.textContent = 'nada que recordar — o está todo usado hace poco, o el clóset está vacío';
+    wrap.appendChild(empty);
+    return;
+  }
+  stale.forEach(({ item, days, everWorn }) => {
+    const row = document.createElement('div');
+    row.className = 'reminderItem';
+    const img = document.createElement('img');
+    img.src = item.photo;
+    img.addEventListener('click', () => openLightbox(item.photo));
+    row.appendChild(img);
+    const txt = document.createElement('div');
+    const label = CATEGORY_LABEL[item.category] || item.category;
+    txt.innerHTML = everWorn
+      ? `<b>${label}</b> — sin usar hace ${days} días`
+      : `<b>${label}</b> — nunca marcada como usada (la agregaste hace ${days} días)`;
+    row.appendChild(txt);
+    wrap.appendChild(row);
+  });
+}
+
 let calloutResizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(calloutResizeTimer);
@@ -2608,6 +3205,7 @@ async function buildOutfit() {
     document.getElementById('guessTag').textContent = '';
     return;
   }
+  refreshWearTodayBtn();
 
   const text = document.getElementById('occasionInput').value.trim();
   const baseTags = text ? guessTags(text) : lastGuessedTags || ['casual'];
@@ -2750,7 +3348,37 @@ async function buildOutfit() {
   const explanation = changePrefix + describeOutfit(pieces, tags, weatherGaps);
   pendingChangeNotes = [];
   addChatMessage('assistant', explanation);
+  refreshWearTodayBtn();
 }
+
+/* ---------------- Marcar como usado hoy (seguimiento de uso) ----------------
+   El botón refleja si HOY ya tiene una entrada 'worn' en LOG_STORE — no si
+   coincide exactamente con lo que se ve ahora mismo en el maniquí (después
+   de un shuffle podría verse distinto a lo que ya se marcó, y eso es
+   correcto: lo marcado es lo que de verdad te pusiste, no lo último que se
+   generó en pantalla). Tocarlo de nuevo lo quita (por si te equivocaste). */
+async function refreshWearTodayBtn() {
+  const btn = document.getElementById('wearTodayBtn');
+  if (!btn) return;
+  const entry = await logGet(todayStr());
+  const already = !!(entry && entry.status === 'worn');
+  btn.classList.toggle('active', already);
+  btn.textContent = already ? '✓ usado hoy' : 'usé este outfit hoy';
+}
+document.getElementById('wearTodayBtn').addEventListener('click', async () => {
+  const date = todayStr();
+  const existing = await logGet(date);
+  if (existing && existing.status === 'worn') {
+    await logDelete(date);
+  } else {
+    if (!lastOutfitPieces || !lastOutfitPieces.length) return;
+    const itemIds = lastOutfitPieces.map(p => p[1].id);
+    await logPut({ date, itemIds, status: 'worn', ts: Date.now() });
+  }
+  refreshWearTodayBtn();
+  renderCloset();
+  if (navigator.vibrate) navigator.vibrate(15);
+});
 
 function startNewOccasion() {
   resetChatState();
@@ -2761,6 +3389,262 @@ document.getElementById('occasionInput').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') startNewOccasion();
 });
 document.getElementById('shuffleBtn').addEventListener('click', buildOutfit);
+
+/* ---------------- Sets: armario cápsula + listas de empaque (26 de agosto de 2026) ----------------
+   Ambas features son la misma idea de fondo — elegir el subconjunto más
+   chico posible del clóset real que combine bien entre sí — así que
+   comparten el mismo motor de selección (selectTopN/groupItemsForSelection)
+   y reutilizan colorCompat/styleWeightForItem (ya usados en Combinar) y las
+   tarjetas visuales del Probador (probadorCard/probadorThumbRow) en vez de
+   inventar componentes nuevos. Los sets guardados viven en SETS_STORE,
+   solo en este dispositivo (mismo criterio que LOG_STORE, ver arriba). */
+
+/* Elige, dentro de "pool", las n prendas con mejor puntaje de estilo+color
+   contra "anchorColors" — a diferencia de weightedPick (que elige al azar
+   con sesgo, para que Combinar no repita siempre lo mismo), aquí se quiere
+   el MEJOR set posible de forma determinista. anchorColors se va llenando
+   a medida que elige, así que cada prenda nueva también combina con las ya
+   elegidas de categorías anteriores. */
+function selectTopN(pool, n, anchorColors) {
+  const chosen = [];
+  let remaining = pool.slice();
+  for (let i = 0; i < n && remaining.length; i++) {
+    let best = null, bestScore = -1;
+    remaining.forEach(it => {
+      const score = styleWeightForItem(it) * colorWeightForItem(it, anchorColors);
+      if (score > bestScore) { bestScore = score; best = it; }
+    });
+    if (!best) break;
+    chosen.push(best);
+    if (best.color) anchorColors.push(best.color);
+    remaining = remaining.filter(x => x.id !== best.id);
+  }
+  return chosen;
+}
+
+/* wantCounts: { categoryKey: n }. Devuelve { categoryKey: [items elegidos] },
+   respetando el orden de CATEGORIES para que top/bottom se elijan primero
+   (y así el resto pueda combinar con ellos vía anchorColors). */
+function groupItemsForSelection(pool, wantCounts, anchorColors) {
+  const selected = {};
+  let remainingPool = pool.slice();
+  CATEGORIES.forEach(c => {
+    const n = wantCounts[c.key] || 0;
+    if (!n) { selected[c.key] = []; return; }
+    const catPool = remainingPool.filter(i => i.category === c.key);
+    const chosen = selectTopN(catPool, n, anchorColors);
+    selected[c.key] = chosen;
+    const chosenIds = new Set(chosen.map(i => i.id));
+    remainingPool = remainingPool.filter(i => !chosenIds.has(i.id));
+  });
+  return selected;
+}
+
+/* Filtra por ocasión igual que pickForCategory: si hay tags elegidos pero
+   ninguna prenda los tiene, cae de vuelta al clóset completo (con aviso en
+   el resumen) en vez de dar un resultado vacío. */
+function filterPoolByTags(items, tagSet) {
+  if (!tagSet || !tagSet.size) return { pool: items, fellBack: false };
+  const tags = Array.from(tagSet);
+  const matching = items.filter(i => i.tags && i.tags.some(t => tags.includes(t)));
+  return matching.length ? { pool: matching, fellBack: false } : { pool: items, fellBack: true };
+}
+
+function renderSetResult(containerEl, selected, summaryHtml) {
+  containerEl.innerHTML = '';
+  containerEl.appendChild(probadorCard('resumen', summaryHtml));
+  CATEGORIES.forEach(c => {
+    const list = selected[c.key];
+    if (!list || !list.length) return;
+    const card = probadorCard(c.label + ' (' + list.length + ')', '');
+    card.querySelector('.probadorCardBody').remove();
+    card.appendChild(probadorThumbRow(list.map(it => ({ item: it })), m => CATEGORY_LABEL[m.item.category] || m.item.category));
+    containerEl.appendChild(card);
+  });
+  containerEl.style.display = 'flex';
+}
+
+async function renderSavedSets(type, wrap) {
+  wrap.innerHTML = '';
+  const all = await setGetAll();
+  const items = await dbGetAll();
+  const itemsById = Object.fromEntries(items.map(i => [i.id, i]));
+  const mine = all.filter(s => s.type === type).sort((a, b) => b.createdAt - a.createdAt);
+  if (!mine.length) return;
+
+  const title = document.createElement('div');
+  title.className = 'fieldLabel';
+  title.style.marginTop = '22px';
+  title.textContent = type === 'capsula' ? 'cápsulas guardadas' : 'listas guardadas';
+  wrap.appendChild(title);
+
+  mine.forEach(setObj => {
+    const card = probadorCard(
+      setObj.name,
+      type === 'empacar' ? `${setObj.days} día${setObj.days === 1 ? '' : 's'} · ${setObj.itemIds.length} prendas` : `${setObj.itemIds.length} prendas`
+    );
+    const validItems = setObj.itemIds.map(id => itemsById[id]).filter(Boolean);
+    if (validItems.length) {
+      card.appendChild(probadorThumbRow(validItems.map(it => ({ item: it })), m => CATEGORY_LABEL[m.item.category] || m.item.category));
+    }
+    const delBtn = document.createElement('button');
+    delBtn.className = 'setDeleteBtn';
+    delBtn.type = 'button';
+    delBtn.textContent = 'borrar';
+    delBtn.addEventListener('click', async () => {
+      await setDeleteSaved(setObj.id);
+      renderSavedSets(type, wrap);
+    });
+    card.appendChild(delBtn);
+    wrap.appendChild(card);
+  });
+}
+
+/* ---- Cápsula ---- */
+let capsulaTags = new Set();
+let lastCapsulaSelected = null;
+TAGS.forEach(t => {
+  const chip = document.createElement('div');
+  chip.className = 'chip';
+  chip.textContent = t.label;
+  chip.addEventListener('click', () => {
+    if (capsulaTags.has(t.key)) { capsulaTags.delete(t.key); chip.classList.remove('selected'); }
+    else { capsulaTags.add(t.key); chip.classList.add('selected'); }
+  });
+  document.getElementById('capsulaTagChips').appendChild(chip);
+});
+
+const CAPSULE_CAT_WEIGHTS = { top: 0.30, bottom: 0.22, shoes: 0.14, outerwear: 0.12, dress: 0.12, accessory: 0.10 };
+
+document.getElementById('capsulaGenBtn').addEventListener('click', async () => {
+  const items = await dbGetAll();
+  if (!items.length) {
+    document.getElementById('capsulaResult').style.display = 'none';
+    return;
+  }
+  const n = Math.max(4, Math.min(40, parseInt(document.getElementById('capsulaSizeInput').value, 10) || 12));
+  const { pool, fellBack } = filterPoolByTags(items, capsulaTags);
+
+  const availableByCat = {};
+  CATEGORIES.forEach(c => { availableByCat[c.key] = pool.filter(i => i.category === c.key).length; });
+  const wantCounts = {};
+  let assigned = 0;
+  CATEGORIES.forEach(c => {
+    if (!availableByCat[c.key]) { wantCounts[c.key] = 0; return; }
+    const want = Math.max(1, Math.round(n * (CAPSULE_CAT_WEIGHTS[c.key] || 0.1)));
+    wantCounts[c.key] = Math.min(want, availableByCat[c.key]);
+    assigned += wantCounts[c.key];
+  });
+  // Si sobran cupos (categorías con poca disponibilidad), rellenar con lo mejor que quede, sin importar categoría.
+  const anchorColors = [];
+  const selected = groupItemsForSelection(pool, wantCounts, anchorColors);
+  let totalChosen = Object.values(selected).flat().length;
+  if (totalChosen < n) {
+    const chosenIds = new Set(Object.values(selected).flat().map(i => i.id));
+    const leftover = pool.filter(i => !chosenIds.has(i.id));
+    const extra = selectTopN(leftover, n - totalChosen, anchorColors);
+    extra.forEach(it => { selected[it.category] = selected[it.category] || []; selected[it.category].push(it); });
+    totalChosen += extra.length;
+  }
+
+  lastCapsulaSelected = selected;
+  const counts = CATEGORIES.map(c => selected[c.key] && selected[c.key].length ? `${selected[c.key].length} ${c.label}` : null).filter(Boolean);
+  const fallbackNote = fellBack ? ' No encontré prendas etiquetadas con esa ocasión, así que usé todo tu clóset.' : '';
+  const summary = `${totalChosen} prenda${totalChosen === 1 ? '' : 's'}: ${counts.join(', ')} — elegidas por lo bien que combinan entre sí y con tu estilo.${fallbackNote}`;
+  renderSetResult(document.getElementById('capsulaResult'), selected, summary);
+  document.getElementById('capsulaSaveBtn').style.display = totalChosen ? 'block' : 'none';
+  if (navigator.vibrate) navigator.vibrate(15);
+});
+
+document.getElementById('capsulaSaveBtn').addEventListener('click', async () => {
+  if (!lastCapsulaSelected) return;
+  const itemIds = Object.values(lastCapsulaSelected).flat().map(i => i.id);
+  if (!itemIds.length) return;
+  const stamp = new Date().toISOString().slice(0, 10);
+  await setPut({
+    id: Date.now() + '_' + Math.random().toString(36).slice(2),
+    type: 'capsula',
+    name: `Cápsula del ${stamp}`,
+    itemIds,
+    tags: Array.from(capsulaTags),
+    createdAt: Date.now()
+  });
+  renderSavedSets('capsula', document.getElementById('capsulaSavedList'));
+  if (navigator.vibrate) navigator.vibrate(15);
+});
+
+/* ---- Empacar (listas de viaje) ---- */
+let empacarTags = new Set();
+let lastEmpacarSelected = null;
+let lastEmpacarDays = null;
+TAGS.forEach(t => {
+  const chip = document.createElement('div');
+  chip.className = 'chip';
+  chip.textContent = t.label;
+  chip.addEventListener('click', () => {
+    if (empacarTags.has(t.key)) { empacarTags.delete(t.key); chip.classList.remove('selected'); }
+    else { empacarTags.add(t.key); chip.classList.add('selected'); }
+  });
+  document.getElementById('empacarTagChips').appendChild(chip);
+});
+
+document.getElementById('empacarGenBtn').addEventListener('click', async () => {
+  const items = await dbGetAll();
+  if (!items.length) {
+    document.getElementById('empacarResult').style.display = 'none';
+    return;
+  }
+  const days = Math.max(1, Math.min(30, parseInt(document.getElementById('empacarDaysInput').value, 10) || 5));
+  const { pool, fellBack } = filterPoolByTags(items, empacarTags);
+
+  const avail = {};
+  CATEGORIES.forEach(c => { avail[c.key] = pool.filter(i => i.category === c.key).length; });
+  /* Heurística estándar de maleta cápsula: suficientes tops/bottoms para
+     que las combinaciones alcancen, sin llevar una prenda por día. */
+  const wantCounts = {
+    top: Math.min(avail.top, Math.max(2, Math.ceil(days / 2))),
+    bottom: Math.min(avail.bottom, Math.max(2, Math.ceil(days / 3))),
+    shoes: Math.min(avail.shoes, days >= 5 ? 2 : 1),
+    outerwear: Math.min(avail.outerwear, 1),
+    dress: Math.min(avail.dress, days >= 4 ? 1 : 0),
+    accessory: Math.min(avail.accessory, 1)
+  };
+  const anchorColors = [];
+  const selected = groupItemsForSelection(pool, wantCounts, anchorColors);
+  const totalChosen = Object.values(selected).flat().length;
+
+  const tCount = (selected.top || []).length, bCount = (selected.bottom || []).length, dCount = (selected.dress || []).length;
+  const combos = (tCount * bCount) + dCount;
+  const counts = CATEGORIES.map(c => selected[c.key] && selected[c.key].length ? `${selected[c.key].length} ${c.label}` : null).filter(Boolean);
+  const fallbackNote = fellBack ? ' No encontré prendas etiquetadas con esa ocasión, así que usé todo tu clóset.' : '';
+  const combosNote = combos >= days
+    ? `Con esto tienes ${combos} combinaciones posibles para ${days} día${days === 1 ? '' : 's'} — alcanza de sobra.`
+    : `Con esto tienes ${combos} combinaciones posibles, un poco justo para ${days} días — si quieres más variedad, agrega más tops o pantalones a esta categoría antes de empacar.`;
+  const summary = `${totalChosen} prenda${totalChosen === 1 ? '' : 's'}: ${counts.join(', ')}. ${combosNote}${fallbackNote}`;
+  renderSetResult(document.getElementById('empacarResult'), selected, summary);
+  document.getElementById('empacarSaveBtn').style.display = totalChosen ? 'block' : 'none';
+  lastEmpacarSelected = selected;
+  lastEmpacarDays = days;
+  if (navigator.vibrate) navigator.vibrate(15);
+});
+
+document.getElementById('empacarSaveBtn').addEventListener('click', async () => {
+  if (!lastEmpacarSelected) return;
+  const itemIds = Object.values(lastEmpacarSelected).flat().map(i => i.id);
+  if (!itemIds.length) return;
+  const stamp = new Date().toISOString().slice(0, 10);
+  await setPut({
+    id: Date.now() + '_' + Math.random().toString(36).slice(2),
+    type: 'empacar',
+    name: `Viaje de ${lastEmpacarDays} día${lastEmpacarDays === 1 ? '' : 's'} — ${stamp}`,
+    itemIds,
+    days: lastEmpacarDays,
+    tags: Array.from(empacarTags),
+    createdAt: Date.now()
+  });
+  renderSavedSets('empacar', document.getElementById('empacarSavedList'));
+  if (navigator.vibrate) navigator.vibrate(15);
+});
 
 /* ---------------- Init ---------------- */
 buildOutfit();

@@ -1,4 +1,4 @@
-const CACHE = 'app-v43';
+const CACHE = 'app-v44';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -18,6 +18,13 @@ const CACHE = 'app-v43';
 // dormidas, kcal comidas, kcal gastadas y pasos por día (antes solo
 // mostraba peso + un dato suelto) — solo sube de versión para que el
 // navegador tome la copia nueva de salud.html.
+// v44: ropa.html suma 5 features nuevas — seguimiento de uso (con costo
+// por uso opcional), calendario de outfits, recordatorio de piezas sin
+// usar, armario cápsula y listas de empaque para viajes. IndexedDB de
+// ropa.html sube de version 2 a 3 (dos stores nuevos, outfit_log y
+// saved_sets — ninguno se sincroniza con Supabase, se quedan solo en el
+// dispositivo). No cambia el handler de fetch, solo sube de versión para
+// que el navegador tome la copia nueva de ropa.html.
 const ASSETS = [
   './',
   './index.html',
