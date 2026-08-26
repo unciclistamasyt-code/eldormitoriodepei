@@ -206,16 +206,17 @@
   .recentTitle { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); margin: 4px 0 8px; }
   .recentRow {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+    flex-direction: column;
+    gap: 4px;
     padding: 9px 2px;
     border-bottom: 1px solid var(--line);
     font-size: 13px;
   }
   .recentRow:last-child { border-bottom: none; }
+  .recentRow .recentMain { display: flex; justify-content: space-between; align-items: baseline; }
   .recentRow .d { color: var(--text-dim); font-size: 11.5px; min-width: 56px; }
   .recentRow .w { font-weight: 500; }
-  .recentRow .extra { color: var(--text-dim); font-size: 11.5px; text-align: right; }
+  .recentRow .extra { color: var(--text-dim); font-size: 11.5px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -1020,12 +1021,18 @@
       row.className = 'recentRow';
       var w = (typeof d.weight === 'number') ? round1(d.weight) + ' ' + (d.weight_unit || '') : '—';
       var extraParts = [];
+      if (typeof d.sleep_seconds === 'number') extraParts.push(round1(d.sleep_seconds / 3600) + 'h dormidas');
+      if (typeof d.food_calories === 'number') extraParts.push(Math.round(d.food_calories) + ' kcal comidas');
+      var burned = (typeof d.calories_total_garmin === 'number') ? d.calories_total_garmin
+        : (typeof d.calories_active_garmin === 'number') ? d.calories_active_garmin : null;
+      if (typeof burned === 'number') extraParts.push(Math.round(burned) + ' kcal gastadas');
       if (typeof d.steps === 'number') extraParts.push(d.steps + ' pasos');
-      if (typeof d.food_calories === 'number') extraParts.push(Math.round(d.food_calories) + ' kcal');
       row.innerHTML =
-        '<span class="d">' + fmtDate(d.date) + '</span>' +
-        '<span class="w">' + w + '</span>' +
-        '<span class="extra">' + (extraParts.join(' · ') || '—') + '</span>';
+        '<div class="recentMain">' +
+          '<span class="d">' + fmtDate(d.date) + '</span>' +
+          '<span class="w">' + w + '</span>' +
+        '</div>' +
+        '<div class="extra">' + (extraParts.join(' · ') || 'sin más datos ese día') + '</div>';
       wrap.appendChild(row);
     });
     return wrap;
