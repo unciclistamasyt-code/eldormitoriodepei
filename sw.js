@@ -1,4 +1,4 @@
-const CACHE = 'app-v44';
+const CACHE = 'app-v45';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -25,6 +25,17 @@ const CACHE = 'app-v44';
 // saved_sets — ninguno se sincroniza con Supabase, se quedan solo en el
 // dispositivo). No cambia el handler de fetch, solo sube de versión para
 // que el navegador tome la copia nueva de ropa.html.
+// v45: dos ajustes a lo de v44 — (1) se quitó por completo el precio de
+// compra / costo por uso de ropa.html (podía confundirse con otra cosa);
+// la insignia de uso ahora solo muestra cuántas veces se usó cada prenda.
+// (2) outfit_log y saved_sets ahora SÍ se sincronizan con Supabase (tablas
+// nuevas, mismo patrón que closet_items — requiere correr una vez
+// tools/uso_sets_sync/setup.sql), así que el uso/calendario/recordatorio/
+// cápsula/empacar también se ven iguales en todos los dispositivos.
+// IndexedDB de ropa.html sube de versión 3 a 4 (dos colas de reintento
+// nuevas, log_outbox y sets_outbox, mismo patrón que la cola del clóset).
+// No cambia el handler de fetch, solo sube de versión para que el
+// navegador tome la copia nueva de ropa.html.
 const ASSETS = [
   './',
   './index.html',
