@@ -1,4 +1,10 @@
-const CACHE = 'app-v39';
+const CACHE = 'app-v40';
+// Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
+// este repo — se movieron a un bucket público de Supabase Storage (más
+// liviano, sin el límite de 30MB para entregar el zip completo del sitio).
+// Por eso ya no aparecen en este precache: se cachean solos, la primera vez
+// que se piden, gracias a la regla genérica de abajo (ver comentario sobre
+// respuestas "opaque" en el handler de fetch).
 const ASSETS = [
   './',
   './index.html',
@@ -9,57 +15,11 @@ const ASSETS = [
   './golf.html',
   './menu.html',
   './salud.html',
-  './videos/fettuccine.webm',
-  './videos/fettuccine.mp4',
-  './img/fettuccine-poster.jpg',
-  './videos/pizza.webm',
-  './videos/pizza.mp4',
-  './img/pizza-poster.jpg',
-  './videos/ensalada.webm',
-  './videos/ensalada.mp4',
-  './img/ensalada-poster.jpg',
-  './videos/hamburguesa.webm',
-  './videos/hamburguesa.mp4',
-  './img/hamburguesa-poster.jpg',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/apple-touch-icon.png',
-  './audio/n1m1.mp3',
-  './audio/n1m2.mp3',
-  './audio/n1m3.mp3',
-  './audio/n1m4.mp3',
-  './audio/n1m5.mp3',
-  './audio/n1m6.mp3',
-  './audio/n1m7.mp3',
-  './audio/n1m8.mp3',
-  './audio/n2m1.mp3',
-  './audio/n2m2.mp3',
-  './audio/n2m3.mp3',
-  './audio/n2m4.mp3',
-  './audio/n2m5.mp3',
-  './audio/n2m6.mp3',
-  './audio/n2m7.mp3',
-  './audio/n2m8.mp3',
-  './audio/n2m9.mp3',
-  './audio/n3m1.mp3',
-  './audio/n3m2.mp3',
-  './audio/n3m3.mp3',
-  './audio/n3m4.mp3',
-  './audio/n4m1.mp3',
-  './audio/n4m2.mp3',
-  './audio/n4m3.mp3',
-  './audio/n4m4.mp3',
-  './audio/n4m5.mp3',
-  './audio/n4m6.mp3',
-  './audio/n5m1.mp3',
-  './audio/n5m2.mp3',
-  './audio/n5m3.mp3',
-  './audio/n5m4.mp3',
-  './audio/n5m5.mp3',
-  './audio/n5m6.mp3',
-  './audio/n5m7.mp3'
+  './icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (e) => {
@@ -108,7 +68,12 @@ self.addEventListener('fetch', (e) => {
     caches.match(e.request).then((cached) => {
       const fetchPromise = fetch(e.request)
         .then((res) => {
-          if (res && res.status === 200) {
+          // res.status === 200: recurso normal del mismo origen (GitHub Pages).
+          // res.type === 'opaque': recurso de otro origen (ej. Supabase
+          // Storage) pedido sin CORS explícito por <video>/<source>/<audio>
+          // — el navegador no deja leer su status real (siempre da 0), pero
+          // sí se puede guardar en caché igual para que funcione offline.
+          if (res && (res.status === 200 || res.type === 'opaque')) {
             const clone = res.clone();
             caches.open(CACHE).then((cache) => cache.put(e.request, clone));
           }

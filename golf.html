@@ -1462,10 +1462,11 @@ function playSynthChunk(text, voice) {
 
 /* ================= Audio pregrabado (voz "real" de ElevenLabs) =================
    Algunos módulos tienen su audio grabado de antemano con una voz humana
-   mucho más natural (ElevenLabs) — se reproduce directo desde ./audio/,
-   sin depender de internet en el momento (queda cacheado por el service
-   worker). Si el archivo no está o falla, cae al flujo en vivo de siempre
-   (Google Translate TTS con fallback a la voz del dispositivo). */
+   mucho más natural (ElevenLabs) — se reproduce desde Supabase Storage
+   (bucket público site-media), y queda cacheado por el service worker tras
+   la primera reproducción para funcionar offline después. Si el archivo no
+   está o falla, cae al flujo en vivo de siempre (Google Translate TTS con
+   fallback a la voz del dispositivo). */
 const PREGEN_AUDIO_MODULES = new Set([
   'n1m1', 'n1m2', 'n1m3', 'n1m4', 'n1m5', 'n1m6', 'n1m7', 'n1m8',
   'n2m1', 'n2m2', 'n2m3', 'n2m4', 'n2m5', 'n2m6', 'n2m7', 'n2m8', 'n2m9',
@@ -1474,8 +1475,10 @@ const PREGEN_AUDIO_MODULES = new Set([
   'n5m1', 'n5m2', 'n5m3', 'n5m4', 'n5m5', 'n5m6', 'n5m7'
 ]);
 
+const MEDIA_BASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media';
+
 function pregenAudioUrl(moduleId) {
-  return `./audio/${moduleId}.mp3`;
+  return `${MEDIA_BASE_URL}/audio/${moduleId}.mp3`;
 }
 
 function playPregenAudio(moduleId, btn, text, fallbackVoice) {
@@ -1702,7 +1705,7 @@ function renderLeccion(app, data) {
   voiceHint.style.marginTop = '-14px';
   voiceHint.style.marginBottom = '18px';
   voiceHint.textContent = PREGEN_AUDIO_MODULES.has(m.id)
-    ? 'Este módulo tiene audio grabado con una voz humana real (no una síntesis) — se reproduce sin necesitar internet, y si por algún motivo falla, cae automáticamente a la voz de tu dispositivo elegida arriba.'
+    ? 'Este módulo tiene audio grabado con una voz humana real (no una síntesis) — la primera vez que lo escuchas necesita internet para descargarlo, pero después queda guardado en tu teléfono y se reproduce sin conexión. Si por algún motivo falla, cae automáticamente a la voz de tu dispositivo elegida arriba.'
     : 'Por defecto "Escuchar el módulo" usa una voz en español más natural (necesita internet). Si no hay conexión o el servicio falla, cae automáticamente a la voz de tu dispositivo elegida arriba — que no incluye "Siri Voice": eso es una limitación de iOS, Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, nunca la voz de Siri en sí.';
   app.appendChild(voiceHint);
 
