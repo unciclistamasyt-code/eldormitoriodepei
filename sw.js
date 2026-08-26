@@ -1,4 +1,4 @@
-const CACHE = 'app-v41';
+const CACHE = 'app-v42';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -10,6 +10,10 @@ const CACHE = 'app-v41';
 // activa cuando se pega la Publishable key real en el archivo; mientras
 // tanto la app sigue funcionando 100% local, igual que siempre. Se sube de
 // versión solo para que el navegador tome la copia nueva de ropa.html.
+// v42: salud.html tiene un nuevo "coach" de preguntas libres (mismo patrón
+// gratis basado en palabras clave que ya usa ropa.html, sin IA real ni
+// costo) — no toca datos ni caché, solo sube de versión para que el
+// navegador tome la copia nueva de salud.html.
 const ASSETS = [
   './',
   './index.html',
