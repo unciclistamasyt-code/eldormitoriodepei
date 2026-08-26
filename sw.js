@@ -1,10 +1,15 @@
-const CACHE = 'app-v40';
+const CACHE = 'app-v41';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
 // Por eso ya no aparecen en este precache: se cachean solos, la primera vez
 // que se piden, gracias a la regla genérica de abajo (ver comentario sobre
 // respuestas "opaque" en el handler de fetch).
+// v41: ropa.html ahora puede sincronizar el clóset con Supabase (tabla
+// closet_items + fotos en el mismo bucket site-media/closet/) — solo se
+// activa cuando se pega la Publishable key real en el archivo; mientras
+// tanto la app sigue funcionando 100% local, igual que siempre. Se sube de
+// versión solo para que el navegador tome la copia nueva de ropa.html.
 const ASSETS = [
   './',
   './index.html',
@@ -47,10 +52,13 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(fetch(e.request));
     return;
   }
-  if (new URL(e.request.url).pathname.indexOf('/data/') !== -1) {
-    // Datos de salud (health.json): cambian todos los días y salud.html ya
-    // pide con cache:'no-store', pero por si acaso — red primero, con la
-    // última copia cacheada como respaldo si no hay conexión.
+  const reqPath = new URL(e.request.url).pathname;
+  if (reqPath.indexOf('/data/') !== -1 || reqPath.indexOf('/rest/v1/') !== -1) {
+    // Datos de salud (health.json) y, desde v41, la tabla closet_items de
+    // Supabase (el clóset sincronizado): ambos cambian seguido y deben
+    // reflejar siempre lo último — red primero, con la última copia
+    // cacheada como respaldo si no hay conexión (nunca servir de caché
+    // primero, o el clóset se vería desactualizado entre dispositivos).
     e.respondWith(
       fetch(e.request)
         .then((res) => {
