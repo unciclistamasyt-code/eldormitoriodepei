@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>&nbsp;</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content=" " />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+<style>
+  .tabs {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 4px;
+    margin-bottom: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 6px 2px;
+    border-bottom: 1px solid transparent;
+    flex-shrink: 0;
+  }
+  .tab.active {
+    color: var(--text);
+    border-bottom: 1px solid var(--text);
+  }
+
+  .view { display: none; flex: 1; flex-direction: column; min-height: 0; }
+  .view.active { display: flex; }
+
+  .syncStatus {
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    min-height: 12px;
+  }
+
+  /* ---- filtros + orden ---- */
+  .filterRow {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chip {
+    font-size: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .chip.active {
+    color: var(--bg);
+    background: var(--text);
+    border-color: var(--text);
+  }
+  .sortRow {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+  .sortBtn {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+  }
+
+  /* ---- lista de recetas ---- */
+  .recipeList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 10px;
+  }
+  .recipeCard {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    background: var(--bg-soft);
+  }
+  .recipeCard .rName {
+    font-size: 15px;
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+  .recipeCard .rMeta {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .badge {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-size: 10px;
+  }
+  .badge.user { color: var(--accent); border-color: var(--accent); }
+  .rStars {
+    font-size: 13px;
+    color: var(--line);
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+  .rStars .filled { color: var(--text); }
+  .emptyState {
+    color: var(--text-dim);
+    text-align: center;
+    font-size: 13px;
+    margin-top: 40px;
+    line-height: 1.5;
+  }
+
+  /* ---- overlay de detalle ---- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+    padding-top: calc(env(safe-area-inset-top) + 18px);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 18px);
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .overlay.open { transform: translateX(0); }
+  .detailName {
+    font-size: 19px;
+    line-height: 1.3;
+    margin: 10px 0 6px;
+  }
+  .detailMeta {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .detailNote {
+    font-size: 12px;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 10px 0;
+    line-height: 1.45;
+  }
+  .sectionLabel {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 18px 0 8px;
+  }
+  .ingList, .prepList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .ingList li {
+    font-size: 14px;
+    line-height: 1.4;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+  }
+  .ingList li:last-child { border-bottom: none; }
+  .measuredTag {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 2px 5px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    height: fit-content;
+  }
+  .prepList {
+    counter-reset: prepStep;
+  }
+  .prepList li {
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    gap: 10px;
+  }
+  .prepList li::before {
+    counter-increment: prepStep;
+    content: counter(prepStep);
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+  }
+  .measuredHint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    line-height: 1.4;
+  }
+
+  .textInput {
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+  }
+  textarea.textInput {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+  }
+  .starRow { display: flex; gap: 4px; }
+  .starRow .star {
+    font-size: 30px;
+    line-height: 1;
+    padding: 4px 6px;
+    color: var(--line);
+  }
+  .starRow .star.filled { color: var(--text); }
+
+  .saveBtn {
+    margin-top: 14px;
+    width: 100%;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .saveBtn:disabled { opacity: 0.4; }
+  .saveMsg {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    min-height: 14px;
+  }
+  .deleteBtn {
+    margin-top: 22px;
+    align-self: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+  }
+
+  /* ---- agregar receta ---- */
+  .formGroup { margin-bottom: 16px; }
+  .formLabel {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .formHint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="topbar">
+      <a class="back" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5 L8 12 L15 19"/></svg>
+      </a>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="tabs fade-in">
+      <div class="tab active" data-view="recetas">recetas</div>
+      <div class="tab" data-view="agregar">agregar</div>
+    </div>
+
+    <div class="syncStatus fade-in" id="syncStatus"></div>
+
+    <!-- RECETAS -->
+    <div class="view active fade-in" id="view-recetas">
+      <div class="filterRow" id="filterRow"></div>
+      <div class="sortRow">
+        <div class="sortBtn" id="sortBtn">orden: como en el libro</div>
+      </div>
+      <div class="recipeList" id="recipeList"></div>
+    </div>
+
+    <!-- AGREGAR -->
+    <div class="view fade-in" id="view-agregar">
+      <div style="flex:1; overflow-y:auto;">
+        <div class="formGroup">
+          <label class="formLabel">nombre de la receta</label>
+          <input class="textInput" id="newName" type="text" placeholder="ej. bowl de pollo con quinoa" maxlength="120" />
+        </div>
+        <div class="formGroup">
+          <label class="formLabel">proteína principal</label>
+          <input class="textInput" id="newProtein" type="text" placeholder="ej. pollo, atún, tofu..." maxlength="60" />
+        </div>
+        <div class="formGroup">
+          <label class="formLabel">calorías aproximadas (opcional)</label>
+          <input class="textInput" id="newKcal" type="number" inputmode="numeric" placeholder="ej. 480" />
+          <div class="formHint">si no la sabes, déjala en blanco — se guarda igual, solo que sin calorías, no pasa nada.</div>
+        </div>
+        <div class="formGroup">
+          <label class="formLabel">ingredientes (uno por línea)</label>
+          <textarea class="textInput" id="newIngredients" rows="5" placeholder="2 pechugas de pollo&#10;1 taza de arroz cocido&#10;..."></textarea>
+        </div>
+        <div class="formGroup">
+          <label class="formLabel">preparación (un paso por línea)</label>
+          <textarea class="textInput" id="newPrep" rows="5" placeholder="Cocinar el arroz...&#10;Sazonar el pollo...&#10;..."></textarea>
+        </div>
+        <button class="saveBtn" id="newSaveBtn">guardar receta</button>
+        <div class="saveMsg" id="newSaveMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY DE DETALLE -->
+  <div class="overlay" id="detailOverlay">
+    <div class="topbar">
+      <div class="back" id="detailClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5 L8 12 L15 19"/></svg>
+      </div>
+      <div class="spacer"></div>
+    </div>
+    <div class="detailName" id="detailName"></div>
+    <div class="detailMeta" id="detailMeta"></div>
+    <div class="detailNote" id="detailNote" style="display:none;"></div>
+
+    <div class="sectionLabel">ingredientes</div>
+    <ul class="ingList" id="detailIng"></ul>
+    <div class="measuredHint">● = porción medida (no combines varias porciones ● grandes en la misma cena si quieres mantenerte cerca de las kcal indicadas).</div>
+
+    <div class="sectionLabel">preparación</div>
+    <ol class="prepList" id="detailPrep"></ol>
+
+    <div class="sectionLabel">tu calificación</div>
+    <div class="starRow" id="detailStarRow"></div>
+
+    <div class="sectionLabel">sugerencias para mejorar la receta</div>
+    <textarea class="textInput" id="detailSuggestion" rows="3" placeholder="ej. menos sal, más limón, doblar la porción de..."></textarea>
+    <button class="saveBtn" id="detailSaveBtn">guardar calificación</button>
+    <div class="saveMsg" id="detailSaveMsg"></div>
+
+    <button class="deleteBtn" id="detailDeleteBtn" style="display:none;">borrar esta receta</button>
+  </div>
+
+<script>
+/* ======================================================================
+   recetas.html — nueva app, 14 de septiembre de 2026.
+   El usuario pidió (verbatim): "quiero agregar otra app con esta info,
+   quiero poder darle calificacion, sugerencias para mejorar receta,
+   ademas probe hoy una nueva receta para agregar que me gusto...", junto
+   con un PDF de 30 recetas de cenas estilo "bowl" (vegetales sin límite +
+   una porción medida de papa/arroz/queso/etc. marcada con ●, ~450-550
+   kcal por porción, 2 porciones por receta).
+
+   Las 31 recetas (las 30 del PDF + la nueva que agregó el usuario, r31)
+   van fijas en el array RECIPES de abajo — se entregan igual en todos los
+   dispositivos sin depender de sincronización. Solo dos cosas sí se
+   sincronizan con Supabase (el usuario eligió esto explícitamente sobre
+   dejarlo local-only, igual que el resto de la app):
+   - "custom_recipes": recetas nuevas que el usuario agregue desde el tab
+     "agregar" (se crean o se borran, no se editan después — mismo patrón
+     que "saved_sets"/"favorite_outfits" de ropa.html).
+   - "recipe_ratings": la calificación (1-5 estrellas) y la sugerencia de
+     texto por receta — funciona igual para las 31 recetas fijas que para
+     cualquier receta agregada, porque se guarda por "recipe_id", no
+     importa de dónde salió la receta. "Última escritura gana" (mismo
+     patrón que "outfit_log").
+   ====================================================================== */
+
+const RECIPES = [
+  {
+    "id": "r1",
+    "name": "Pollo al horno con papas asadas y ensalada de pepino",
+    "protein": "Pollo",
+    "kcal": 520,
+    "ingredients": [
+      "2 pechugas de pollo (150 g c/u)",
+      "300 g papa en cubos ●",
+      "1 cda aceite de oliva ●",
+      "300 g pepino",
+      "1 taza tomate cherry",
+      "vinagre, sal, pimentón, romero"
+    ],
+    "prep": [
+      "Precalentar el horno a 200 grados C.",
+      "Sazonar el pollo con pimentón, sal y romero.",
+      "Mezclar las papas con el aceite de oliva y sal.",
+      "Hornear el pollo y las papas juntos 30-35 minutos, volteando a la mitad.",
+      "Preparar una ensalada de pepino y tomate cherry con vinagre y sal.",
+      "Servir el pollo con las papas y la ensalada."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r2",
+    "name": "Salmón al horno con espárragos y limón",
+    "protein": "Salmón",
+    "kcal": 500,
+    "ingredients": [
+      "2 filetes de salmón (120 g c/u) ●",
+      "300 g espárragos",
+      "1 cda aceite de oliva ●",
+      "1 limón",
+      "2 dientes de ajo",
+      "sal y pimienta"
+    ],
+    "prep": [
+      "Precalentar el horno a 200 grados C.",
+      "Colocar el salmón y los espárragos en una bandeja para hornear.",
+      "Rociar con aceite de oliva, ajo picado, sal, pimienta y rodajas de limón.",
+      "Hornear 15-18 minutos.",
+      "Servir con un poco más de jugo de limón."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r3",
+    "name": "Camarones al ajillo con arroz integral y calabacín",
+    "protein": "Camarones",
+    "kcal": 470,
+    "ingredients": [
+      "300 g camarones pelados",
+      "1.5 tazas arroz integral cocido ●",
+      "2 calabacines en rodajas",
+      "4 dientes de ajo",
+      "1 cda aceite de oliva ●",
+      "perejil, chile en hojuelas (opcional)"
+    ],
+    "prep": [
+      "Cocinar el arroz integral según las instrucciones del paquete.",
+      "Saltear el ajo en el aceite de oliva.",
+      "Agregar los camarones y cocinar 3-4 minutos.",
+      "Incorporar el calabacín en rodajas y cocinar 3 minutos más.",
+      "Servir sobre el arroz con perejil picado."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r4",
+    "name": "Pechuga rellena de espinaca y champiñones con puré de papa",
+    "protein": "Pollo",
+    "kcal": 530,
+    "ingredients": [
+      "2 pechugas de pollo abiertas en mariposa",
+      "2 tazas espinaca",
+      "1 taza champiñones picados",
+      "30 g queso light ●",
+      "400 g papa ●",
+      "un chorrito de leche descremada",
+      "ajo, sal, pimienta"
+    ],
+    "prep": [
+      "Saltear la espinaca y los champiñones con ajo hasta que se ablanden.",
+      "Rellenar las pechugas con la mezcla y el queso, cerrar con palillos.",
+      "Cocinar en sartén tapado 8-10 minutos por lado, o al horno 25 minutos a 200 grados C.",
+      "Hervir la papa hasta que esté tierna y hacer puré con la leche descremada.",
+      "Servir el pollo relleno sobre el puré de papa."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r5",
+    "name": "Merluza a la plancha con quinoa y brócoli",
+    "protein": "Pescado blanco",
+    "kcal": 460,
+    "ingredients": [
+      "2 filetes de merluza (150 g c/u)",
+      "1.5 tazas quinoa cocida ●",
+      "300 g brócoli",
+      "1 cda aceite de oliva ●",
+      "limón, ajo, sal"
+    ],
+    "prep": [
+      "Cocinar la quinoa según las instrucciones del paquete.",
+      "Sazonar la merluza y cocinarla en plancha 3-4 minutos por lado.",
+      "Cocinar el brócoli al vapor 5 minutos.",
+      "Servir todo junto con aceite de oliva y jugo de limón."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r6",
+    "name": "Ensalada de garbanzos con atún y vegetales",
+    "protein": "Atún",
+    "kcal": 480,
+    "ingredients": [
+      "1 taza garbanzos cocidos ●",
+      "2 latas atún en agua (160 g escurrido)",
+      "1 pepino",
+      "1 tomate",
+      "1 pimiento",
+      "1/4 cebolla morada",
+      "1 cda aceite de oliva ●",
+      "vinagre, sal, orégano"
+    ],
+    "prep": [
+      "Escurrir los garbanzos y el atún.",
+      "Picar el pepino, tomate, pimiento y cebolla.",
+      "Mezclar todo en un bowl grande.",
+      "Aliñar con aceite de oliva, vinagre, sal y orégano.",
+      "Servir frio o a temperatura ambiente."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r7",
+    "name": "Pollo al curry ligero con arroz y coliflor",
+    "protein": "Pollo",
+    "kcal": 510,
+    "ingredients": [
+      "2 pechugas de pollo en cubos",
+      "1.5 tazas arroz cocido ●",
+      "2 tazas coliflor",
+      "1/2 cebolla",
+      "1 cdta curry en polvo",
+      "1/4 taza leche de coco light ●",
+      "caldo de pollo, ajo, jengibre"
+    ],
+    "prep": [
+      "Sofreír la cebolla y el ajo hasta que estén transparentes.",
+      "Agregar el pollo y dorarlo por todos lados.",
+      "Añadir el curry, el jengibre, el caldo y la leche de coco light.",
+      "Incorporar la coliflor y cocinar tapado 12-15 minutos.",
+      "Servir sobre el arroz."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r8",
+    "name": "Salmón teriyaki con repollo salteado y arroz",
+    "protein": "Salmón",
+    "kcal": 540,
+    "ingredients": [
+      "2 filetes de salmón (120 g c/u) ●",
+      "1 taza arroz cocido ●",
+      "3 tazas repollo",
+      "2 cdas salsa de soja",
+      "1 cdta miel o sirope sin azúcar ●",
+      "ajo, jengibre",
+      "spray de aceite"
+    ],
+    "prep": [
+      "Mezclar la soja, la miel/sirope, el ajo y el jengibre para la salsa teriyaki.",
+      "Cocinar el salmón en sartén con spray de aceite 3-4 minutos por lado.",
+      "Agregar la salsa los últimos 2 minutos de cocción.",
+      "Saltear el repollo aparte 5 minutos.",
+      "Servir el salmón con el repollo y el arroz."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r9",
+    "name": "Tacos de pollo con tortillas integrales y pico de gallo",
+    "protein": "Pollo",
+    "kcal": 500,
+    "ingredients": [
+      "2 pechugas de pollo en tiras",
+      "4 tortillas integrales pequeñas ●",
+      "1 tomate",
+      "1/4 cebolla",
+      "cilantro",
+      "jugo de limón",
+      "lechuga",
+      "salsa picante al gusto"
+    ],
+    "prep": [
+      "Cocinar el pollo sazonado en sartén 8-10 minutos y desmenuzar o cortar en tiras.",
+      "Preparar el pico de gallo con tomate, cebolla, cilantro y limón picados.",
+      "Calentar las tortillas.",
+      "Armar los tacos con lechuga, pollo y pico de gallo."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r10",
+    "name": "Pavo al horno con batata y ejotes",
+    "protein": "Pavo",
+    "kcal": 520,
+    "ingredients": [
+      "2 filetes de pechuga de pavo (150 g c/u)",
+      "300 g batata/camote en cubos ●",
+      "250 g ejotes",
+      "1 cda aceite de oliva ●",
+      "romero, sal, pimienta"
+    ],
+    "prep": [
+      "Precalentar el horno a 200 grados C.",
+      "Mezclar la batata con el aceite, sal y romero, y hornear 20 minutos.",
+      "Agregar el pavo sazonado y los ejotes a la misma bandeja.",
+      "Hornear 15-18 minutos más hasta que el pavo esté cocido."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r11",
+    "name": "Sopa de lentejas con pollo desmenuzado y vegetales",
+    "protein": "Pollo",
+    "kcal": 470,
+    "ingredients": [
+      "1 taza lentejas cocidas ●",
+      "200 g pechuga de pollo",
+      "1 zanahoria",
+      "1 tallo de apio",
+      "1/2 cebolla",
+      "ajo",
+      "caldo de pollo bajo en sodio",
+      "comino, sal"
+    ],
+    "prep": [
+      "Cocinar el pollo en el caldo hasta que esté listo y desmenuzarlo.",
+      "En la misma olla, sofreír la cebolla, el ajo, la zanahoria y el apio.",
+      "Agregar las lentejas cocidas y el pollo desmenuzado.",
+      "Cocinar 10 minutos a fuego medio y sazonar con comino y sal."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r12",
+    "name": "Camarones salteados con fideos de calabacín y maíz",
+    "protein": "Camarones",
+    "kcal": 440,
+    "ingredients": [
+      "300 g camarones pelados",
+      "2 calabacines en espiral",
+      "1/2 taza maíz dulce ●",
+      "2 dientes de ajo",
+      "1 cda aceite de oliva ●",
+      "limón, chile en hojuelas, cilantro"
+    ],
+    "prep": [
+      "Saltear el ajo en el aceite de oliva.",
+      "Agregar los camarones y cocinar 3-4 minutos.",
+      "Añadir el maíz y cocinar 2 minutos.",
+      "Incorporar los fideos de calabacín y cocinar 2 minutos más sin pasarlos de cocción.",
+      "Terminar con jugo de limón y cilantro."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r13",
+    "name": "Pollo fajitas con pimientos, cebolla y tortilla integral",
+    "protein": "Pollo",
+    "kcal": 510,
+    "ingredients": [
+      "2 pechugas de pollo en tiras",
+      "2 pimientos en tiras",
+      "1 cebolla en tiras",
+      "4 tortillas integrales pequeñas ●",
+      "comino, pimentón, ajo en polvo",
+      "jugo de limón"
+    ],
+    "prep": [
+      "Sazonar el pollo con comino, pimentón y ajo en polvo.",
+      "Saltear el pollo en sartén caliente 5-6 minutos y reservar.",
+      "Saltear los pimientos y la cebolla 5 minutos.",
+      "Combinar todo, agregar el jugo de limón.",
+      "Servir con las tortillas calientes."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r14",
+    "name": "Salmón en papillote con papas baby y eneldo",
+    "protein": "Salmón",
+    "kcal": 530,
+    "ingredients": [
+      "2 filetes de salmón (120 g c/u) ●",
+      "250 g papas baby ●",
+      "eneldo fresco",
+      "1 limón",
+      "1 cda aceite de oliva ●",
+      "sal, pimienta"
+    ],
+    "prep": [
+      "Precalentar el horno a 200 grados C.",
+      "Cortar papel para hornear en dos porciones.",
+      "Colocar el salmón y las papas baby cortadas en mitades en cada paquete.",
+      "Agregar eneldo, limón, aceite, sal y pimienta.",
+      "Cerrar bien los paquetes y hornear 20-25 minutos."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r15",
+    "name": "Pescado blanco empanizado ligero con ensalada",
+    "protein": "Pescado blanco",
+    "kcal": 460,
+    "ingredients": [
+      "2 filetes de tilapia o merluza (150 g c/u)",
+      "1/3 taza avena molida o pan rallado integral ●",
+      "1 huevo ●",
+      "lechuga, tomate, pepino",
+      "spray de aceite",
+      "limón, sal, pimentón"
+    ],
+    "prep": [
+      "Batir el huevo en un plato hondo.",
+      "Pasar el pescado por el huevo y luego por la avena molida sazonada con pimentón y sal.",
+      "Cocinar en sartén con spray de aceite 4-5 minutos por lado hasta dorar.",
+      "Preparar una ensalada simple de lechuga, tomate y pepino.",
+      "Servir con jugo de limón."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r16",
+    "name": "Albóndigas de pavo con salsa de tomate y espagueti integral",
+    "protein": "Pavo",
+    "kcal": 520,
+    "ingredients": [
+      "300 g pavo molido",
+      "1 huevo ●",
+      "2 cdas pan rallado integral ●",
+      "1 diente de ajo",
+      "1.5 tazas salsa de tomate baja en azúcar",
+      "1 taza espagueti integral cocido ●",
+      "albahaca, sal"
+    ],
+    "prep": [
+      "Mezclar el pavo molido con huevo, pan rallado, ajo picado, sal y pimienta.",
+      "Formar albóndigas y dorarlas en sartén por todos lados.",
+      "Agregar la salsa de tomate y cocinar tapado 10-12 minutos.",
+      "Servir sobre el espagueti integral con albahaca fresca."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r17",
+    "name": "Pollo a la mostaza y miel con brócoli y arroz",
+    "protein": "Pollo",
+    "kcal": 500,
+    "ingredients": [
+      "2 pechugas de pollo",
+      "1 cda mostaza Dijon",
+      "1 cdta miel o sirope sin azúcar ●",
+      "300 g brócoli",
+      "1 taza arroz cocido ●",
+      "ajo, sal"
+    ],
+    "prep": [
+      "Mezclar la mostaza, la miel/sirope, el ajo y la sal para la marinada.",
+      "Marinar el pollo unos minutos y cocinarlo en sartén o al horno 20 minutos.",
+      "Cocinar el brócoli al vapor.",
+      "Servir el pollo con el brócoli y el arroz."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r18",
+    "name": "Bowl de atún, aguacate, arroz y pepino estilo poke",
+    "protein": "Atún",
+    "kcal": 510,
+    "ingredients": [
+      "250 g atún (fresco en cubos o en agua)",
+      "1/2 aguacate ●",
+      "1 taza arroz cocido ●",
+      "1 pepino",
+      "1 zanahoria",
+      "salsa de soja, sésamo, jugo de lima"
+    ],
+    "prep": [
+      "Cocinar el arroz y dejar enfriar un poco.",
+      "Cortar el atún, el pepino y la zanahoria en cubos o tiras finas.",
+      "Marinar el atún con soja, sésamo y lima unos minutos.",
+      "Armar el bowl con el arroz, los vegetales, el atún y el aguacate en láminas."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r19",
+    "name": "Chili de pavo con frijoles negros y vegetales",
+    "protein": "Pavo",
+    "kcal": 490,
+    "ingredients": [
+      "300 g pavo molido",
+      "1 taza frijoles negros cocidos ●",
+      "1 taza tomate triturado",
+      "1 pimiento",
+      "1/2 cebolla",
+      "ajo, comino, chile en polvo",
+      "caldo"
+    ],
+    "prep": [
+      "Dorar el pavo molido con la cebolla y el ajo.",
+      "Agregar el pimiento, el tomate triturado, los frijoles, el comino y el chile en polvo.",
+      "Cocinar a fuego medio-bajo 20-25 minutos, removiendo ocasionalmente.",
+      "Ajustar la sal y servir."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r20",
+    "name": "Pollo al horno con papas y pimientos estilo mediterráneo",
+    "protein": "Pollo",
+    "kcal": 520,
+    "ingredients": [
+      "2 pechugas o muslos de pollo sin piel",
+      "300 g papa en cubos ●",
+      "2 pimientos en tiras",
+      "10 aceitunas",
+      "1 cda aceite de oliva ●",
+      "orégano, limón, ajo"
+    ],
+    "prep": [
+      "Precalentar el horno a 200 grados C.",
+      "Mezclar las papas y los pimientos con aceite, ajo, orégano y sal.",
+      "Colocar el pollo sazonado encima de las verduras.",
+      "Hornear todo junto 30-35 minutos.",
+      "Terminar con aceitunas y jugo de limón."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r21",
+    "name": "Salmón con costra de almendras y espinaca salteada",
+    "protein": "Salmón",
+    "kcal": 550,
+    "ingredients": [
+      "2 filetes de salmón (120 g c/u) ●",
+      "2 cdas almendras molidas ●",
+      "1 cda mostaza Dijon",
+      "3 tazas espinaca",
+      "ajo",
+      "spray de aceite",
+      "sal"
+    ],
+    "prep": [
+      "Untar el salmón con mostaza y cubrir con las almendras molidas.",
+      "Hornear a 200 grados C durante 15-18 minutos.",
+      "Saltear la espinaca con ajo y spray de aceite 2-3 minutos.",
+      "Servir el salmón con la espinaca salteada."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r22",
+    "name": "Camarones al coco con arroz y brócoli",
+    "protein": "Camarones",
+    "kcal": 500,
+    "ingredients": [
+      "300 g camarones pelados",
+      "1/3 taza leche de coco light ●",
+      "curry en polvo o paprika",
+      "1 taza arroz cocido ●",
+      "300 g brócoli",
+      "ajo, cilantro"
+    ],
+    "prep": [
+      "Sofreír el ajo y agregar los camarones, cocinar 2-3 minutos.",
+      "Incorporar la leche de coco light y el curry, cocinar 4-5 minutos más.",
+      "Cocinar el brócoli al vapor.",
+      "Servir con el arroz y cilantro fresco."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r23",
+    "name": "Ensalada tibia de pollo, quinoa, garbanzos y vegetales",
+    "protein": "Pollo",
+    "kcal": 530,
+    "ingredients": [
+      "2 pechugas de pollo en cubos",
+      "1 taza quinoa cocida ●",
+      "1/2 taza garbanzos cocidos ●",
+      "1 tomate",
+      "1 pepino",
+      "1 pimiento",
+      "1 cda aceite de oliva ●",
+      "limón, sal"
+    ],
+    "prep": [
+      "Cocinar el pollo sazonado en sartén 8-10 minutos.",
+      "Cocinar la quinoa según las instrucciones del paquete.",
+      "Mezclar en un bowl grande el pollo, la quinoa, los garbanzos y los vegetales picados.",
+      "Aliñar con aceite de oliva, limón y sal.",
+      "Servir tibio o frio."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r24",
+    "name": "Pechuga rellena de queso light y tomate con ensalada",
+    "protein": "Pollo",
+    "kcal": 490,
+    "ingredients": [
+      "2 pechugas de pollo en mariposa",
+      "40 g queso mozzarella light ●",
+      "1 tomate en rodajas",
+      "albahaca fresca",
+      "ensalada verde de acompañamiento",
+      "spray de aceite, sal, pimienta"
+    ],
+    "prep": [
+      "Rellenar las pechugas con el queso, el tomate y la albahaca, cerrar con palillos.",
+      "Cocinar en sartén con spray de aceite, tapado, 8-10 minutos por lado (o al horno 25 minutos).",
+      "Servir con una ensalada verde simple."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r25",
+    "name": "Merluza al horno con papas y alcaparras",
+    "protein": "Pescado blanco",
+    "kcal": 470,
+    "ingredients": [
+      "2 filetes de merluza (150 g c/u)",
+      "250 g papa en rodajas finas ●",
+      "1 cda alcaparras",
+      "1 limón, ajo",
+      "1 cda aceite de oliva ●",
+      "perejil, sal"
+    ],
+    "prep": [
+      "Precalentar el horno a 200 grados C.",
+      "Colocar las papas en rodajas en la base de una bandeja con un poco de aceite y sal, hornear 15 minutos.",
+      "Agregar el pescado encima con ajo, alcaparras, limón y el resto del aceite.",
+      "Hornear 15-18 minutos más.",
+      "Terminar con perejil fresco."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r26",
+    "name": "Tazón de pavo molido estilo asiático con arroz y vegetales",
+    "protein": "Pavo",
+    "kcal": 510,
+    "ingredients": [
+      "300 g pavo molido",
+      "1 taza arroz cocido ●",
+      "1 zanahoria",
+      "2 tazas repollo",
+      "ajo, jengibre",
+      "2 cdas salsa de soja",
+      "sésamo, cebollín"
+    ],
+    "prep": [
+      "Dorar el pavo molido con el ajo y el jengibre.",
+      "Agregar la zanahoria y el repollo en tiras finas, saltear 4-5 minutos.",
+      "Añadir la salsa de soja y mezclar bien.",
+      "Servir sobre el arroz con sésamo y cebollín."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r27",
+    "name": "Pollo al limón con papas y espárragos",
+    "protein": "Pollo",
+    "kcal": 500,
+    "ingredients": [
+      "2 pechugas de pollo",
+      "250 g papa en cubos ●",
+      "250 g espárragos",
+      "jugo de limón",
+      "ajo",
+      "1 cda aceite de oliva ●",
+      "orégano, sal"
+    ],
+    "prep": [
+      "Precalentar el horno a 200 grados C.",
+      "Mezclar las papas con aceite, ajo, orégano y sal, hornear 15 minutos.",
+      "Agregar el pollo sazonado con limón y los espárragos.",
+      "Hornear 20 minutos más, hasta que el pollo esté bien cocido."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r28",
+    "name": "Camarones con quinoa, elote y aguacate",
+    "protein": "Camarones",
+    "kcal": 520,
+    "ingredients": [
+      "300 g camarones pelados",
+      "1 taza quinoa cocida ●",
+      "1/2 taza elote/maíz desgranado ●",
+      "1/2 aguacate ●",
+      "jugo de lima, cilantro, ajo",
+      "spray de aceite"
+    ],
+    "prep": [
+      "Cocinar la quinoa según las instrucciones del paquete.",
+      "Saltear los camarones con ajo y spray de aceite 3-4 minutos.",
+      "Mezclar la quinoa con el elote, los camarones, el cilantro y el jugo de lima.",
+      "Servir con láminas de aguacate encima."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r29",
+    "name": "Salmón a la plancha con ensalada de papa y huevo",
+    "protein": "Salmón",
+    "kcal": 540,
+    "ingredients": [
+      "2 filetes de salmón (120 g c/u) ●",
+      "250 g papa cocida en cubos ●",
+      "2 huevos cocidos ●",
+      "1 pepino",
+      "1/4 cebolla morada",
+      "1 cdta mostaza",
+      "1 cda aceite de oliva ●",
+      "vinagre, sal"
+    ],
+    "prep": [
+      "Cocinar la papa hasta que esté tierna, dejar enfriar y cortar en cubos.",
+      "Cocinar el salmón en plancha 3-4 minutos por lado.",
+      "Mezclar la papa con el huevo picado, el pepino, la cebolla, la mostaza, el aceite y el vinagre.",
+      "Servir el salmón sobre la ensalada de papa."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r30",
+    "name": "Sopa de pescado blanco con papas y vegetales",
+    "protein": "Pescado blanco",
+    "kcal": 460,
+    "ingredients": [
+      "2 filetes de tilapia o merluza (150 g c/u)",
+      "250 g papa en cubos ●",
+      "1 zanahoria",
+      "1 tallo de apio",
+      "1/2 cebolla",
+      "caldo de pescado o pollo bajo en sodio",
+      "1/2 taza leche descremada",
+      "ajo, perejil"
+    ],
+    "prep": [
+      "Sofreír la cebolla, el ajo, la zanahoria y el apio.",
+      "Agregar la papa y el caldo, cocinar 12-15 minutos hasta que la papa esté tierna.",
+      "Agregar el pescado en trozos y cocinar 5-6 minutos más.",
+      "Incorporar la leche descremada al final y ajustar la sal.",
+      "Terminar con perejil fresco."
+    ],
+    "source": "pdf"
+  },
+  {
+    "id": "r31",
+    "name": "Bowl cremoso de atún, pepino y maíz al yogur",
+    "protein": "Atún",
+    "kcal": 400,
+    "ingredients": [
+      "2 pepinos en cubos",
+      "2 latas de atún en agua, escurridas",
+      "1 lata de maíz dulce, escurrida ●",
+      "1/4 cebolla picada fina",
+      "1 taza de yogur griego ●",
+      "2 cdas mayonesa ●",
+      "1 cda mostaza",
+      "jugo de limón",
+      "sal"
+    ],
+    "prep": [
+      "Pelar y cortar los pepinos en cubos pequeños.",
+      "Escurrir bien el atún y el maíz.",
+      "Picar fina la cebolla (opcional: dejarla en agua fría 5 minutos para suavizarla).",
+      "En un bowl grande, mezclar el yogur griego, la mayonesa, la mostaza y el jugo de limón hasta integrar.",
+      "Incorporar el pepino, el atún, el maíz y la cebolla, y mezclar bien.",
+      "Sazonar con sal al gusto. Enfriar 15-20 minutos en el refrigerador antes de servir (opcional, mejora el sabor)."
+    ],
+    "source": "user",
+    "note": "kcal aproximadas, calculadas a partir de los ingredientes (no viene de una receta con calorias ya calculadas como las otras 30) — puede variar segun la marca de mayonesa/yogur."
+  }
+];
+
+/* ---------------- IndexedDB ---------------- */
+const DB_NAME = 'recetas_db';
+const CUSTOM_STORE = 'custom_recipes';
+const CUSTOM_OUTBOX_STORE = 'custom_outbox';
+const RATING_STORE = 'ratings';
+const RATING_OUTBOX_STORE = 'rating_outbox';
+
+let dbPromise = new Promise((resolve, reject) => {
+  const req = indexedDB.open(DB_NAME, 1);
+  req.onupgradeneeded = () => {
+    const db = req.result;
+    if (!db.objectStoreNames.contains(CUSTOM_STORE)) {
+      db.createObjectStore(CUSTOM_STORE, { keyPath: 'id' });
+    }
+    if (!db.objectStoreNames.contains(CUSTOM_OUTBOX_STORE)) {
+      db.createObjectStore(CUSTOM_OUTBOX_STORE, { keyPath: 'id' });
+    }
+    if (!db.objectStoreNames.contains(RATING_STORE)) {
+      db.createObjectStore(RATING_STORE, { keyPath: 'recipe_id' });
+    }
+    if (!db.objectStoreNames.contains(RATING_OUTBOX_STORE)) {
+      db.createObjectStore(RATING_OUTBOX_STORE, { keyPath: 'recipe_id' });
+    }
+  };
+  req.onsuccess = () => resolve(req.result);
+  req.onerror = () => reject(req.error);
+});
+
+async function idbGetAll(storeName) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readonly');
+    const req = tx.objectStore(storeName).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbPut(storeName, obj) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    tx.objectStore(storeName).put(obj);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbDelete(storeName, key) {
+  const db = await dbPromise;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    tx.objectStore(storeName).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function genericOutboxPut(storeName, key, keyField, op) {
+  return idbPut(storeName, { [keyField]: key, op, ts: Date.now() });
+}
+async function genericOutboxGetAll(storeName) { return idbGetAll(storeName); }
+async function genericOutboxDelete(storeName, key) { return idbDelete(storeName, key); }
+
+/* ---------------- Supabase ----------------
+   Mismo proyecto/clave que el resto del sitio (ropa.html) — es una
+   Publishable key, diseñada para viajar en el código del navegador. */
+const SUPABASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_9prcahBAJHmeCZ8IB_bx5w_GQ6nl4wL';
+const CUSTOM_TABLE = 'custom_recipes';
+const RATING_TABLE = 'recipe_ratings';
+
+function supabaseSyncEnabled() {
+  return !!SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.indexOf('PEGA-AQUI') === -1;
+}
+function setSyncStatus(msg) {
+  const el = document.getElementById('syncStatus');
+  if (el) el.textContent = msg || '';
+}
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
+/* ---- custom_recipes: crear o borrar, no se edita (igual que saved_sets) ---- */
+async function pushCustomUpsert(recipe) {
+  if (!supabaseSyncEnabled()) return false;
+  try {
+    const row = {
+      id: recipe.id,
+      name: recipe.name,
+      protein: recipe.protein,
+      kcal: recipe.kcal,
+      ingredients: recipe.ingredients,
+      prep: recipe.prep,
+      created_at: recipe.createdAt,
+      updated_at: recipe.createdAt,
+      deleted: false
+    };
+    const res = await withTimeout(fetch(`${SUPABASE_URL}/rest/v1/${CUSTOM_TABLE}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify(row)
+    }), 20000);
+    if (!res.ok) throw new Error('guardar receta: HTTP ' + res.status);
+    return true;
+  } catch (err) {
+    console.warn('recetas sync: no se pudo subir receta', recipe.id, err);
+    return false;
+  }
+}
+async function pushCustomDelete(id) {
+  if (!supabaseSyncEnabled()) return false;
+  try {
+    const res = await withTimeout(fetch(`${SUPABASE_URL}/rest/v1/${CUSTOM_TABLE}?id=eq.${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ deleted: true, updated_at: Date.now() })
+    }), 20000);
+    if (!res.ok) throw new Error('borrar receta: HTTP ' + res.status);
+    return true;
+  } catch (err) {
+    console.warn('recetas sync: no se pudo borrar receta', id, err);
+    return false;
+  }
+}
+async function syncQueueCustomUpsert(recipe) {
+  if (!supabaseSyncEnabled()) return;
+  const ok = await pushCustomUpsert(recipe);
+  if (ok) await genericOutboxDelete(CUSTOM_OUTBOX_STORE, recipe.id);
+  else await genericOutboxPut(CUSTOM_OUTBOX_STORE, recipe.id, 'id', 'upsert');
+}
+async function syncQueueCustomDelete(id) {
+  if (!supabaseSyncEnabled()) return;
+  const ok = await pushCustomDelete(id);
+  if (ok) await genericOutboxDelete(CUSTOM_OUTBOX_STORE, id);
+  else await genericOutboxPut(CUSTOM_OUTBOX_STORE, id, 'id', 'delete');
+}
+async function flushCustomOutbox() {
+  if (!supabaseSyncEnabled()) return;
+  const pending = await genericOutboxGetAll(CUSTOM_OUTBOX_STORE);
+  if (!pending.length) return;
+  const local = await idbGetAll(CUSTOM_STORE);
+  const byId = Object.fromEntries(local.map(r => [r.id, r]));
+  for (const entry of pending) {
+    const ok = (entry.op === 'delete' || !byId[entry.id])
+      ? await pushCustomDelete(entry.id)
+      : await pushCustomUpsert(byId[entry.id]);
+    if (ok) await genericOutboxDelete(CUSTOM_OUTBOX_STORE, entry.id);
+  }
+}
+async function pullCustomFromSupabase() {
+  if (!supabaseSyncEnabled()) return;
+  try {
+    const res = await withTimeout(fetch(`${SUPABASE_URL}/rest/v1/${CUSTOM_TABLE}?select=*`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    }), 20000);
+    if (!res.ok) throw new Error('traer recetas: HTTP ' + res.status);
+    const rows = await res.json();
+    const local = await idbGetAll(CUSTOM_STORE);
+    const byId = Object.fromEntries(local.map(r => [r.id, r]));
+    for (const row of rows) {
+      const existing = byId[row.id];
+      if (row.deleted) {
+        if (existing) await idbDelete(CUSTOM_STORE, row.id);
+        continue;
+      }
+      if (!existing) {
+        await idbPut(CUSTOM_STORE, {
+          id: row.id, name: row.name, protein: row.protein, kcal: row.kcal,
+          ingredients: row.ingredients || [], prep: row.prep || [],
+          createdAt: row.created_at, source: 'user'
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('recetas sync: no se pudo traer de Supabase', err);
+  }
+}
+
+/* ---- recipe_ratings: última escritura gana (igual que outfit_log) ---- */
+async function pushRatingUpsert(entry) {
+  if (!supabaseSyncEnabled()) return false;
+  try {
+    const row = {
+      recipe_id: entry.recipe_id,
+      rating: entry.rating || 0,
+      note: entry.note || '',
+      updated_at: entry.updatedAt,
+      deleted: false
+    };
+    const res = await withTimeout(fetch(`${SUPABASE_URL}/rest/v1/${RATING_TABLE}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify(row)
+    }), 20000);
+    if (!res.ok) throw new Error('guardar calificación: HTTP ' + res.status);
+    return true;
+  } catch (err) {
+    console.warn('recetas sync: no se pudo subir calificación', entry.recipe_id, err);
+    return false;
+  }
+}
+async function syncQueueRatingUpsert(entry) {
+  if (!supabaseSyncEnabled()) return;
+  const ok = await pushRatingUpsert(entry);
+  if (ok) await genericOutboxDelete(RATING_OUTBOX_STORE, entry.recipe_id);
+  else await genericOutboxPut(RATING_OUTBOX_STORE, entry.recipe_id, 'recipe_id', 'upsert');
+}
+async function flushRatingOutbox() {
+  if (!supabaseSyncEnabled()) return;
+  const pending = await genericOutboxGetAll(RATING_OUTBOX_STORE);
+  if (!pending.length) return;
+  const local = await idbGetAll(RATING_STORE);
+  const byId = Object.fromEntries(local.map(r => [r.recipe_id, r]));
+  for (const entry of pending) {
+    if (!byId[entry.recipe_id]) { await genericOutboxDelete(RATING_OUTBOX_STORE, entry.recipe_id); continue; }
+    const ok = await pushRatingUpsert(byId[entry.recipe_id]);
+    if (ok) await genericOutboxDelete(RATING_OUTBOX_STORE, entry.recipe_id);
+  }
+}
+async function pullRatingsFromSupabase() {
+  if (!supabaseSyncEnabled()) return;
+  try {
+    const res = await withTimeout(fetch(`${SUPABASE_URL}/rest/v1/${RATING_TABLE}?select=*`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    }), 20000);
+    if (!res.ok) throw new Error('traer calificaciones: HTTP ' + res.status);
+    const rows = await res.json();
+    const local = await idbGetAll(RATING_STORE);
+    const byId = Object.fromEntries(local.map(r => [r.recipe_id, r]));
+    for (const row of rows) {
+      const existing = byId[row.recipe_id];
+      if (row.deleted) {
+        if (existing) await idbDelete(RATING_STORE, row.recipe_id);
+        continue;
+      }
+      if (!existing || (row.updated_at || 0) >= (existing.updatedAt || 0)) {
+        await idbPut(RATING_STORE, {
+          recipe_id: row.recipe_id, rating: row.rating || 0, note: row.note || '',
+          updatedAt: row.updated_at
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('recetas sync: no se pudo traer calificaciones', err);
+  }
+}
+
+function scheduleSync() {
+  if (!supabaseSyncEnabled()) return;
+  flushCustomOutbox().then(pullCustomFromSupabase).then(() => { renderList(); });
+  flushRatingOutbox().then(pullRatingsFromSupabase).then(() => { renderList(); if (currentDetailId) openDetail(currentDetailId); });
+}
+window.addEventListener('online', scheduleSync);
+
+/* ---------------- Estado y render ---------------- */
+let customRecipes = [];
+let ratingsById = {};
+let currentFilter = 'todas';
+let sortByRating = false;
+let currentDetailId = null;
+
+function allRecipes() {
+  return RECIPES.concat(customRecipes);
+}
+
+function proteinList() {
+  const set = new Set();
+  allRecipes().forEach(r => set.add(r.protein));
+  return Array.from(set).sort();
+}
+
+function renderFilters() {
+  const row = document.getElementById('filterRow');
+  row.innerHTML = '';
+  const chips = ['todas'].concat(proteinList());
+  chips.forEach(p => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (p === currentFilter ? ' active' : '');
+    chip.textContent = p === 'todas' ? 'todas' : p.toLowerCase();
+    chip.addEventListener('click', () => {
+      currentFilter = p;
+      renderFilters();
+      renderList();
+    });
+    row.appendChild(chip);
+  });
+}
+
+function starString(rating) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    html += `<span class="${i <= rating ? 'filled' : ''}">★</span>`;
+  }
+  return html;
+}
+
+function renderList() {
+  const list = document.getElementById('recipeList');
+  list.innerHTML = '';
+  let recipes = allRecipes();
+  if (currentFilter !== 'todas') recipes = recipes.filter(r => r.protein === currentFilter);
+  recipes = recipes.slice();
+  if (sortByRating) {
+    recipes.sort((a, b) => (ratingsById[b.id]?.rating || 0) - (ratingsById[a.id]?.rating || 0));
+  }
+  if (!recipes.length) {
+    const e = document.createElement('div');
+    e.className = 'emptyState';
+    e.textContent = 'no hay recetas con este filtro todavía.';
+    list.appendChild(e);
+    return;
+  }
+  recipes.forEach(r => {
+    const rating = ratingsById[r.id]?.rating || 0;
+    const card = document.createElement('div');
+    card.className = 'recipeCard';
+    card.innerHTML = `
+      <div class="rName">${escapeHtml(r.name)}</div>
+      <div class="rMeta">
+        <span class="badge${r.source === 'user' ? ' user' : ''}">${escapeHtml(r.protein)}</span>
+        ${r.kcal ? `<span>~${r.kcal} kcal · 2 porciones</span>` : ''}
+      </div>
+      <div class="rStars">${starString(rating)}</div>
+    `;
+    card.addEventListener('click', () => openDetail(r.id));
+    list.appendChild(card);
+  });
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+
+document.getElementById('sortBtn').addEventListener('click', () => {
+  sortByRating = !sortByRating;
+  document.getElementById('sortBtn').textContent = sortByRating ? 'orden: mejor calificadas' : 'orden: como en el libro';
+  renderList();
+});
+
+/* ---------------- Detalle + calificar ---------------- */
+let detailRating = 0;
+
+function findRecipe(id) {
+  return allRecipes().find(r => r.id === id);
+}
+
+function openDetail(id) {
+  const r = findRecipe(id);
+  if (!r) return;
+  currentDetailId = id;
+  document.getElementById('detailName').textContent = r.name;
+  document.getElementById('detailMeta').innerHTML = `
+    <span class="badge${r.source === 'user' ? ' user' : ''}">${escapeHtml(r.protein)}</span>
+    ${r.kcal ? `<span>~${r.kcal} kcal · 2 porciones</span>` : '<span>calorías no especificadas</span>'}
+  `;
+  const noteEl = document.getElementById('detailNote');
+  if (r.note) {
+    noteEl.style.display = 'block';
+    noteEl.textContent = r.note;
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  const ingEl = document.getElementById('detailIng');
+  ingEl.innerHTML = '';
+  (r.ingredients || []).forEach(ing => {
+    const measured = ing.includes('●');
+    const clean = ing.replace('●', '').trim();
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${escapeHtml(clean)}</span>${measured ? '<span class="measuredTag">medida ●</span>' : ''}`;
+    ingEl.appendChild(li);
+  });
+
+  const prepEl = document.getElementById('detailPrep');
+  prepEl.innerHTML = '';
+  (r.prep || []).forEach(step => {
+    const li = document.createElement('li');
+    li.textContent = step;
+    prepEl.appendChild(li);
+  });
+
+  const existing = ratingsById[id];
+  detailRating = existing?.rating || 0;
+  renderDetailStars();
+  document.getElementById('detailSuggestion').value = existing?.note || '';
+  document.getElementById('detailSaveMsg').textContent = '';
+
+  const isCustom = customRecipes.some(cr => cr.id === r.id);
+  document.getElementById('detailDeleteBtn').style.display = isCustom ? 'block' : 'none';
+
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+function renderDetailStars() {
+  const row = document.getElementById('detailStarRow');
+  row.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const star = document.createElement('span');
+    star.className = 'star' + (i <= detailRating ? ' filled' : '');
+    star.textContent = '★';
+    star.dataset.star = String(i);
+    star.addEventListener('click', () => {
+      detailRating = i;
+      renderDetailStars();
+    });
+    row.appendChild(star);
+  }
+}
+
+document.getElementById('detailClose').addEventListener('click', () => {
+  document.getElementById('detailOverlay').classList.remove('open');
+  currentDetailId = null;
+});
+
+document.getElementById('detailSaveBtn').addEventListener('click', async () => {
+  if (!currentDetailId) return;
+  const note = document.getElementById('detailSuggestion').value.trim();
+  const entry = {
+    recipe_id: currentDetailId,
+    rating: detailRating,
+    note,
+    updatedAt: Date.now()
+  };
+  await idbPut(RATING_STORE, entry);
+  ratingsById[currentDetailId] = entry;
+  syncQueueRatingUpsert(entry);
+  document.getElementById('detailSaveMsg').textContent = 'guardado.';
+  renderList();
+});
+
+document.getElementById('detailDeleteBtn').addEventListener('click', async () => {
+  if (!currentDetailId) return;
+  const id = currentDetailId;
+  customRecipes = customRecipes.filter(r => r.id !== id);
+  await idbDelete(CUSTOM_STORE, id);
+  syncQueueCustomDelete(id);
+  document.getElementById('detailOverlay').classList.remove('open');
+  currentDetailId = null;
+  renderFilters();
+  renderList();
+});
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => switchView(t.dataset.view));
+});
+function switchView(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+}
+
+/* ---------------- Agregar receta ---------------- */
+document.getElementById('newSaveBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newName').value.trim();
+  const protein = document.getElementById('newProtein').value.trim();
+  const kcalRaw = document.getElementById('newKcal').value.trim();
+  const kcal = kcalRaw ? parseInt(kcalRaw, 10) : null;
+  const ingredients = document.getElementById('newIngredients').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const prep = document.getElementById('newPrep').value.split('\n').map(s => s.trim()).filter(Boolean);
+
+  if (!name || !protein || !ingredients.length || !prep.length) {
+    document.getElementById('newSaveMsg').textContent = 'falta el nombre, la proteína, los ingredientes o la preparación.';
+    return;
+  }
+
+  const recipe = {
+    id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2),
+    name, protein, kcal, ingredients, prep,
+    createdAt: Date.now(),
+    source: 'user'
+  };
+  await idbPut(CUSTOM_STORE, recipe);
+  customRecipes.push(recipe);
+  syncQueueCustomUpsert(recipe);
+
+  document.getElementById('newName').value = '';
+  document.getElementById('newProtein').value = '';
+  document.getElementById('newKcal').value = '';
+  document.getElementById('newIngredients').value = '';
+  document.getElementById('newPrep').value = '';
+  document.getElementById('newSaveMsg').textContent = 'receta guardada — ya aparece en el tab "recetas".';
+
+  renderFilters();
+  renderList();
+});
+
+/* ---------------- Arranque ---------------- */
+async function init() {
+  customRecipes = await idbGetAll(CUSTOM_STORE);
+  const ratingRows = await idbGetAll(RATING_STORE);
+  ratingsById = Object.fromEntries(ratingRows.map(r => [r.recipe_id, r]));
+  renderFilters();
+  renderList();
+  if (supabaseSyncEnabled()) {
+    setSyncStatus('sincronizando...');
+    await flushCustomOutbox();
+    await flushRatingOutbox();
+    await pullCustomFromSupabase();
+    await pullRatingsFromSupabase();
+    customRecipes = await idbGetAll(CUSTOM_STORE);
+    const rr = await idbGetAll(RATING_STORE);
+    ratingsById = Object.fromEntries(rr.map(r => [r.recipe_id, r]));
+    setSyncStatus('');
+    renderFilters();
+    renderList();
+  }
+}
+init();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>

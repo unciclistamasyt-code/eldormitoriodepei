@@ -1,4 +1,4 @@
-const CACHE = 'app-v45';
+const CACHE = 'app-v47';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -36,6 +36,26 @@ const CACHE = 'app-v45';
 // nuevas, log_outbox y sets_outbox, mismo patrón que la cola del clóset).
 // No cambia el handler de fetch, solo sube de versión para que el
 // navegador tome la copia nueva de ropa.html.
+// v46: ropa.html tiene un tab nuevo, "favoritos" — fotos de outfits que
+// realmente te pusiste (la foto completa del look, no una prenda suelta),
+// con un puntaje de 1 a 5 estrellas y una nota opcional. Se puede ordenar
+// por mejor puntuados o por más recientes. Se sincroniza con Supabase igual
+// que el clóset (foto en Storage + fila en la tabla favorite_outfits nueva
+// — requiere correr una vez tools/fav_sync/setup.sql). IndexedDB de
+// ropa.html sube de versión 4 a 5 (dos stores nuevos, fav_outfits y
+// fav_outbox). No cambia el handler de fetch, solo sube de versión para
+// que el navegador tome la copia nueva de ropa.html.
+// v47: app nueva, recetas.html — las 30 recetas de cenas estilo "bowl" del
+// PDF que pasaste, más la que probaste hoy (bowl de atún, pepino y maíz al
+// yogur), todas fijas dentro del archivo (no dependen de sincronizar
+// nada para verse). Se puede calificar cada receta de 1 a 5 estrellas y
+// dejar una sugerencia de texto para mejorarla, filtrar por proteína y
+// ordenar por mejor calificadas, y agregar tus propias recetas nuevas
+// desde el tab "agregar". Las calificaciones/sugerencias y las recetas que
+// agregues se sincronizan con Supabase (tablas nuevas recipe_ratings y
+// custom_recipes — requiere correr una vez tools/recetas_sync/setup.sql),
+// igual que el resto de la app. Se agregó un ícono nuevo en la pantalla de
+// inicio para entrar a esta app.
 const ASSETS = [
   './',
   './index.html',
@@ -46,6 +66,7 @@ const ASSETS = [
   './golf.html',
   './menu.html',
   './salud.html',
+  './recetas.html',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',
