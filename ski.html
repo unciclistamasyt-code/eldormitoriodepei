@@ -107,6 +107,29 @@
   .continue-card p{margin:0;color:var(--muted);font-size:12.5px;}
   .continue-card .arrow{font-size:20px;color:var(--muted);flex-shrink:0;}
 
+  /* ---------- repaso general card ---------- */
+  .review-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;margin-bottom:14px;
+    display:flex;align-items:center;gap:14px;
+    cursor:pointer;position:relative;overflow:hidden;
+  }
+  .review-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);}
+  .review-card.disabled{cursor:default;opacity:.55;}
+  .review-card .review-icon{
+    width:38px;height:38px;border-radius:10px;background:var(--panel2);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .review-card .review-icon svg{width:20px;height:20px;stroke:var(--ice);fill:none;stroke-width:1.8;}
+  .review-card .review-text{flex:1;}
+  .review-card .review-title{font-size:15px;font-weight:600;margin-bottom:2px;}
+  .review-card .review-sub{font-size:12.5px;color:var(--muted);}
+  .review-card .review-chev{font-size:18px;color:var(--muted);flex-shrink:0;}
+
+  /* ---------- resultado de quiz con calificación cualitativa ---------- */
+  .result-grade{font-size:15px;color:var(--ink);margin:4px 0 2px;font-weight:600;}
+  .result-pct{font-size:13px;color:var(--muted);}
+
   /* ---------- stat grid ---------- */
   .stat-grid{
     display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;
@@ -267,6 +290,15 @@
         <p id="continueSub"></p>
       </div>
       <div class="arrow">→</div>
+    </div>
+
+    <div class="review-card" id="reviewCard">
+      <div class="review-icon"><svg viewBox="0 0 24 24"><path d="M4 12 a8 8 0 1 1 2.5 5.8"/><path d="M4 12 L4 17 L9 17"/></svg></div>
+      <div class="review-text">
+        <div class="review-title">Repaso general</div>
+        <div class="review-sub" id="reviewSub"></div>
+      </div>
+      <div class="review-chev">→</div>
     </div>
 
     <div class="stat-grid" id="statGrid"></div>
@@ -1067,6 +1099,8 @@ let continueId = null;
 let quizIdx = 0;
 let quizCorrectCount = 0;
 let readStart = null;
+let isRepaso = false;
+let repasoQuestions = [];
 
 /* =========================================================
    RENDER: DASHBOARD
@@ -1172,6 +1206,19 @@ function renderDashboard(){
       cont.style.display='flex';
     } else cont.style.display='none';
   } else cont.style.display='none';
+
+  // repaso general card
+  const reviewCard = document.getElementById('reviewCard');
+  const reviewSubEl = document.getElementById('reviewSub');
+  if(s.done === 0){
+    reviewCard.classList.add('disabled');
+    reviewSubEl.textContent = 'Completá al menos un módulo para desbloquearlo';
+    reviewCard.onclick = null;
+  } else {
+    reviewCard.classList.remove('disabled');
+    reviewSubEl.textContent = `Quiz con preguntas de los ${s.done} módulo${s.done===1?'':'s'} que ya completaste`;
+    reviewCard.onclick = startRepaso;
+  }
 
   // stat grid
   const grid = document.getElementById('statGrid');
@@ -1326,6 +1373,7 @@ function goHome(){
   document.getElementById('reader').classList.remove('show');
   document.getElementById('quiz').classList.remove('show');
   document.getElementById('backBtn').classList.remove('show');
+  isRepaso = false;
   stopAllAudio();
   renderDashboard();
   window.scrollTo(0,0);
@@ -1448,19 +1496,56 @@ function markAudioStarted(moduleId){
 /* =========================================================
    QUIZ
    ========================================================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
 function startQuiz(){
   stopAllAudio();
+  isRepaso = false;
   quizIdx = 0; quizCorrectCount = 0;
   document.getElementById('reader').classList.remove('show');
   document.getElementById('quiz').classList.add('show');
   renderQuestion();
 }
 
-function renderQuestion(){
+function startRepaso(){
+  const progress = loadProgress();
+  const pool = [];
+  MODULES.forEach(m=>{
+    if(progress[m.id]?.completed){
+      m.quiz.forEach(q=>pool.push({...q, _mod: m.title}));
+    }
+  });
+  if(pool.length === 0) return;
+  stopAllAudio();
+  isRepaso = true;
+  repasoQuestions = shuffle(pool).slice(0, 10);
+  quizIdx = 0; quizCorrectCount = 0;
+  document.getElementById('home').classList.add('hide');
+  document.getElementById('reader').classList.remove('show');
+  document.getElementById('quiz').classList.add('show');
+  document.getElementById('backBtn').classList.add('show');
+  renderQuestion();
+}
+
+function currentQuizSet(){
+  if(isRepaso) return repasoQuestions;
   const mod = MODULES.find(m=>m.id===currentModuleId);
-  const total = mod.quiz.length;
-  document.getElementById('qProgress').textContent = `Pregunta ${quizIdx+1} de ${total}`;
-  const q = mod.quiz[quizIdx];
+  return mod ? mod.quiz : [];
+}
+
+function renderQuestion(){
+  const questions = currentQuizSet();
+  const total = questions.length;
+  const q = questions[quizIdx];
+  const modTag = isRepaso && q._mod ? ` · ${q._mod}` : '';
+  document.getElementById('qProgress').textContent = `Pregunta ${quizIdx+1} de ${total}${modTag}`;
   const body = document.getElementById('qBody');
   body.innerHTML = `
     <div class="q-text">${q.q}</div>
@@ -1470,8 +1555,8 @@ function renderQuestion(){
 }
 
 function answerQuiz(i){
-  const mod = MODULES.find(m=>m.id===currentModuleId);
-  const q = mod.quiz[quizIdx];
+  const questions = currentQuizSet();
+  const q = questions[quizIdx];
   const opts = document.querySelectorAll('.q-opt');
   opts.forEach((o,idx)=>{
     o.style.pointerEvents='none';
@@ -1485,32 +1570,44 @@ function answerQuiz(i){
 
   setTimeout(()=>{
     quizIdx++;
-    if(quizIdx < mod.quiz.length) renderQuestion();
+    if(quizIdx < questions.length) renderQuestion();
     else finishQuiz();
   }, 1600);
 }
 
+/* Calificación cualitativa a partir del porcentaje de aciertos. */
+function gradeLabel(pct){
+  if(pct===100) return '¡Perfecto!';
+  if(pct>=80) return 'Muy bien';
+  if(pct>=60) return 'Bien, pero conviene repasar';
+  return 'Convendría repasar de nuevo';
+}
+
 function finishQuiz(){
-  const mod = MODULES.find(m=>m.id===currentModuleId);
-  const total = mod.quiz.length;
+  const questions = currentQuizSet();
+  const total = questions.length;
   const pct = Math.round(quizCorrectCount/total*100);
 
-  const timeSpent = Math.round((Date.now()-readStart)/1000);
-  const progress = loadProgress();
-  progress[mod.id] = progress[mod.id]||{};
-  progress[mod.id].completed = true;
-  progress[mod.id].completedAt = new Date().toISOString();
-  progress[mod.id].quizCorrect = quizCorrectCount;
-  progress[mod.id].quizTotal = total;
-  progress[mod.id].timeSpentSec = (progress[mod.id].timeSpentSec||0)+timeSpent;
-  saveProgress(progress);
-  markActivity();
+  if(!isRepaso){
+    const mod = MODULES.find(m=>m.id===currentModuleId);
+    const timeSpent = Math.round((Date.now()-readStart)/1000);
+    const progress = loadProgress();
+    progress[mod.id] = progress[mod.id]||{};
+    progress[mod.id].completed = true;
+    progress[mod.id].completedAt = new Date().toISOString();
+    progress[mod.id].quizCorrect = quizCorrectCount;
+    progress[mod.id].quizTotal = total;
+    progress[mod.id].timeSpentSec = (progress[mod.id].timeSpentSec||0)+timeSpent;
+    saveProgress(progress);
+    markActivity();
+  }
 
   document.getElementById('qProgress').textContent='';
   document.getElementById('qBody').innerHTML = `
     <div class="quiz-result">
       <div class="score mono">${pct}%</div>
-      <p>${quizCorrectCount} de ${total} correctas</p>
+      <div class="result-grade">${gradeLabel(pct)}</div>
+      <p class="result-pct">${quizCorrectCount} de ${total} correctas${isRepaso?' · repaso general':''}</p>
     </div>
     <div class="reader-actions">
       <button class="btn btn-ghost" onclick="goHome()">Volver al inicio</button>
