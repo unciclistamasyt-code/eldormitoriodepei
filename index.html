@@ -15,34 +15,102 @@
 
 <link rel="stylesheet" href="style.css" />
 <style>
+  .screen { padding-left: 0; padding-right: 0; }
+  .topbar { padding: 0 20px; }
   .wrap {
     flex: 1;
-    display: grid;
-    grid-template-columns: repeat(2, 64px);
-    justify-content: center;
-    align-content: center;
-    column-gap: 90px;
-    row-gap: 46px;
-  }
-  .item {
-    width: 64px;
-    height: 64px;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.75;
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    touch-action: pan-y;
+    overflow: hidden;
   }
-  .item:active {
-    opacity: 1;
-    transform: scale(0.92);
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    height: min(74vh, 560px);
   }
-  .item svg {
-    width: 30px;
-    height: 30px;
+  .hub {
+    position: absolute;
+    left: 50%;
+    top: 38%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    width: 220px;
+  }
+  .hub .name {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: var(--text);
+    transition: opacity 0.12s ease;
+  }
+  .hub .hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .ring {
+    position: absolute;
+    left: 50%;
+    top: 62%;
+    width: 0;
+    height: 0;
+  }
+  .card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 82px;
+    height: 109px;
+    margin: -54.5px 0 0 -41px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    will-change: transform, opacity;
+  }
+  .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  .card.icon-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-soft);
+  }
+  .card.icon-card svg {
+    width: 34px;
+    height: 34px;
     stroke: var(--text);
     fill: none;
     stroke-width: 1.4;
+  }
+  .card .cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 5px 6px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    background: linear-gradient(to top, rgba(0,0,0,0.72), rgba(0,0,0,0));
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .card.icon-card .cap { color: var(--text-dim); background: none; text-shadow: none; }
+  .card.active {
+    border-color: rgba(232,230,223,0.5);
   }
 </style>
 </head>
@@ -50,34 +118,145 @@
   <div class="screen">
     <div class="topbar"></div>
     <div class="wrap fade-in">
-      <a class="item" href="ruleta.html" aria-label="uno">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><line x1="12" y1="3" x2="12" y2="6"/></svg>
-      </a>
-      <a class="item" href="checklist.html" aria-label="dos">
-        <svg viewBox="0 0 24 24"><path d="M4 12 L9 17 L20 6"/></svg>
-      </a>
-      <a class="item" href="pomodoro.html" aria-label="tres">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7 v5 l3.5 2"/></svg>
-      </a>
-      <a class="item" href="ropa.html" aria-label="cuatro">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.3" fill="currentColor" stroke="none"/><path d="M12 6.3 L4 15 L20 15 Z"/></svg>
-      </a>
-      <a class="item" href="golf.html" aria-label="cinco">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="20"/><path d="M12 3 L19 6.5 L12 9.5 Z" fill="currentColor" stroke="none"/><ellipse cx="12" cy="20.5" rx="6" ry="1.6"/></svg>
-      </a>
-      <a class="item" href="menu.html" aria-label="seis">
-        <svg viewBox="0 0 24 24"><path d="M6 3 L6 21 M6 3 Q3 6 6 9 Q9 6 6 3 M6 12 L6 21" stroke-linecap="round"/><path d="M18 3 L18 12 M15 3 L15 9 Q15 12 18 12 Q21 12 21 9 L21 3 M18 12 L18 21"/></svg>
-      </a>
-      <a class="item" href="salud.html" aria-label="siete">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 L8 12 L10 7 L14 17 L16 12 L21 12"/></svg>
-      </a>
-      <a class="item" href="recetas.html" aria-label="ocho">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 a8 6 0 0 0 16 0 Z"/><path d="M3.5 12 L20.5 12"/><path d="M12 8 V4"/></svg>
-      </a>
+      <div class="stage" id="stage">
+        <div class="hub">
+          <div class="name" id="hubName">&nbsp;</div>
+          <div class="hint">Arrastra para girar · toca para entrar</div>
+        </div>
+        <div class="ring" id="ring"></div>
+      </div>
     </div>
   </div>
 
 <script>
+var APPS = [
+  { href: 'ruleta.html',    label: 'Ruleta',    img: 'icons/cards/ruleta.jpg' },
+  { href: 'checklist.html', label: 'Checklist',  icon: '<path d="M4 12 L9 17 L20 6"/>' },
+  { href: 'pomodoro.html',  label: 'Pomodoro',   img: 'icons/cards/pomodoro.jpg' },
+  { href: 'ropa.html',      label: 'Ropa',       img: 'icons/cards/ropa.jpg' },
+  { href: 'golf.html',      label: 'Golf',       img: 'icons/cards/golf.jpg' },
+  { href: 'menu.html',      label: 'Menú',       img: 'icons/cards/menu.jpg' },
+  { href: 'salud.html',     label: 'Salud',      img: 'icons/cards/salud.jpg' },
+  { href: 'recetas.html',   label: 'Recetas',    img: 'icons/cards/recetas.jpg' }
+];
+
+var ring = document.getElementById('ring');
+var hubName = document.getElementById('hubName');
+var stage = document.getElementById('stage');
+var STEP = 360 / APPS.length;
+var RX = 150, RY = 78;
+
+var cards = APPS.map(function (app, i) {
+  var el = document.createElement('a');
+  el.className = 'card' + (app.img ? '' : ' icon-card');
+  el.href = app.href;
+  el.dataset.index = i;
+  if (app.img) {
+    var img = document.createElement('img');
+    img.src = app.img;
+    img.alt = app.label;
+    img.draggable = false;
+    el.appendChild(img);
+  } else {
+    el.innerHTML = '<svg viewBox="0 0 24 24">' + app.icon + '</svg>';
+  }
+  var cap = document.createElement('div');
+  cap.className = 'cap';
+  cap.textContent = app.label;
+  el.appendChild(cap);
+  el.addEventListener('click', function (e) {
+    if (dragged) { e.preventDefault(); }
+  });
+  ring.appendChild(el);
+  return el;
+});
+
+var rotation = 0;      // current wheel rotation, degrees
+var velocity = 0;
+var dragging = false;
+var dragged = false;
+var startX = 0, lastX = 0, lastT = 0;
+var rafId = null;
+
+function layout() {
+  var frontIdx = -1, frontVal = -2;
+  for (var i = 0; i < APPS.length; i++) {
+    var angle = (i * STEP + rotation) * Math.PI / 180;
+    var x = RX * Math.sin(angle);
+    var y = RY * Math.cos(angle);
+    var front = Math.cos(angle); // 1 = closest/front, -1 = farthest/back
+    var scale = 0.62 + 0.38 * (front + 1) / 2;
+    var opacity = 0.45 + 0.55 * (front + 1) / 2;
+    var z = Math.round(front * 100) + 100;
+    var el = cards[i];
+    el.style.transform = 'translate(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px) scale(' + scale.toFixed(3) + ')';
+    el.style.opacity = opacity.toFixed(2);
+    el.style.zIndex = z;
+    el.classList.toggle('active', front > 0.85);
+    if (front > frontVal) { frontVal = front; frontIdx = i; }
+  }
+  hubName.textContent = APPS[frontIdx].label;
+}
+
+function pointerDown(e) {
+  dragging = true;
+  dragged = false;
+  startX = lastX = (e.touches ? e.touches[0].clientX : e.clientX);
+  lastT = Date.now();
+  velocity = 0;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+}
+
+function pointerMove(e) {
+  if (!dragging) return;
+  var x = (e.touches ? e.touches[0].clientX : e.clientX);
+  var dx = x - lastX;
+  if (Math.abs(x - startX) > 6) dragged = true;
+  var now = Date.now();
+  var dt = Math.max(now - lastT, 1);
+  velocity = (dx / dt) * 16; // deg-ish per frame at 60fps
+  rotation += dx * 0.45;
+  lastX = x;
+  lastT = now;
+  layout();
+  if (dragged) e.preventDefault();
+}
+
+function pointerUp() {
+  if (!dragging) return;
+  dragging = false;
+  inertia();
+}
+
+function inertia() {
+  velocity *= 0.94;
+  rotation += velocity * 0.45;
+  layout();
+  if (Math.abs(velocity) > 0.05) {
+    rafId = requestAnimationFrame(inertia);
+  } else {
+    snap();
+  }
+}
+
+function snap() {
+  var target = Math.round(rotation / STEP) * STEP;
+  var diff = target - rotation;
+  if (Math.abs(diff) < 0.05) { rotation = target; layout(); return; }
+  rotation += diff * 0.18;
+  layout();
+  rafId = requestAnimationFrame(snap);
+}
+
+stage.addEventListener('mousedown', pointerDown);
+window.addEventListener('mousemove', pointerMove);
+window.addEventListener('mouseup', pointerUp);
+stage.addEventListener('touchstart', pointerDown, { passive: true });
+stage.addEventListener('touchmove', pointerMove, { passive: false });
+stage.addEventListener('touchend', pointerUp);
+
+layout();
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(function(){});
 }

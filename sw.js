@@ -1,4 +1,4 @@
-const CACHE = 'app-v48';
+const CACHE = 'app-v49';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -61,6 +61,15 @@ const CACHE = 'app-v48';
 // se vean más agrupados y no en una sola línea larga. Solo cambia el CSS
 // de index.html — mismos íconos, mismos enlaces, mismo orden. No toca el
 // handler de fetch ni el IndexedDB de ninguna página.
+// v49: la pantalla de inicio (index.html) cambió de cuadrícula a una
+// "rueda circular" de tarjetas con foto (una foto representativa por app,
+// menos checklist.html que se quedó con su ícono de siempre porque no
+// había una foto clara para ella). Se arrastra para girar la rueda y se
+// toca la tarjeta que queda al frente para entrar — pensado para el dedo,
+// no para mouse/hover. Mismos 8 enlaces y mismo orden que antes. Se
+// agregaron 7 fotos nuevas en icons/cards/ (optimizadas, ~190KB en total)
+// al precache. No toca el handler de fetch ni el IndexedDB de ninguna
+// página.
 const ASSETS = [
   './',
   './index.html',
@@ -76,7 +85,14 @@ const ASSETS = [
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  './icons/cards/ruleta.jpg',
+  './icons/cards/pomodoro.jpg',
+  './icons/cards/ropa.jpg',
+  './icons/cards/golf.jpg',
+  './icons/cards/menu.jpg',
+  './icons/cards/salud.jpg',
+  './icons/cards/recetas.jpg'
 ];
 
 self.addEventListener('install', (e) => {
