@@ -1,4 +1,14 @@
-const CACHE = 'app-v51';
+const CACHE = 'app-v52';
+// v52: fix a la rueda circular de index.html en navegador de escritorio (con
+// mouse) — las tarjetas son enlaces <a>, y por default el navegador permite
+// "arrastrar el link" de forma nativa al hacer mousedown+arrastrar sobre uno,
+// lo cual competía con el arrastre propio de la rueda y rompía la rotación
+// (en el celular no pasaba porque touchstart nunca dispara ese arrastre
+// nativo). Se desactivó el arrastre nativo de las tarjetas
+// (`draggable=false` + cancelar `dragstart`), se evitó la selección de texto
+// mientras se arrastra, y se bloqueó el comportamiento default en
+// mousedown. Solo toca `index.html`, no cambia el handler de `fetch` ni el
+// IndexedDB/localStorage de ninguna página.
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).

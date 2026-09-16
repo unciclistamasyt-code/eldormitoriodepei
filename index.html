@@ -25,13 +25,17 @@
     justify-content: center;
     touch-action: pan-y;
     overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
   }
   .stage {
     position: relative;
     width: 100%;
     max-width: 420px;
     height: min(74vh, 560px);
+    cursor: grab;
   }
+  .stage.grabbing { cursor: grabbing; }
   .hub {
     position: absolute;
     left: 50%;
@@ -73,6 +77,9 @@
     border: 1px solid var(--line);
     box-shadow: 0 6px 16px rgba(0,0,0,0.35);
     will-change: transform, opacity;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
   .card img {
     width: 100%;
@@ -152,6 +159,8 @@ var cards = APPS.map(function (app, i) {
   el.className = 'card' + (app.img ? '' : ' icon-card');
   el.href = app.href;
   el.dataset.index = i;
+  el.draggable = false;
+  el.addEventListener('dragstart', function (e) { e.preventDefault(); });
   if (app.img) {
     var img = document.createElement('img');
     img.src = app.img;
@@ -200,6 +209,13 @@ function layout() {
 }
 
 function pointerDown(e) {
+  if (!e.touches) {
+    // Mouse only: stop native link-drag/text-selection from hijacking the
+    // gesture — this is what made dragging feel broken on desktop while
+    // touch (which never triggers native drag) worked fine.
+    e.preventDefault();
+    stage.classList.add('grabbing');
+  }
   dragging = true;
   dragged = false;
   startX = lastX = (e.touches ? e.touches[0].clientX : e.clientX);
@@ -226,6 +242,7 @@ function pointerMove(e) {
 function pointerUp() {
   if (!dragging) return;
   dragging = false;
+  stage.classList.remove('grabbing');
   inertia();
 }
 
