@@ -1,11 +1,4 @@
-const CACHE = 'app-v48';
-// v48: app nueva, ski.html — curso completo de esquí, de principiante a
-// avanzado más un nivel de equipamiento/venta técnica (36 módulos, sin
-// selector de perfil, un solo usuario, Sebas). Mismo patrón que golf.html:
-// el audio pregrabado (voz Leticia) vive en Supabase Storage, bucket
-// ski-audio, no en este repo — se cachea solo la primera vez que se pide,
-// igual que ya pasa con el audio de golf.html. Se agregó un noveno ícono
-// en la pantalla de inicio para entrar a esta app.
+const CACHE = 'app-v47';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -74,7 +67,6 @@ const ASSETS = [
   './menu.html',
   './salud.html',
   './recetas.html',
-  './ski.html',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',
