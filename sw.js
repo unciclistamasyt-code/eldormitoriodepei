@@ -1,4 +1,4 @@
-const CACHE = 'app-v47';
+const CACHE = 'app-v48';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -56,6 +56,11 @@ const CACHE = 'app-v47';
 // custom_recipes — requiere correr una vez tools/recetas_sync/setup.sql),
 // igual que el resto de la app. Se agregó un ícono nuevo en la pantalla de
 // inicio para entrar a esta app.
+// v48: los 8 íconos de la pantalla de inicio (index.html) pasaron de una
+// sola columna vertical a una cuadrícula de 2 columnas x 4 filas, para que
+// se vean más agrupados y no en una sola línea larga. Solo cambia el CSS
+// de index.html — mismos íconos, mismos enlaces, mismo orden. No toca el
+// handler de fetch ni el IndexedDB de ninguna página.
 const ASSETS = [
   './',
   './index.html',
