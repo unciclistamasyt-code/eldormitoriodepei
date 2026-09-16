@@ -1,4 +1,4 @@
-const CACHE = 'app-v49';
+const CACHE = 'app-v51';
 // Desde v40: los videos de menu.html y el audio de golf.html ya NO viven en
 // este repo — se movieron a un bucket público de Supabase Storage (más
 // liviano, sin el límite de 30MB para entregar el zip completo del sitio).
@@ -70,6 +70,27 @@ const CACHE = 'app-v49';
 // agregaron 7 fotos nuevas en icons/cards/ (optimizadas, ~190KB en total)
 // al precache. No toca el handler de fetch ni el IndexedDB de ninguna
 // página.
+// v50: (versión corregida en v51 — ver abajo) se había agregado por error
+// un esqui.html fabricado desde cero (4 niveles/20 módulos, motor de
+// golf.html) porque no se encontró ningún rastro del curso de esquí real en
+// este checkout. Sebastian confirmó que sí existía y mandó los archivos
+// reales (ski.html, 5 niveles/36 módulos, con audio pregrabado real de
+// Supabase bucket ski-audio) — nunca llegaron a subirse a GitHub el
+// esqui.html falso, así que no hubo que revertir nada ahí.
+// v51: se reemplaza el esqui.html fabricado por el ski.html real y
+// completo que Sebastian recuperó (5 niveles — Fundamentos y equipo,
+// Técnica de principiante, Equipamiento y venta técnica, Perfeccionamiento,
+// Avanzado y fuera de pista — 36 módulos, un solo perfil "Sebas", panel de
+// inicio tipo dashboard con racha/heatmap/gráfica mensual/"ascenso" en SVG,
+// y audio pregrabado real (voz Leticia) en vez de solo voz en vivo). Este
+// archivo tiene su propio diseño visual (paleta hielo/violeta, tipografías
+// Space Grotesk/IBM Plex Mono) independiente de style.css — se dejó tal
+// cual se recuperó, sin forzarlo al estilo del resto del sitio. La 9ª
+// tarjeta de la rueda circular en index.html ahora apunta a ski.html (no
+// esqui.html) y usa icons/cards/ski.jpg (misma foto del esquiador,
+// renombrada para que coincida). Se quita esqui.html/esqui.jpg del
+// precache y se agregan ski.html/ski.jpg. No toca el handler de fetch ni
+// el IndexedDB/localStorage de ninguna página existente.
 const ASSETS = [
   './',
   './index.html',
@@ -81,6 +102,7 @@ const ASSETS = [
   './menu.html',
   './salud.html',
   './recetas.html',
+  './ski.html',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',
@@ -92,7 +114,8 @@ const ASSETS = [
   './icons/cards/golf.jpg',
   './icons/cards/menu.jpg',
   './icons/cards/salud.jpg',
-  './icons/cards/recetas.jpg'
+  './icons/cards/recetas.jpg',
+  './icons/cards/ski.jpg'
 ];
 
 self.addEventListener('install', (e) => {
