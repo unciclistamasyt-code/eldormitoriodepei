@@ -1,4 +1,13 @@
-const CACHE = 'app-v52';
+const CACHE = 'app-v53';
+// v53: recetas.html ahora muestra en pantalla (no solo en la consola) si la
+// sincronización con Supabase falla, con el error real (ej. "HTTP 404" si
+// la tabla no existe, "HTTP 401/403" si es un problema de permisos/RLS,
+// "Failed to fetch" si no hay red o el dominio está bloqueado) — antes el
+// mensaje "sincronizando..." se limpiaba solo aunque la sincronización
+// hubiera fallado, así que un fallo pasaba desapercibido. Se agregó por el
+// reporte de que una receta guardada en un PC no aparecía en otro. Solo
+// toca `recetas.html`, no cambia el handler de `fetch` ni el IndexedDB de
+// ninguna página.
 // v52: fix a la rueda circular de index.html en navegador de escritorio (con
 // mouse) — las tarjetas son enlaces <a>, y por default el navegador permite
 // "arrastrar el link" de forma nativa al hacer mousedown+arrastrar sobre uno,
