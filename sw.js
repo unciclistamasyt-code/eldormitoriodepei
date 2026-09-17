@@ -1,4 +1,18 @@
-const CACHE = 'app-v53';
+const CACHE = 'app-v54';
+// v54: la pantalla de inicio (index.html) tenía mucho espacio vacío arriba y
+// el título/rueda quedaban en el centro vertical de la pantalla — el usuario
+// pidió que el título ("Ruleta", etc.) y la rueda estuvieran más arriba,
+// centrados cerca de la parte superior en vez de flotar en medio de la
+// pantalla con tanto espacio vacío encima. Se cambió `.wrap` de centrar
+// verticalmente (`align-items: center`) a alinear arriba (`align-items:
+// flex-start` + un poco de padding-top), se redujo la altura de `.stage`
+// (de 74vh/560px a 58vh/460px) y se subieron los porcentajes de `.hub`
+// (38%→24%) y `.ring` (62%→54%) dentro de esa caja más chica — el resultado
+// es que el título y la rueda de tarjetas quedan agrupados cerca de arriba
+// en vez de en medio de la pantalla. Solo CSS: la lógica de arrastre/inercia
+// no cambia (usa posiciones fijas en px relativas a `.ring`, no depende de
+// dónde esté `.ring` en la pantalla). Solo toca `index.html`, no cambia el
+// handler de `fetch` ni el IndexedDB/localStorage de ninguna página.
 // v53: recetas.html ahora muestra en pantalla (no solo en la consola) si la
 // sincronización con Supabase falla, con el error real (ej. "HTTP 404" si
 // la tabla no existe, "HTTP 401/403" si es un problema de permisos/RLS,
