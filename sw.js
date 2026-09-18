@@ -1,4 +1,19 @@
-const CACHE = 'app-v55';
+const CACHE = 'app-v56';
+// v56: app nueva, nuevayork.html — guía de viaje NYC para diciembre 2026,
+// pedida por el usuario ("guia tipo viajera... actividades o lugares que si
+// o si no puedes perderte, cosas curiosas, cosas gratis"). 4 pestañas
+// (Imperdibles / Diciembre / Gratis / Curiosidades), fotos reales bajadas de
+// Wikipedia (uso personal) para cada lugar, más la foto de la Estatua de la
+// Libertad que mandó el usuario como 10ª tarjeta de index.html
+// (icons/cards/nuevayork.jpg). Contenido de temporada (encendido del árbol
+// de Rockefeller, mercados navideños, luces de Dyker Heights) verificado con
+// búsqueda web contra fuentes de 2026 antes de publicarse, con nota de
+// "confirma la fecha exacta cerca del viaje" en lo que puede variar año a
+// año (fecha exacta del encendido del árbol, si el show de luces de Saks va
+// a estar o no). Página 100% independiente (su propio <style>, sin depender
+// de style.css ni de ninguna otra página), con la misma barra "⌂ Inicio"
+// que ski.html. No toca el handler de `fetch` ni el IndexedDB/localStorage
+// de ninguna página existente.
 // v55: rediseño de ski.html — el usuario pidió cambiar colores/diseño a algo
 // "más usado en el mundo de cursos online" (eligió el look "moderno tipo
 // Duolingo": colorido, tarjetas redondeadas, iconos grandes, barras de
@@ -162,6 +177,7 @@ const ASSETS = [
   './salud.html',
   './recetas.html',
   './ski.html',
+  './nuevayork.html',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',
@@ -174,7 +190,19 @@ const ASSETS = [
   './icons/cards/menu.jpg',
   './icons/cards/salud.jpg',
   './icons/cards/recetas.jpg',
-  './icons/cards/ski.jpg'
+  './icons/cards/ski.jpg',
+  './icons/cards/nuevayork.jpg',
+  './icons/ny/staten.jpg',
+  './icons/ny/times.jpg',
+  './icons/ny/central.jpg',
+  './icons/ny/empire.jpg',
+  './icons/ny/brooklyn.jpg',
+  './icons/ny/rock.jpg',
+  './icons/ny/highline.jpg',
+  './icons/ny/grandc.jpg',
+  './icons/ny/bryant.jpg',
+  './icons/ny/dyker.jpg',
+  './icons/ny/union.jpg'
 ];
 
 self.addEventListener('install', (e) => {

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>NYC · Diciembre 2026</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --panel: #16161a;
+    --panel2: #1d1d22;
+    --line: #2a2a30;
+    --text: #e8e6df;
+    --dim: #8b8b93;
+    --accent: #3fa9f5;
+    --accent2: #e0574a;
+    --gold: #d4af37;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  body { padding-bottom: 40px; }
+  a { color: inherit; text-decoration: none; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(10,10,12,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 14px calc(10px + env(safe-area-inset-top, 0px));
+    padding-top: max(10px, env(safe-area-inset-top, 0px));
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .homeBtn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--panel2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 600;
+    color: var(--text); white-space: nowrap;
+  }
+  .topTitle { font-size: 14px; font-weight: 700; letter-spacing: 0.2px; text-align: right; line-height: 1.25; }
+  .topTitle small { display: block; font-weight: 500; color: var(--dim); font-size: 11px; }
+
+  .hero {
+    padding: 18px 16px 8px;
+    text-align: center;
+  }
+  .hero h1 { margin: 0 0 4px; font-size: 21px; }
+  .hero p { margin: 0; color: var(--dim); font-size: 13px; line-height: 1.5; }
+
+  .tabs {
+    position: sticky; top: 52px; z-index: 19;
+    display: flex; gap: 6px; padding: 10px 14px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabBtn {
+    flex-shrink: 0; padding: 8px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: var(--dim);
+    background: var(--panel); border: 1px solid var(--line);
+  }
+  .tabBtn.active { color: var(--bg); background: var(--text); border-color: var(--text); }
+
+  .view { display: none; padding: 14px 14px 4px; max-width: 640px; margin: 0 auto; }
+  .view.show { display: block; }
+
+  .sectionNote {
+    font-size: 12.5px; color: var(--dim); line-height: 1.55;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 10px 12px; margin-bottom: 14px;
+  }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 16px; overflow: hidden; margin-bottom: 14px;
+  }
+  .card img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; background: var(--panel2); }
+  .card .body { padding: 12px 14px 14px; }
+  .card h3 { margin: 0 0 6px; font-size: 16px; display: flex; align-items: center; gap: 6px; }
+  .card .badge {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+    padding: 2px 7px; border-radius: 999px; background: rgba(63,169,245,0.15); color: var(--accent);
+  }
+  .card .badge.free { background: rgba(88,204,2,0.15); color: #6bd400; }
+  .card .badge.dec { background: rgba(224,87,74,0.15); color: var(--accent2); }
+  .card p { margin: 0 0 8px; font-size: 13.5px; line-height: 1.55; color: var(--text); }
+  .card .tip { font-size: 12px; color: var(--dim); line-height: 1.5; border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 6px; }
+  .card .tip b { color: var(--text); }
+  .card .warn { font-size: 11.5px; color: #f0b429; margin-top: 6px; line-height: 1.5; }
+
+  .curioCard {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 13px 14px; margin-bottom: 10px;
+  }
+  .curioCard h4 { margin: 0 0 5px; font-size: 14.5px; display: flex; gap: 8px; align-items: center; }
+  .curioCard h4 .em { font-size: 18px; }
+  .curioCard p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--dim); }
+
+  footer.credits {
+    max-width: 640px; margin: 10px auto 0; padding: 0 14px 20px;
+    font-size: 11px; color: var(--dim); line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a class="homeBtn" href="index.html">⌂ Inicio</a>
+    <div class="topTitle">Guía NYC<small>Diciembre 2026</small></div>
+  </div>
+
+  <div class="hero">
+    <h1>🗽 Nueva York en diciembre</h1>
+    <p>Imperdibles, cosas especiales de la temporada, gratis y curiosidades — para tu viaje. Fechas de eventos de temporada aproximadas: confírmalas cerca de tu viaje, cambian un poco cada año.</p>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tabBtn active" data-tab="imperdibles">Imperdibles</button>
+    <button class="tabBtn" data-tab="diciembre">Diciembre 🎄</button>
+    <button class="tabBtn" data-tab="gratis">Gratis</button>
+    <button class="tabBtn" data-tab="curiosidades">Curiosidades</button>
+  </div>
+
+  <!-- IMPERDIBLES -->
+  <div class="view show" id="view-imperdibles">
+    <div class="sectionNote">Lo que sí o sí no te puedes perder, funciona en cualquier época del año.</div>
+
+    <div class="card">
+      <img src="icons/cards/nuevayork.jpg" alt="Estatua de la Libertad" loading="lazy" />
+      <div class="body">
+        <h3>Estatua de la Libertad <span class="badge">Imperdible</span></h3>
+        <p>Regalo de Francia a EE.UU. (1886). El ferry a Liberty Island/Ellis Island sale de Battery Park; hay que reservar boleto con anticipación, sobre todo en temporada alta.</p>
+        <div class="tip"><b>Tip gratis:</b> si no quieres pagar el ferry oficial, el Staten Island Ferry pasa justo al lado y es 100% gratis (ver pestaña Gratis).</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/times.jpg" alt="Times Square" loading="lazy" />
+      <div class="body">
+        <h3>Times Square <span class="badge">Imperdible</span></h3>
+        <p>La intersección de Broadway y la Séptima Avenida, pura pantalla y luces 24/7. Es el corazón del distrito de teatros (Broadway).</p>
+        <div class="tip"><b>Tip:</b> de noche se ve mucho mejor que de día. Cuidado con las carteras, es zona muy turística y concurrida.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/central.jpg" alt="Central Park" loading="lazy" />
+      <div class="body">
+        <h3>Central Park <span class="badge">Imperdible</span></h3>
+        <p>340 hectáreas en pleno Manhattan, el parque urbano más visitado de EE.UU. En diciembre, con algo de suerte, cae nieve y se ve espectacular.</p>
+        <div class="tip"><b>Tip:</b> la pista de hielo Wollman Rink queda dentro del parque, es una parada natural si ya estás caminando por ahí.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/empire.jpg" alt="Empire State Building" loading="lazy" />
+      <div class="body">
+        <h3>Empire State Building <span class="badge">Imperdible</span></h3>
+        <p>102 pisos, mirador icónico con vista 360° de Manhattan. Alternativas con vista similar o mejor: Top of the Rock (incluye la vista con el Empire State en el marco) y One World Observatory.</p>
+        <div class="tip"><b>Tip:</b> compra el boleto con horario asignado con anticipación — en diciembre hay más gente por vacaciones.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/brooklyn.jpg" alt="Brooklyn Bridge" loading="lazy" />
+      <div class="body">
+        <h3>Puente de Brooklyn <span class="badge free">Gratis</span></h3>
+        <p>Cruzarlo a pie desde Manhattan hasta Brooklyn (o al revés) es una de las mejores caminatas gratis de la ciudad — 25-30 min, vista completa del skyline y del East River.</p>
+        <div class="tip"><b>Tip:</b> hay carril peatonal separado del de bicicletas, mantente en el lado correcto. Del lado de Brooklyn (DUMBO) hay buena vista para foto del puente con el Empire State de fondo.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/grandc.jpg" alt="Grand Central Terminal" loading="lazy" />
+      <div class="body">
+        <h3>Grand Central Terminal <span class="badge free">Gratis</span></h3>
+        <p>Estación de tren de 1913, Beaux-Arts, con el techo pintado de constelaciones en el salón principal. Se puede visitar sin tomar ningún tren.</p>
+        <div class="tip"><b>Tip:</b> el techo está pintado al revés (visto desde "fuera" de la esfera celeste) — un error del artista original que nunca se corrigió.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/highline.jpg" alt="High Line" loading="lazy" />
+      <div class="body">
+        <h3>The High Line <span class="badge free">Gratis</span></h3>
+        <p>Parque elevado de 2.3 km construido sobre una vía de tren de carga abandonada. Corre por Chelsea y el Meatpacking District, buena forma de caminar sin tráfico.</p>
+        <div class="tip"><b>Tip:</b> en diciembre hace frío ahí arriba (está expuesto), abrígate bien.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DICIEMBRE -->
+  <div class="view" id="view-diciembre">
+    <div class="sectionNote">Cosas que solo pasan (o se ven mejor) en la temporada navideña. Las fechas exactas de encendidos/mercados cambian un poco cada año — confírmalas cerca de tu viaje.</div>
+
+    <div class="card">
+      <img src="icons/ny/rock.jpg" alt="Árbol de Rockefeller Center" loading="lazy" />
+      <div class="body">
+        <h3>Árbol de Rockefeller Center <span class="badge dec">Diciembre</span></h3>
+        <p>El árbol de Navidad más famoso de EE.UU., un abeto de 20-30 metros con miles de luces LED, junto a la pista de hielo y la estatua dorada de Prometeo.</p>
+        <div class="tip"><b>Cuándo:</b> el encendido es siempre el miércoles después de Acción de Gracias — en 2026 Acción de Gracias es el 26 de noviembre, así que el encendido debería ser el <b>miércoles 2 de diciembre de 2026</b> (verifica la fecha exacta cerca del viaje, a veces varía). El árbol se queda encendido hasta inicios de enero.</div>
+        <div class="warn">⚠ El día del encendido la zona se cierra por horas y hay muchísima gente — si solo quieres ver el árbol, ve otro día por la noche, se ve igual de bien y sin las multitudes.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/bryant.jpg" alt="Bryant Park Winter Village" loading="lazy" />
+      <div class="body">
+        <h3>Bryant Park Winter Village <span class="badge dec">Diciembre</span></h3>
+        <p>Mercado navideño con casetas de artesanías/comida alrededor de una pista de hielo, justo detrás de la Biblioteca Pública de NY (Bryant Park).</p>
+        <div class="tip"><b>Cuándo:</b> para la temporada 2026 abre el <b>23 de octubre de 2026</b> y las casetas funcionan hasta el <b>3 de enero de 2027</b>; la pista de hielo se queda hasta el <b>28 de febrero de 2027</b> — en diciembre lo vas a encontrar abierto sin problema.</div>
+        <div class="tip"><b>Gratis:</b> entrar al mercado y caminar es gratis, solo pagas si patinas (alquiler de patines) o compras algo.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/union.jpg" alt="Union Square Holiday Market" loading="lazy" />
+      <div class="body">
+        <h3>Union Square Holiday Market <span class="badge dec">Diciembre</span></h3>
+        <p>Otro mercado navideño clásico de la ciudad, con más de 150 casetas de artesanos locales — buena opción para regalos hechos a mano.</p>
+        <div class="tip"><b>Cuándo:</b> normalmente corre desde mediados de noviembre hasta el 24 de diciembre. Confirma el horario exacto del día que quieras ir.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/times.jpg" alt="Vitrinas navideñas Quinta Avenida" loading="lazy" />
+      <div class="body">
+        <h3>Vitrinas navideñas (Macy's y Quinta Avenida) <span class="badge dec">Diciembre</span></h3>
+        <p>Macy's en Herald Square monta cada año vitrinas animadas de temática navideña en su fachada — tradición desde hace décadas. Varias tiendas de la Quinta Avenida (Saks, Bergdorf Goodman) también decoran sus vitrinas en diciembre.</p>
+        <div class="warn">⚠ El show de luces proyectadas de Saks Fifth Avenue específicamente ha sido inconsistente año a año (se canceló en 2024, volvió en 2025) — no des por hecho que va a estar, confirma cerca de la fecha. Las vitrinas de Macy's sí son una tradición mucho más estable.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/dyker.jpg" alt="Dyker Heights Christmas Lights" loading="lazy" />
+      <div class="body">
+        <h3>Dyker Heights Christmas Lights <span class="badge dec">Diciembre</span></h3>
+        <p>Barrio residencial en Brooklyn donde varias casas se decoran de forma exageradamente elaborada en diciembre (luces, inflables, hasta animatronics) — es una tradición del vecindario, no un evento oficial.</p>
+        <div class="tip"><b>Tip:</b> mejor de noche. Queda algo lejos de Manhattan (~35-45 min en auto/Uber); hay tours organizados en bus si prefieres no manejar tú el trayecto.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRATIS -->
+  <div class="view" id="view-gratis">
+    <div class="sectionNote">Cosas que puedes hacer sin gastar un dólar (más allá de moverte y comer).</div>
+
+    <div class="card">
+      <img src="icons/ny/staten.jpg" alt="Staten Island Ferry" loading="lazy" />
+      <div class="body">
+        <h3>Staten Island Ferry <span class="badge free">100% gratis</span></h3>
+        <p>Ferry público que cruza la bahía de Nueva York entre Manhattan y Staten Island, las 24 horas. Pasa muy cerca de la Estatua de la Libertad — es la mejor vista gratuita de la estatua y del skyline que existe.</p>
+        <div class="tip"><b>Tip:</b> súbete, cruza, y regresa en el mismo ferry sin bajarte en Staten Island si solo quieres la vista — el viaje redondo toma cerca de 1 hora.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/brooklyn.jpg" alt="Caminata puente de Brooklyn" loading="lazy" />
+      <div class="body">
+        <h3>Cruzar el puente de Brooklyn a pie <span class="badge free">Gratis</span></h3>
+        <p>Ver descripción completa en Imperdibles — gratis, ~25-30 min caminando, una de las mejores vistas de la ciudad.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/highline.jpg" alt="High Line gratis" loading="lazy" />
+      <div class="body">
+        <h3>The High Line <span class="badge free">Gratis</span></h3>
+        <p>Entrada libre todo el año, sin horario de reserva. Ver descripción completa en Imperdibles.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/central.jpg" alt="Central Park gratis" loading="lazy" />
+      <div class="body">
+        <h3>Central Park <span class="badge free">Gratis</span></h3>
+        <p>Entrar y caminar por el parque nunca cuesta nada (solo pagan cosas puntuales como el bote de remos o la pista de hielo).</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/grandc.jpg" alt="Grand Central gratis" loading="lazy" />
+      <div class="body">
+        <h3>Grand Central Terminal <span class="badge free">Gratis</span></h3>
+        <p>Visitar la estación y ver el techo de constelaciones no cuesta nada — ver descripción completa en Imperdibles.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/bryant.jpg" alt="MoMA y museos" loading="lazy" />
+      <div class="body">
+        <h3>MoMA — viernes gratis por la tarde <span class="badge free">Gratis (con condición)</span></h3>
+        <p>El MoMA ofrece entrada gratuita los viernes por la tarde (patrocinado por UNIQLO), normalmente de 5:30 pm a 8:30 pm.</p>
+        <div class="warn">⚠ Suele requerir reservar el boleto gratis en línea con anticipación porque se llena rápido — revisa el sitio oficial del MoMA antes de ir, el horario puede variar en diciembre.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="icons/ny/union.jpg" alt="Washington Square Park" loading="lazy" />
+      <div class="body">
+        <h3>Washington Square Park <span class="badge free">Gratis</span></h3>
+        <p>Plaza con el arco icónico en el Greenwich Village, ambiente universitario (NYU está al lado), casi siempre hay músicos callejeros tocando.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURIOSIDADES -->
+  <div class="view" id="view-curiosidades">
+    <div class="sectionNote">Datos curiosos para impresionar en el viaje.</div>
+
+    <div class="curioCard">
+      <h4><span class="em">🌳</span> Central Park es más grande que Mónaco</h4>
+      <p>El parque tiene 3.41 km² — el país de Mónaco entero mide unos 2.1 km². Fue el primer parque diseñado como tal en EE.UU. (1858).</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🚇</span> El metro nunca cierra</h4>
+      <p>El subway de Nueva York opera 24 horas, los 7 días de la semana — a diferencia de casi todos los demás sistemas de metro del mundo, que cierran de madrugada.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">⭐</span> El techo de Grand Central está "al revés"</h4>
+      <p>El mural de constelaciones del salón principal representa el cielo visto desde fuera de la esfera celeste, no desde la Tierra — un error del pintor original (o una elección deliberada, según la versión) que nunca se corrigió.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🗽</span> La Estatua de la Libertad era cobriza, no verde</h4>
+      <p>Cuando se inauguró en 1886 tenía el color brillante del cobre pulido. El verde actual (pátina) se formó con décadas de oxidación natural del metal por el clima.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🐂</span> El toro de Wall Street apareció de la nada</h4>
+      <p>El artista Arturo Di Modica instaló el "Charging Bull" ilegalmente, de madrugada, en diciembre de 1989, como regalo sorpresa para la ciudad después del crash bursátil de 1987. La policía lo confiscó y, por presión popular, terminó reinstalado a pocas cuadras.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🎬</span> Times Square no siempre se llamó así</h4>
+      <p>Se llamaba Longacre Square hasta 1904, cuando el periódico The New York Times mudó su sede ahí y la ciudad renombró la plaza en su honor.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🛤️</span> El High Line era una vía de tren de carga</h4>
+      <p>Se construyó en los años 1930 para sacar los trenes de carga de las calles (antes atropellaban peatones a nivel de calle). Se abandonó en los 80 y se reconvirtió en parque entre 2009 y 2014.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🎆</span> La bola de Times Square pesa un montón</h4>
+      <p>La bola que baja en Nochevieja pesa cerca de 5,400 kg y está cubierta con más de 2,600 triángulos de cristal Waterford — se usa desde 1907, con rediseños a lo largo de los años.</p>
+    </div>
+  </div>
+
+  <script>
+    var btns = document.querySelectorAll('.tabBtn');
+    var views = document.querySelectorAll('.view');
+    btns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var tab = btn.dataset.tab;
+        btns.forEach(function(b){ b.classList.toggle('active', b === btn); });
+        views.forEach(function(v){ v.classList.toggle('show', v.id === 'view-' + tab); });
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      });
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    }
+  </script>
+</body>
+</html>
