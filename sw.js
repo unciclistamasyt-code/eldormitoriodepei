@@ -1,4 +1,30 @@
-const CACHE = 'app-v54';
+const CACHE = 'app-v55';
+// v55: rediseño de ski.html — el usuario pidió cambiar colores/diseño a algo
+// "más usado en el mundo de cursos online" (eligió el look "moderno tipo
+// Duolingo": colorido, tarjetas redondeadas, iconos grandes, barras de
+// progreso gruesas) y agregar una forma de volver al menú principal del
+// sitio, que antes no existía en ski.html. Cambios: (1) paleta nueva clara
+// (fondo blanco/gris muy claro, azul #1cb0f6 + verde #58cc02 como acentos,
+// naranja #ff9600 para la racha, verde/rojo para correcto/incorrecto en el
+// quiz) reemplazando el tema oscuro hielo/violeta/coral — se hizo cambiando
+// solo los valores de las variables --ice/--violet/--coral/--bg/--panel/etc.
+// en :root, así que cualquier CSS o JS que ya usaba var(--ice) etc. heredó
+// el nuevo color sin tocarse; (2) tipografía cambiada de 'Space Grotesk' +
+// 'IBM Plex Mono' a 'Nunito' (más redondeada/amigable, look de app de
+// curso); (3) esquinas más redondeadas, bordes de 2px y sombra inferior
+// tipo "botón 3D" en tarjetas/paneles/botones para el efecto gamificado;
+// (4) se recolorearon los 9 valores hexadecimales sueltos de la ilustración
+// SVG "Tu ascenso" (gradientes de montaña, gorro de nieve, bandera, sendero,
+// checkpoints) que no habrían heredado el cambio de variables por estar
+// escritos como color literal; (5) se agregó una barra fija arriba de
+// ski.html con un botón "⌂ Inicio" que lleva a index.html (el menú
+// principal del sitio) — visible en las 3 vistas (panel/lectura/quiz) — y
+// se renombró el botón interno "Volver al inicio" a "Volver al panel" para
+// no confundirlo ahora que existe un "Inicio" real. Ningún nombre de clase
+// CSS ni de función JS cambió: LEVELS/MODULES, localStorage, el sistema de
+// audio y el quiz siguen funcionando exactamente igual. Solo toca
+// `ski.html`, no cambia el handler de `fetch` ni el IndexedDB/localStorage
+// de ninguna otra página.
 // v54: la pantalla de inicio (index.html) tenía mucho espacio vacío arriba y
 // el título/rueda quedaban en el centro vertical de la pantalla — el usuario
 // pidió que el título ("Ruleta", etc.) y la rueda estuvieran más arriba,
