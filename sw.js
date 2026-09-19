@@ -1,4 +1,19 @@
-const CACHE = 'app-v56';
+const CACHE = 'app-v57';
+// v57: el usuario reportó que las fotos de nuevayork.html se veían "mala
+// calidad" (borrosas), mostrando capturas de la tarjeta de Times Square como
+// ejemplo. Causa: la primera versión usaba capturas de las miniaturas chicas
+// del infobox de Wikipedia (~300-320px de ancho) agrandadas al doble para
+// mostrarlas a 700px, lo que se veía pixelado. Arreglo: se volvió a sacar
+// cada foto pero ahora navegando hasta la imagen en resolución original de
+// Wikimedia Commons (miles de píxeles de ancho) antes de recortarla, así que
+// ahora se reduce de una foto grande a 700px en vez de agrandar una chica.
+// Se rehicieron así los 10 paisajes de icons/ny/*.jpg (Times Square, Central
+// Park, Empire State, Puente de Brooklyn, Grand Central, High Line, Árbol de
+// Rockefeller, Bryant Park, Union Square, Dyker Heights, Staten Island
+// Ferry). Los nombres de archivo no cambiaron, solo el contenido de las
+// fotos, así que se sube de versión el CACHE para que el service worker
+// baje las nuevas en vez de servir las viejas borrosas desde caché. No
+// cambia ningún HTML/CSS/JS de nuevayork.html ni de ninguna otra página.
 // v56: app nueva, nuevayork.html — guía de viaje NYC para diciembre 2026,
 // pedida por el usuario ("guia tipo viajera... actividades o lugares que si
 // o si no puedes perderte, cosas curiosas, cosas gratis"). 4 pestañas
