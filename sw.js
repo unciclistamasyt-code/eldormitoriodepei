@@ -1,4 +1,14 @@
-const CACHE = 'app-v57';
+const CACHE = 'app-v58';
+// v58: el usuario avisó que la foto de Central Park en nuevayork.html
+// seguía viéndose mal (esta vez no por ser chica sino por la bruma/neblina
+// del día en que se tomó la foto original de Wikipedia, que la hacía ver
+// suave/lavada de fondo) y dio permiso explícito para cambiarla por otra si
+// hacía falta. Se reemplazó por una foto distinta de Central Park desde la
+// terraza del Rockefeller Center (día despejado, sin neblina, cielo azul
+// nítido), recortada de la imagen original en Wikimedia Commons vía canvas
+// del navegador para no perder resolución. Mismo nombre de archivo
+// (icons/ny/central.jpg), por eso sube la versión de caché otra vez. No
+// cambia ninguna otra foto ni ningún HTML/CSS/JS.
 // v57: el usuario reportó que las fotos de nuevayork.html se veían "mala
 // calidad" (borrosas), mostrando capturas de la tarjeta de Times Square como
 // ejemplo. Causa: la primera versión usaba capturas de las miniaturas chicas
