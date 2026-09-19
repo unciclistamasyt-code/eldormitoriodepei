@@ -1,4 +1,25 @@
-const CACHE = 'app-v58';
+const CACHE = 'app-v59';
+// v59: el usuario siguió viendo TODAS las fotos de nuevayork.html mal
+// (mostró la de "The High Line" como ejemplo) a pesar del arreglo de v57.
+// Causa real encontrada esta vez: las tarjetas se muestran hasta 612px de
+// ancho en CSS (.view max-width 640px) y en una pantalla retina normal
+// (2x o 3x, o sea casi cualquier celular moderno) eso pide entre 1200 y
+// 1836 píxeles físicos — pero las fotos de v57 solo tenían 700px de ancho,
+// así que el propio navegador las agrandaba y se veían borrosas, sin
+// importar qué tan nítida fuera la foto original. Arreglo: se volvieron a
+// recortar las 10 fotos de icons/ny/*.jpg directamente desde el archivo
+// original de Wikimedia (no desde una captura de pantalla chica) a un
+// ancho de ~1200-1250px (tope real de la herramienta de captura usada),
+// 1.7-1.8× más grandes que antes — cubre bien pantallas 2x y la mayoría de
+// 3x. Excepciones por resolución nativa límite del archivo original:
+// empire.jpg (846px de ancho, el original de Wikipedia no da para más) y
+// rock.jpg (666px de ancho, recorte vertical del árbol). De paso se
+// cambió dyker.jpg por una foto real de las luces navideñas de Dyker
+// Heights (antes era una casa sin luces, la única disponible en ese
+// momento) y se subió central.jpg al mismo ancho ~1250px que el resto
+// (seguía siendo la versión sin neblina de v58). Mismos nombres de
+// archivo, por eso sube la versión de caché otra vez. No cambia ningún
+// HTML/CSS/JS.
 // v58: el usuario avisó que la foto de Central Park en nuevayork.html
 // seguía viéndose mal (esta vez no por ser chica sino por la bruma/neblina
 // del día en que se tomó la foto original de Wikipedia, que la hacía ver
