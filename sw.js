@@ -1,4 +1,28 @@
-const CACHE = 'app-v59';
+const CACHE = 'app-v60';
+// v60: el usuario avisó de nuevo ("cambia estas a algo mejor") que 3 fotos
+// puntuales seguían viéndose mal: Estatua de la Libertad, Puente de
+// Brooklyn y Árbol de Rockefeller. El arreglo de v59 solo resolvía el
+// ANCHO de las fotos para pantallas retina, pero había una segunda causa
+// que v59 no cubría: la tarjeta usa CSS "aspect-ratio: 4/3" junto con
+// "object-fit: cover", así que el navegador recorta la foto a un
+// rectángulo 4:3 usando la dimensión (ancho O alto) que esté más
+// ajustada según la forma original de la foto — no solo el ancho.
+// brooklyn.jpg era un panorama 3:1 con muy poca ALTURA real, así que al
+// recortarlo a 4:3 el navegador tenía que agrandar la altura y se veía
+// borroso pese a tener ancho de sobra. rock.jpg era una foto vertical
+// (retrato) del árbol con poco ANCHO real, mismo problema pero al revés.
+// La de la Estatua de la Libertad reusaba la fotito de 399x501 que mandó
+// el usuario para la ruedita del menú de index.html, demasiado chica para
+// una tarjeta grande. Arreglo: se rehicieron brooklyn.jpg y rock.jpg como
+// recortes horizontales reales en proporción 4:3 desde los archivos
+// originales de Wikimedia (no un recorte "aproximado" a 4:3, sino uno
+// calculado a esa proporción exacta), y se agregó una foto nueva
+// icons/ny/liberty.jpg (recorte 4:3 desde una foto de la Estatua de la
+// Libertad en alta resolución de Wikimedia, no la fotito chica del
+// usuario) que ahora usa la tarjeta "Imperdibles" de nuevayork.html en vez
+// de icons/cards/nuevayork.jpg. icons/cards/nuevayork.jpg (la foto propia
+// del usuario) se deja intacta porque en la ruedita de index.html se ve a
+// solo 82px y ahí sí se ve bien. No cambia ningún otro HTML/CSS/JS.
 // v59: el usuario siguió viendo TODAS las fotos de nuevayork.html mal
 // (mostró la de "The High Line" como ejemplo) a pesar del arreglo de v57.
 // Causa real encontrada esta vez: las tarjetas se muestran hasta 612px de
@@ -238,6 +262,7 @@ const ASSETS = [
   './icons/cards/recetas.jpg',
   './icons/cards/ski.jpg',
   './icons/cards/nuevayork.jpg',
+  './icons/ny/liberty.jpg',
   './icons/ny/staten.jpg',
   './icons/ny/times.jpg',
   './icons/ny/central.jpg',
