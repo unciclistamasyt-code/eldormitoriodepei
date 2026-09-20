@@ -1,4 +1,31 @@
-const CACHE = 'app-v60';
+const CACHE = 'app-v61';
+// v61: ARREGLO DE UN ERROR PROPIO, no un pedido nuevo del usuario. El
+// usuario reportó "las imagenes se desaparecieron y baja el menu un poco"
+// en la rueda de index.html: Ruleta, Pomodoro, Ropa, Golf, Menú, Salud,
+// Recetas y Ski School perdieron su foto real y quedaron mostrando solo
+// un color sólido. Causa encontrada revisando el repo real en GitHub: la
+// entrega anterior (v60) se empaquetó copiando TODA la carpeta
+// /root/project/site del entorno de trabajo en vez de solo los archivos
+// que de verdad se habían tocado (nuevayork.html, sw.js, icons/ny/*) — y
+// en ese entorno, icons/cards/ruleta.jpg, pomodoro.jpg, ropa.jpg,
+// golf.jpg, menu.jpg, salud.jpg, recetas.jpg, ski.jpg, style.css,
+// manifest.json e icons/icon-192.png, icon-512.png y
+// apple-touch-icon.png eran versiones de relleno (placeholders, colores
+// sólidos o CSS mínimo) usadas solo para poder probar el layout, no las
+// fotos ni el CSS reales del usuario — nunca deberían haber salido de
+// ese entorno. Al subir esa entrega, esas versiones de relleno
+// reemplazaron a las reales en GitHub, incluyendo el style.css que
+// comparten ruleta/checklist/pomodoro/ropa/golf/menu/salud/recetas
+// (quedó reducido de 1844 a 503 bytes, perdiendo el reset de
+// html/body, el padding de safe-area del notch, etc. — probable causa
+// de que "el menu baje/se vea distinto") y manifest.json (perdió
+// nombre, colores e íconos reales de la PWA). Arreglo: se recuperaron
+// las 8 fotos, style.css, manifest.json y los 3 íconos reales
+// directamente del historial de git de GitHub (commits de antes de la
+// entrega dañada) y se restauraron con su contenido original — nada de
+// esto se reconstruyó a mano ni se adivinó. icons/cards/nuevayork.jpg,
+// nuevayork.html, sw.js (este changelog) e icons/ny/*.jpg (los arreglos
+// reales de v60: liberty/brooklyn/rock) NO se tocan, siguen igual.
 // v60: el usuario avisó de nuevo ("cambia estas a algo mejor") que 3 fotos
 // puntuales seguían viéndose mal: Estatua de la Libertad, Puente de
 // Brooklyn y Árbol de Rockefeller. El arreglo de v59 solo resolvía el
