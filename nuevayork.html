@@ -39,10 +39,16 @@
     height: 100vh; height: 100svh; height: 100dvh;
     background: #05080f;
   }
-  .hero-video-bg {
+  .hero-poster {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; z-index: 1;
   }
+  .hero-video-bg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; z-index: 1;
+    opacity: 0; transition: opacity 1s ease;
+  }
+  .hero-video-bg.is-ready { opacity: 1; }
   .hero-gradient {
     position: absolute; inset: 0; z-index: 2;
     background: linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%);
@@ -235,7 +241,8 @@
 <body>
 
   <section class="hero-video-section" id="heroVideoSection">
-    <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+    <img class="hero-poster" src="https://images.pexels.com/videos/5838621/amazing-view-amazing-views-bridge-brooklyn-5838621.jpeg?auto=compress&cs=tinysrgb&h=627&fit=crop&w=1200" alt="" aria-hidden="true" />
+    <video class="hero-video-bg" id="heroVideoBg" autoplay muted loop playsinline preload="auto" poster="https://images.pexels.com/videos/5838621/amazing-view-amazing-views-bridge-brooklyn-5838621.jpeg?auto=compress&cs=tinysrgb&h=627&fit=crop&w=1200">
       <source src="https://videos.pexels.com/video-files/5838621/5838621-uhd_2560_1440_30fps.mp4" type="video/mp4" />
     </video>
     <div class="hero-gradient"></div>
@@ -600,6 +607,17 @@
     window.addEventListener('pageshow', heroTryPlay);
     document.addEventListener('touchend', heroTryPlay, { once: true, passive: true });
     document.addEventListener('click', heroTryPlay, { once: true });
+
+    // Mientras el video pesado carga, se ve el poster (queda instantáneo).
+    // En cuanto el video puede reproducirse de verdad, se revela con un fundo
+    // suave para que nunca haya un flash negro / momento de "esto es un video
+    // que todavía no cargó".
+    if (heroVideoEl) {
+      var heroRevealVideo = function () { heroVideoEl.classList.add('is-ready'); };
+      heroVideoEl.addEventListener('playing', heroRevealVideo);
+      heroVideoEl.addEventListener('canplaythrough', heroRevealVideo);
+      if (heroVideoEl.readyState >= 3) heroRevealVideo();
+    }
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(function(){});

@@ -1,4 +1,39 @@
-const CACHE = 'app-v64';
+const CACHE = 'app-v66';
+// v66: el usuario dijo (verbatim) "me quedo con la anterior pero me molesta
+// que al abrir la pagina no arranque de una y se ve que es un video" — es
+// decir, rechazó el arreglo de v65 (cambiar de video para evitar los
+// tirones) y prefiere quedarse con el video anterior de v64 (el dron del
+// Puente de Brooklyn de noche, más pesado y más lindo) aunque tenga algo
+// de corte, pero quiere que el momento de carga de la página no se sienta
+// como "esto es obviamente un video que todavía no cargó". Se hicieron dos
+// cambios en nuevayork.html: (1) se volvió a cambiar el `src` del
+// `<source>` del video al de v64 (Puente de Brooklyn, 5838621); (2) se
+// agregó una imagen de portada (`<img class="hero-poster">`, el thumbnail
+// real de ese mismo video en Pexels) que se ve instantánea de fondo desde
+// el primer frame — el `<video>` ahora arranca en `opacity: 0` y se
+// agregó JS que le suma la clase `is-ready` (con una transición CSS de 1s)
+// en cuanto el video dispara el evento `playing` o `canplaythrough`, así
+// que la portada se funde suavemente hacia el video real en vez de un
+// flash negro o un salto brusco. El problema de fondo de los tirones (el
+// archivo sigue siendo pesado, UHD a 30fps) no se resolvió — el usuario
+// aceptó ese trade-off a cambio de quedarse con este video; si más
+// adelante quiere resolverlo de raíz, la opción sigue siendo comprimir el
+// archivo con ffmpeg y alojarlo en Supabase en vez de usar Pexels directo.
+// v65: el usuario reportó (verbatim) "el video no va fluido se corta" — el
+// video del hero de nuevayork.html (v64, dron del Puente de Brooklyn de
+// noche) se veía con tirones/cortes en su dispositivo real. Causa más
+// probable: ese archivo era UHD (2560x1440 a 30fps) — mucho más pesado de
+// decodificar y de transmitir por la red de lo que hace falta para un
+// video de fondo detrás de texto, y este contenedor no tiene forma de
+// medir el bitrate real del archivo para confirmarlo con certeza (mismo
+// bloqueo de red hacia videos.pexels.com que ya se documentó en v63/v64).
+// Arreglo: se cambió el video por otro, más liviano en resolución real
+// (1920x1080 a 24fps, en vez de 2560x1440 a 30fps) — de paso, esta nueva
+// toma es nieve cayendo de verdad sobre casas históricas (brownstones)
+// de Nueva York, así que además queda más "navideña" de lo que ya estaba
+// (el efecto de nieve por CSS de v64 se dejó igual, ahora con nieve real
+// de fondo se ve con más profundidad). Solo cambió el `src` del
+// `<source>` del video (una línea) en nuevayork.html.
 // v64: el usuario pidió (verbatim) "podemos hacer una toma de navidad la
 // mas bonita que encuentres que me haga viajar" — o sea, cambiar el video
 // del hero de nuevayork.html (v63, skyline aéreo al atardecer) por uno
