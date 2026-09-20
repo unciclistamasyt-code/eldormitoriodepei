@@ -1,4 +1,23 @@
-const CACHE = 'app-v61';
+const CACHE = 'app-v62';
+// v62: el usuario reportó "en el de Menú los vídeos no avanzan" — en
+// menu.html, el video de fondo del plato (ej. Fettuccine) se queda quieto
+// mostrando solo la foto (poster) con el botón de play nativo encima, en
+// vez de reproducirse solo. Los 4 <video> ya tenían autoplay+muted+
+// playsinline, que en teoría alcanza para autoreproducir en iPhone, pero
+// hay casos reales donde el navegador igual bloquea el autoplay: con
+// "Reproducción automática de vistas previas de video" desactivado en
+// Ajustes > Accesibilidad > Movimiento, con el Modo de bajo consumo
+// activado, o simplemente si el video queda pausado al volver a la
+// pestaña después de estar en segundo plano — en esos casos el atributo
+// autoplay del HTML no es suficiente. Arreglo, solo en menu.html: además
+// de autoplay, ahora se intenta reproducir cada video por código (1) al
+// cargar la página, (2) cada vez que la pestaña vuelve a estar visible
+// (evento visibilitychange/pageshow), y (3) en el primer toque en
+// cualquier parte de la pantalla (el mismo toque que ya se usa para
+// deslizar entre platos) — así, aunque el navegador haya bloqueado el
+// autoplay real, ese primer toque hace que arranque. No cambia el HTML/
+// CSS de menu.html, solo se agregó JS al final del <script> existente.
+// No toca ninguna otra página ni el handler de `fetch`.
 // v61: ARREGLO DE UN ERROR PROPIO, no un pedido nuevo del usuario. El
 // usuario reportó "las imagenes se desaparecieron y baja el menu un poco"
 // en la rueda de index.html: Ruleta, Pomodoro, Ropa, Golf, Menú, Salud,

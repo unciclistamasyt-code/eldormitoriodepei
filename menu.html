@@ -558,6 +558,40 @@
   document.getElementById('dishModalClose').addEventListener('click', closeDishModal);
   document.getElementById('dishModalBackdrop').addEventListener('click', closeDishModal);
 
+  // Los videos de fondo a veces se quedan pausados mostrando solo el poster
+  // (con el botón de play nativo encima) en vez de reproducirse solos: pasa
+  // cuando el navegador bloquea el autoplay (por ejemplo con "Reproducción
+  // automática de vistas previas de video" desactivado en Ajustes >
+  // Accesibilidad > Movimiento en iPhone, o en Modo de bajo consumo), y
+  // también puede pasar si el video queda pausado al volver a esta pestaña
+  // después de estar en segundo plano. El atributo autoplay del <video> no
+  // siempre alcanza en esos casos, así que además: (1) se intenta reproducir
+  // cada video por código al cargar la página y cada vez que la pestaña
+  // vuelve a estar visible, y (2) el primer toque en cualquier parte de la
+  // pantalla también intenta reproducir el video de la tarjeta activa —
+  // así, aunque el navegador haya bloqueado el autoplay real, alcanza con
+  // el primer toque (el mismo que se usa para deslizar) para que arranque.
+  var videos = slides.map(function (s) { return s.querySelector('video.slide-bg'); });
+  function tryPlayVideo(v) {
+    if (!v) return;
+    var p = v.play();
+    if (p && typeof p.catch === 'function') p.catch(function () {});
+  }
+  function tryPlayAll() {
+    videos.forEach(tryPlayVideo);
+  }
+  tryPlayAll();
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') tryPlayAll();
+  });
+  window.addEventListener('pageshow', tryPlayAll);
+  rail.addEventListener('touchend', function () {
+    tryPlayVideo(videos[currentIdx]);
+  }, { passive: true });
+  rail.addEventListener('click', function () {
+    tryPlayVideo(videos[currentIdx]);
+  });
+
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function(){});
   }
