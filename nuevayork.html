@@ -10,6 +10,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <link rel="icon" href="icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #0a0a0c;
@@ -25,8 +28,116 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  html, body { scrollbar-width: none; -ms-overflow-style: none; }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   body { padding-bottom: 40px; }
   a { color: inherit; text-decoration: none; }
+
+  /* ===== Hero de video (Nueva York) ===== */
+  .hero-video-section {
+    position: relative; width: 100%; overflow: hidden;
+    height: 100vh; height: 100svh; height: 100dvh;
+    background: #05080f;
+  }
+  .hero-video-bg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; z-index: 1;
+  }
+  .hero-gradient {
+    position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%);
+  }
+  .hero-nav {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 5;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: max(18px, env(safe-area-inset-top)) 20px 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    opacity: 0; transform: translateY(-14px);
+    animation: heroFadeUp 0.7s ease forwards; animation-delay: 0.15s;
+  }
+  .hero-logo { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: 0.2px; white-space: nowrap; }
+  .hero-menu { display: flex; align-items: center; gap: 26px; }
+  .hero-menu a { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.9); }
+  .hero-home-btn {
+    font-size: 14px; font-weight: 400; color: #fff;
+    border: 1px solid rgba(255,255,255,0.7); border-radius: 999px;
+    padding: 9px 18px; white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .hero-home-btn:hover { background: #fff; color: #000; }
+  .hero-burger {
+    display: none; flex-direction: column; gap: 5px;
+    background: none; border: none; padding: 8px; cursor: pointer;
+  }
+  .hero-burger span { width: 22px; height: 2px; background: #fff; display: block; border-radius: 2px; }
+
+  @media (max-width: 768px) {
+    .hero-menu { display: none; }
+    .hero-home-btn { display: none; }
+    .hero-burger { display: flex; }
+  }
+
+  .hero-mobile-menu {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 6;
+    background: rgba(10,10,14,0.97); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    padding: max(14px, env(safe-area-inset-top)) 20px 20px;
+    display: none; flex-direction: column; gap: 2px;
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+  .hero-mobile-menu.open { display: flex; }
+  .hero-mobile-menu a {
+    color: #fff; font-size: 16px; font-weight: 500; padding: 13px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .hero-mobile-close {
+    align-self: flex-end; background: none; border: none; color: #fff;
+    font-size: 20px; margin-bottom: 4px; padding: 6px;
+  }
+
+  .hero-content {
+    position: relative; z-index: 4; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 0 22px; max-width: 720px; margin: 0 auto;
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+  .hero-title {
+    color: #fff; font-weight: 500; line-height: 1.1; margin: 0 0 16px;
+    font-size: 38px;
+    opacity: 0; transform: translateY(18px);
+    animation: heroFadeUp 0.7s ease forwards; animation-delay: 0.35s;
+  }
+  .hero-sub {
+    color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.6; margin: 0 0 28px; font-weight: 400;
+    opacity: 0; transform: translateY(18px);
+    animation: heroFadeUp 0.7s ease forwards; animation-delay: 0.5s;
+  }
+  .hero-cta {
+    background: #fff; color: #000; font-size: 15px; font-weight: 500;
+    padding: 12px 26px; border-radius: 999px; border: none; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    opacity: 0; transform: translateY(18px);
+    animation: heroFadeUp 0.7s ease forwards; animation-delay: 0.65s;
+  }
+  .hero-cta:hover { transform: scale(1.05); box-shadow: 0 12px 32px rgba(0,0,0,0.45); }
+  .hero-cta:active { transform: scale(0.98); }
+
+  .hero-scroll-hint {
+    position: absolute; bottom: max(20px, env(safe-area-inset-bottom)); left: 0; right: 0; z-index: 4;
+    text-align: center; color: rgba(255,255,255,0.75); font-size: 12px; letter-spacing: 0.3px;
+    font-family: 'Inter', -apple-system, sans-serif;
+    opacity: 0; animation: heroHintIn 0.7s ease forwards 0.85s;
+  }
+  .hero-scroll-hint span { display: inline-block; animation: heroBounce 1.8s ease-in-out infinite; animation-delay: 1.6s; }
+
+  @keyframes heroFadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes heroHintIn { to { opacity: 1; } }
+  @keyframes heroBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+
+  @media (min-width: 768px) {
+    .hero-title { font-size: 56px; }
+    .hero-sub { font-size: 18px; }
+  }
 
   .topbar {
     position: sticky; top: 0; z-index: 20;
@@ -110,6 +221,44 @@
 </style>
 </head>
 <body>
+
+  <section class="hero-video-section" id="heroVideoSection">
+    <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+      <source src="https://videos.pexels.com/video-files/12122308/12122308-uhd_2560_1440_24fps.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-gradient"></div>
+
+    <nav class="hero-nav">
+      <div class="hero-logo">Nueva York</div>
+      <div class="hero-menu">
+        <a href="#" data-hero-tab="imperdibles">Imperdibles</a>
+        <a href="#" data-hero-tab="diciembre">Diciembre</a>
+        <a href="#" data-hero-tab="gratis">Gratis</a>
+        <a href="#" data-hero-tab="curiosidades">Curiosidades</a>
+      </div>
+      <a class="hero-home-btn" href="index.html">⌂ Inicio</a>
+      <button class="hero-burger" id="heroBurgerBtn" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <div class="hero-mobile-menu" id="heroMobileMenu">
+      <button class="hero-mobile-close" id="heroMobileClose" aria-label="Cerrar menú">✕</button>
+      <a href="#" data-hero-tab="imperdibles">Imperdibles</a>
+      <a href="#" data-hero-tab="diciembre">Diciembre 🎄</a>
+      <a href="#" data-hero-tab="gratis">Gratis</a>
+      <a href="#" data-hero-tab="curiosidades">Curiosidades</a>
+      <a href="index.html">⌂ Inicio</a>
+    </div>
+
+    <div class="hero-content">
+      <h1 class="hero-title">Nueva York<br />Te Espera en Diciembre</h1>
+      <p class="hero-sub">Imperdibles, eventos de temporada, planes gratis y curiosidades — todo lo que necesitas para tu viaje a Nueva York.</p>
+      <button class="hero-cta" id="heroCtaBtn">Ver la Guía</button>
+    </div>
+
+    <div class="hero-scroll-hint">Desliza para ver la guía <span>↓</span></div>
+  </section>
 
   <div class="topbar">
     <a class="homeBtn" href="index.html">⌂ Inicio</a>
@@ -367,6 +516,51 @@
         window.scrollTo({ top: 0, behavior: 'instant' });
       });
     });
+
+    // --- Hero de video: menú móvil, links que activan pestañas, y CTA ---
+    var heroBurgerBtn = document.getElementById('heroBurgerBtn');
+    var heroMobileMenu = document.getElementById('heroMobileMenu');
+    var heroMobileClose = document.getElementById('heroMobileClose');
+    if (heroBurgerBtn && heroMobileMenu) {
+      heroBurgerBtn.addEventListener('click', function () { heroMobileMenu.classList.add('open'); });
+    }
+    if (heroMobileClose && heroMobileMenu) {
+      heroMobileClose.addEventListener('click', function () { heroMobileMenu.classList.remove('open'); });
+    }
+    function heroGoToTab(tab) {
+      var targetBtn = document.querySelector('.tabBtn[data-tab="' + tab + '"]');
+      if (targetBtn) targetBtn.click();
+      var tabsEl = document.getElementById('tabs');
+      if (tabsEl) tabsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.querySelectorAll('[data-hero-tab]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        heroGoToTab(link.dataset.heroTab);
+        if (heroMobileMenu) heroMobileMenu.classList.remove('open');
+      });
+    });
+    var heroCtaBtn = document.getElementById('heroCtaBtn');
+    if (heroCtaBtn) {
+      heroCtaBtn.addEventListener('click', function () { heroGoToTab('imperdibles'); });
+    }
+
+    // El video de fondo del hero puede quedar bloqueado por el autoplay de iOS
+    // (mismo problema ya visto en menu.html) — mismo arreglo defensivo: reintentar
+    // .play() al cargar, al volver a la pestaña, y en el primer toque/clic.
+    var heroVideoEl = document.querySelector('.hero-video-bg');
+    function heroTryPlay() {
+      if (!heroVideoEl) return;
+      var p = heroVideoEl.play();
+      if (p && typeof p.catch === 'function') p.catch(function () {});
+    }
+    heroTryPlay();
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') heroTryPlay();
+    });
+    window.addEventListener('pageshow', heroTryPlay);
+    document.addEventListener('touchend', heroTryPlay, { once: true, passive: true });
+    document.addEventListener('click', heroTryPlay, { once: true });
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(function(){});

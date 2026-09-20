@@ -1,4 +1,26 @@
-const CACHE = 'app-v62';
+const CACHE = 'app-v63';
+// v63: pedido del usuario — que nuevayork.html tenga un hero de video de
+// pantalla completa como lo primero que se ve al abrir la página, con la
+// plantilla que mandó (nav + título + botón), pero personalizado para el
+// viaje real en vez del texto genérico de la plantilla, y con un video de
+// Nueva York en vez del video de avión del ejemplo. Se agregó una nueva
+// sección `.hero-video-section` al inicio de <body> de nuevayork.html:
+// video de fondo a pantalla completa (autoplay+muted+loop+playsinline) con
+// degradado oscuro encima, nav con logo "Nueva York", menú (Imperdibles/
+// Diciembre/Gratis/Curiosidades, que activan la pestaña real y hacen
+// scroll hacia ella) y el botón "⌂ Inicio" ya existente en el sitio, más
+// un menú hamburguesa para móvil, título/subtítulo/botón "Ver la Guía"
+// centrados con animación de aparición escalonada, y el mismo arreglo
+// defensivo de autoplay que ya se usó en menu.html (v62) por si iOS
+// bloquea el autoplay real. El video es un clip gratuito de stock
+// (Pexels, "drone footage of New York City skyline" al atardecer, uso
+// libre sin atribución) enlazado directo a su CDN — no se descargó ni se
+// agregó al repo, así que no pesa nada al precache del service worker.
+// No se pudo verificar la reproducción real del video desde este entorno
+// porque el proxy de egress del sandbox bloquea videos.pexels.com (mismo
+// tipo de bloqueo ya documentado con Supabase y con mixkit.co) — si el
+// video no carga bien en el dispositivo real, avisar para cambiarlo por
+// otro. No cambia ninguna otra página ni el handler de `fetch`.
 // v62: el usuario reportó "en el de Menú los vídeos no avanzan" — en
 // menu.html, el video de fondo del plato (ej. Fettuccine) se queda quieto
 // mostrando solo la foto (poster) con el botón de play nativo encima, en
