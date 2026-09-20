@@ -104,12 +104,26 @@
     inset: 0;
     background: linear-gradient(180deg, rgba(6,6,8,0.15) 0%, rgba(6,6,8,0.15) 40%, rgba(6,6,8,0.92) 100%);
   }
+  .slide-poster {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
   video.slide-bg {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center 30%;
     background: #0a0a0c;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  video.slide-bg.is-ready {
+    opacity: 1;
   }
   .slide-scrim {
     position: absolute;
@@ -351,6 +365,7 @@
 
   <!-- 1: Fettuccine Prosciutto y Burrata -->
   <section class="slide" data-dish="fettuccine" style="--slide-accent:#d99a5b;">
+    <img class="slide-poster" src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/fettuccine-poster.jpg" alt="" aria-hidden="true" />
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/fettuccine-poster.jpg">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/fettuccine.webm" type="video/webm">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/fettuccine.mp4" type="video/mp4">
@@ -376,6 +391,7 @@
 
   <!-- 2: Pizza Pesto Prosciutto y Burrata -->
   <section class="slide" data-dish="pizza" style="--slide-accent:#c97b5a;">
+    <img class="slide-poster" src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/pizza-poster.jpg" alt="" aria-hidden="true" />
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/pizza-poster.jpg">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/pizza.webm" type="video/webm">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/pizza.mp4" type="video/mp4">
@@ -397,6 +413,7 @@
 
   <!-- 3: Ensalada con Salmón -->
   <section class="slide" data-dish="ensalada" style="--slide-accent:#8fae7c;">
+    <img class="slide-poster" src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/ensalada-poster.jpg" alt="" aria-hidden="true" />
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/ensalada-poster.jpg">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/ensalada.webm" type="video/webm">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/ensalada.mp4" type="video/mp4">
@@ -417,6 +434,7 @@
 
   <!-- 4: Hamburguesa Bowl -->
   <section class="slide" data-dish="hamburguesa" style="--slide-accent:#d9b25b;">
+    <img class="slide-poster" src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/hamburguesa-poster.jpg" alt="" aria-hidden="true" />
     <video class="slide-bg" autoplay muted loop playsinline preload="auto" poster="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/img/hamburguesa-poster.jpg">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/hamburguesa.webm" type="video/webm">
       <source src="https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media/videos/hamburguesa.mp4" type="video/mp4">
@@ -581,6 +599,19 @@
     videos.forEach(tryPlayVideo);
   }
   tryPlayAll();
+
+  // Mientras cada video pesa y todavía está cargando, se ve la foto de portada
+  // (<img class="slide-poster">, instantánea) de fondo. En cuanto el video ya
+  // puede reproducirse de verdad, se revela con un fundo suave de 1s en vez
+  // de aparecer de golpe — así nunca se nota el momento en que "esto recién
+  // arrancó como video".
+  videos.forEach(function (v) {
+    if (!v) return;
+    var revealVideo = function () { v.classList.add('is-ready'); };
+    v.addEventListener('playing', revealVideo);
+    v.addEventListener('canplaythrough', revealVideo);
+    if (v.readyState >= 3) revealVideo();
+  });
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') tryPlayAll();
   });

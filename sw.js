@@ -1,4 +1,26 @@
-const CACHE = 'app-v66';
+const CACHE = 'app-v67';
+// v67: el usuario pidió (verbatim) "hagamos lo mismo para los de menu" —
+// aplicar a los 4 videos de fondo de `menu.html` (fettuccine, pizza,
+// ensalada, hamburguesa) la misma técnica de poster + fundo suave que se
+// agregó en v66 al hero de `nuevayork.html`. Esos videos ya tenían un
+// atributo `poster="..."` nativo en el `<video>` apuntando a la foto
+// correspondiente en Supabase, así que ya se veía algo instantáneo al
+// abrir cada tarjeta — pero el video pasaba de golpe (sin transición) de
+// esa portada a la reproducción real en cuanto cargaba. Se agregó, para
+// cada uno de los 4 platos: (1) una `<img class="slide-poster">` con la
+// misma foto de portada, puesta justo antes del `<video>` en el HTML y
+// con `z-index` más bajo que el video y que el degradado `.slide-scrim`
+// (que es un `<div>` aparte, no depende del video, así que el degradado
+// para que se lea el texto sigue viéndose igual desde el primer instante,
+// sin regresión); (2) el `<video class="slide-bg">` ahora arranca en
+// `opacity: 0` con una transición CSS de 1s, y se le agregó la clase
+// `is-ready` (que lo lleva a `opacity: 1`) por JS en cuanto dispara
+// `playing`/`canplaythrough` — mismo patrón ya usado en el hero de NY. Se
+// mantuvo el atributo `poster` nativo del `<video>` como respaldo. No se
+// tocó el video en sí (mismos 4 archivos de Supabase, mismo bitrate), así
+// que esto no afecta si algún video pesa o corta — es solo la transición
+// de carga. Cambios solo en `menu.html` (CSS + HTML de las 4 tarjetas +
+// un bloque chico de JS); nada de `nuevayork.html` se tocó en esta subida.
 // v66: el usuario dijo (verbatim) "me quedo con la anterior pero me molesta
 // que al abrir la pagina no arranque de una y se ve que es un video" — es
 // decir, rechazó el arreglo de v65 (cambiar de video para evitar los
