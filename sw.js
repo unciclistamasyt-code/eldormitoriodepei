@@ -1,4 +1,26 @@
-const CACHE = 'app-v63';
+const CACHE = 'app-v64';
+// v64: el usuario pidió (verbatim) "podemos hacer una toma de navidad la
+// mas bonita que encuentres que me haga viajar" — o sea, cambiar el video
+// del hero de nuevayork.html (v63, skyline aéreo al atardecer) por uno
+// más bonito y con más espíritu navideño/de viaje. Se buscaron varias
+// opciones reales de stock gratuito con escenas de Navidad en Nueva York
+// (árbol de Rockefeller, nieve en Central Park, calles nevadas) pero las
+// mejores tomas de esos temas específicos son de bancos de pago (Getty/
+// Shutterstock/iStock) — lo gratuito disponible de esos temas puntuales
+// era de calidad más floja (celular, vertical, multitudes borrosas). Se
+// eligió en cambio un video real, de altísima calidad, del Puente de
+// Brooklyn de noche iluminado con la ciudad de fondo (toma aérea/dron,
+// 4K, Pexels, uso libre sin atribución) — el Puente de Brooklyn ya es la
+// tarjeta "Imperdible" #1 de la propia guía, así que encaja perfecto
+// como primera imagen de la página aunque no sea 100% "navideño". Para
+// compensar eso y darle igual el toque de Navidad que pidió el usuario,
+// se agregó un efecto de nieve cayendo (copos ❄/❅/❆ generados por JS,
+// animados con CSS, sin ninguna imagen ni librería externa) encima del
+// video y detrás del texto — así queda la sensación de nevada de
+// diciembre sin depender de encontrar el video "perfecto" de archivo. Se
+// cambió el `src` del `<source>` del video y se agregó el efecto de
+// nieve (`.hero-snow`, CSS + un bloque de JS chico) en nuevayork.html;
+// nada más de la página se tocó.
 // v63: pedido del usuario — que nuevayork.html tenga un hero de video de
 // pantalla completa como lo primero que se ve al abrir la página, con la
 // plantilla que mandó (nav + título + botón), pero personalizado para el

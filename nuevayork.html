@@ -47,6 +47,18 @@
     position: absolute; inset: 0; z-index: 2;
     background: linear-gradient(to bottom, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%);
   }
+  .hero-snow {
+    position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none;
+  }
+  .hero-snow .flake {
+    position: absolute; top: -12px; color: #fff; user-select: none;
+    animation-name: heroSnowFall; animation-timing-function: linear; animation-iteration-count: infinite;
+    text-shadow: 0 0 3px rgba(255,255,255,0.6);
+  }
+  @keyframes heroSnowFall {
+    0% { transform: translate(0, -12px) rotate(0deg); }
+    100% { transform: translate(var(--drift, 20px), 115vh) rotate(180deg); }
+  }
   .hero-nav {
     position: absolute; top: 0; left: 0; right: 0; z-index: 5;
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -224,9 +236,10 @@
 
   <section class="hero-video-section" id="heroVideoSection">
     <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
-      <source src="https://videos.pexels.com/video-files/12122308/12122308-uhd_2560_1440_24fps.mp4" type="video/mp4" />
+      <source src="https://videos.pexels.com/video-files/5838621/5838621-uhd_2560_1440_30fps.mp4" type="video/mp4" />
     </video>
     <div class="hero-gradient"></div>
+    <div class="hero-snow" id="heroSnow" aria-hidden="true"></div>
 
     <nav class="hero-nav">
       <div class="hero-logo">Nueva York</div>
@@ -516,6 +529,32 @@
         window.scrollTo({ top: 0, behavior: 'instant' });
       });
     });
+
+    // --- Nieve cayendo sobre el hero, para el ambiente navideño ---
+    (function () {
+      var snowBox = document.getElementById('heroSnow');
+      if (!snowBox) return;
+      var flakeChars = ['❄', '❅', '❆'];
+      var count = 34;
+      for (var i = 0; i < count; i++) {
+        var el = document.createElement('span');
+        el.className = 'flake';
+        el.textContent = flakeChars[i % flakeChars.length];
+        var size = 8 + Math.random() * 16;
+        var left = Math.random() * 100;
+        var duration = 8 + Math.random() * 9;
+        var delay = Math.random() * -16;
+        var drift = (Math.random() * 80 - 40) + 'px';
+        var opacity = 0.35 + Math.random() * 0.5;
+        el.style.left = left + '%';
+        el.style.fontSize = size + 'px';
+        el.style.opacity = opacity;
+        el.style.setProperty('--drift', drift);
+        el.style.animationDuration = duration + 's';
+        el.style.animationDelay = delay + 's';
+        snowBox.appendChild(el);
+      }
+    })();
 
     // --- Hero de video: menú móvil, links que activan pestañas, y CTA ---
     var heroBurgerBtn = document.getElementById('heroBurgerBtn');
