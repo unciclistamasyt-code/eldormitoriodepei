@@ -1,4 +1,42 @@
-const CACHE = 'app-v68';
+const CACHE = 'app-v69';
+// v69: el usuario pidió (verbatim) "anade tambien al curso de skis toda su
+// linea de downhill, los supershape y tips para venta y para que sirve cada
+// uno, es los discoverys tambien detalla para que sirve cada uno" — dos
+// cosas: (1) agregar al curso la línea de pista "Supershape e-" de Head
+// (downhill/carving de alto rendimiento), con tips de venta y para qué
+// sirve cada modelo; (2) detallar más a fondo, dentro del módulo Discovery
+// ya existente, para qué sirve cada modelo de esa línea. Investigación
+// (blisterreview.com, skiessentials.com, inthesnow.com, thegearpicker.com,
+// head.com) confirmó: la línea Supershape tiene 5 modelos actuales, todos
+// con prefijo "e-" desde hace unas temporadas (e-Original 66mm, e-Speed
+// 68mm, e-Magnum 72mm, e-Rally 78mm, e-Titan 84mm — "Supershape Titan" a
+// secas es nombre viejo del mismo e-Titan), con tecnología propia distinta
+// a Discovery (titanal de 2 capas, grafeno, Crossforce Carbon Construction,
+// Energy Management Circuit — sin Auxetic ni Superframe). Se agregó un
+// módulo nuevo, `n3-m11` ("La línea de pista de Head: Supershape e-"), al
+// final del Nivel 3, con los 5 modelos, su tecnología, y tips de venta
+// concretos sobre cuándo recomendar Discovery vs. Supershape y qué ancho de
+// Supershape según el cliente — mismo formato que el resto (prosa + quiz de
+// 5 preguntas). Se expandió también el módulo `n3-m10` (Discovery): se
+// agregaron specs reales (sidecut/radio) del 82 Sport, 82 Pro y 86 Pro, se
+// sumó un párrafo sobre los modelos angostos 70 y 74 (aclarando que Head
+// todavía no publicó sus specs técnicas, para no inventarlas frente a un
+// cliente), se corrigió la mención a "Supershape Titan" por el nombre
+// vigente "Supershape e-", y se agregó una quinta pregunta de quiz sobre no
+// inventar specs no publicadas. De paso se corrigieron conjugaciones "vos"
+// que habían quedado inconsistentes con el resto del curso (dominás→
+// dominas, útil para vos→para ti, seguís→sigues, identificá→identifica,
+// pensá→piensa, sabés→sabes, escuchás→escuchas) — el resto del curso usa
+// "tú". El curso pasa de **37 a 38 módulos** (Nivel 3 pasa de 10 a 11) — se
+// actualizaron las dos referencias hardcodeadas a "37 módulos"; el resto de
+// los contadores ya se calculan dinámicamente desde `MODULES.length`.
+// Verificado con Playwright: `MODULES.length` da 38, Nivel 3 tiene 11
+// módulos, sin ids duplicados, los 5 quizzes de n3-m11 están bien formados,
+// el módulo y su quiz abren y se ven correctamente, y no hay errores de
+// consola. No se tocó `LEVELS`, ningún otro módulo existente, el sistema de
+// audio pregrabado (el módulo nuevo n3-m11 no tiene audio pregrabado — cae
+// al fallback de voz del navegador hasta que se genere uno, igual que pasó
+// con n3-m10), ni ningún otro archivo del sitio.
 // v68: el usuario pidió (verbatim) "hay un nuevo catalago de skis de head que
 // me gustaria agregar al curso" — agregar al curso de `ski.html` la
 // información del catálogo nuevo de la marca Head (temporada 2026-27). Se
