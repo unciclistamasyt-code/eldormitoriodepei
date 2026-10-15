@@ -1,4 +1,26 @@
-const CACHE = 'app-v67';
+const CACHE = 'app-v68';
+// v68: el usuario pidió (verbatim) "hay un nuevo catalago de skis de head que
+// me gustaria agregar al curso" — agregar al curso de `ski.html` la
+// información del catálogo nuevo de la marca Head (temporada 2026-27). Se
+// investigó en la web (freeskier.com y skiessentials.com) la línea nueva
+// "Discovery" de Head, que reemplaza a la antigua línea "Shape": 9 modelos
+// de 70-74mm (iniciación) a 82/86mm (Pro), con tres tecnologías nuevas de
+// construcción (Superframe, tira de grafeno, y la novedad genuina de esta
+// temporada, Auxetic) y ejemplos concretos de modelo (Discovery 82 Sport,
+// 82 Pro, 86 Pro). Se agregó un módulo nuevo, `n3-m10` ("Catálogo nuevo: la
+// línea Discovery de Head (2026-27)"), al final del Nivel 3 ("Equipamiento
+// y venta técnica") de `ski.html` — mismo formato que los demás módulos
+// (contenido en prosa + quiz de 5 preguntas), conectando el contenido
+// nuevo con lo ya enseñado en el módulo de categorías de esquí y
+// reforzando el hábito de venta consultiva (identificar qué reemplaza una
+// línea nueva, qué cambió en la tecnología real, y a qué perfil de cliente
+// le sirve) en vez de solo memorizar nombres de modelo. El curso pasa de
+// 36 a **37 módulos** — se actualizaron las dos referencias hardcodeadas a
+// "36 módulos" en el HTML/JS de `ski.html` (el saludo inicial y el mensaje
+// de "curso completo"); el resto de los contadores (por nivel, por mes,
+// etc.) ya se calculan dinámicamente desde `MODULES.length`, así que no
+// hizo falta tocarlos. No se tocó `LEVELS`, el resto de los módulos, el
+// sistema de audio pregrabado, ni ningún otro archivo del sitio.
 // v67: el usuario pidió (verbatim) "hagamos lo mismo para los de menu" —
 // aplicar a los 4 videos de fondo de `menu.html` (fettuccine, pizza,
 // ensalada, hamburguesa) la misma técnica de poster + fundo suave que se
