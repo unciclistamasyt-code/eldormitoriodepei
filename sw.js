@@ -1,4 +1,48 @@
-const CACHE = 'app-v69';
+const CACHE = 'app-v71';
+// v71: el usuario pidió (verbatim) "vamos hacer el audio denuevo de todo el
+// curso con la nueva voz, al igual quiero mejorar el curso de ski con mas
+// info especifica y tambien agregar snowboard, quiero cuestion de angulos a
+// la hora de hacer tune up el base bevel, stone grinding y toda la
+// informacion necesaria para volverme en un experto" — de las 4 partes de
+// ese pedido, esta versión cubre la de contenido de tuning técnico (las
+// otras 3 — audio regenerado, snowboard espejo, y cualquier otra mejora de
+// info específica — quedan para versiones siguientes). Se agregó un NIVEL
+// NUEVO completo, Nivel 6 "Taller: tuning técnico y stone grinding", con 6
+// módulos (n6-m1 a n6-m6): qué es el bevel (base bevel vs side bevel, y la
+// fórmula ángulo de canto = (90+base bevel)-side bevel); ángulos de side
+// bevel por disciplina (recreativo, carving, slalom, GS, velocidad) y la
+// regla práctica "1/3" (1° base / 3° side); el matiz más importante del
+// nivel — afilar en casa sin guía de ángulo AUMENTA el bevel de base
+// involuntariamente en vez de "afilar" en el sentido coloquial, y solo un
+// stone grind lo resetea; herramientas de taller (guías de bevel, piedras
+// diamante/gomosas, cortadores de sidewall, true bar); qué es un stone
+// grind, en qué se diferencia de un belt grind y de un afilado de rutina, y
+// qué problemas resuelve que un afilado simple no puede; y estructura
+// (structure) + cómo armar el argumento de venta de servicio de taller
+// (stone grind completo vs. afilado de rutina) según el síntoma real que
+// reporte el cliente. Conteo de módulos del curso completo: 43 → 49.
+//
+// De paso, antes de escribir el nivel nuevo, se reconstruyeron en este
+// archivo los 5 módulos "explicado fácil" de Discovery (n3-m12 a n3-m16,
+// uno por modelo: 70, 74, 82 Sport, 82 Pro, 86 Pro) que se habían agregado
+// en la v70 pero que todavía no estaban subidos al repositorio de GitHub —
+// si ya los habías subido vos mismo a mano, este archivo los vuelve a
+// incluir sin duplicar nada (reemplaza, no suma).
+//
+// v70: el usuario pidió (verbatim) "Agrega para discovery ya se un curso
+// más de cada uno muy bien explicado como para niños con analogía para un
+// vendedor nuevo que así no sepas de esto puedes vender pero al igual
+// siempre nombrando términos correctos e información clara y no dejando
+// nada afuera de cada modelo uno por uno de discovery" — 5 módulos nuevos,
+// uno por cada modelo de Discovery (70, 74, 82 Sport, 82 Pro, 86 Pro),
+// cada uno con una analogía simple (bicicleta de ruta vs. ciclocross vs.
+// mountain bike para el ancho; bate de béisbol mixto vs. de madera entera
+// para el núcleo; cinturón con pretensor para la fijación superior) pero
+// siempre nombrando el término técnico correcto (sidecut, radio de giro,
+// núcleo, fijación), sin omitir ningún dato ya conocido de cada modelo, y
+// siendo honesto sobre los datos que Head no publicó (sidecut/radio del 70
+// y 74). Conteo de módulos: 38 → 43 (Nivel 3: 11 → 16).
+//
 // v69: el usuario pidió (verbatim) "anade tambien al curso de skis toda su
 // linea de downhill, los supershape y tips para venta y para que sirve cada
 // uno, es los discoverys tambien detalla para que sirve cada uno" — dos
