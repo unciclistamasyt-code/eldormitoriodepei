@@ -1,4 +1,70 @@
-const CACHE = 'app-v71';
+const CACHE = 'app-v73';
+// v73: el usuario mandó directamente, como archivo adjunto en el chat, una
+// foto real de un snowboarder carveando en nieve — así se resolvió el
+// bloqueo de red descripto en el changelog de v72 (no hizo falta volver a
+// intentar el fetch externo). Se guardó como icons/cards/snowboard.jpg, se
+// agregó al precache de este archivo, y se cambió la entrada de
+// snowboard.html en el array APPS de index.html de `icon` (SVG) a `img`
+// (la foto real), siguiendo el mismo patrón que el resto de tarjetas del
+// sitio. No se tocó snowboard.html ni ski.html en esta versión.
+//
+// v72: segunda parte del pedido de 4 partes (ver changelog de v71 para el
+// pedido completo verbatim): curso de snowboard espejo. El usuario eligió
+// (AskUserQuestion) "un curso espejo del de ski" como alcance, y para la
+// tarjeta del menú principal eligió "buscá una foto libre de derechos en la
+// web" — pero el entorno de esta sesión bloquea la descarga directa de
+// imágenes externas vía fetch (solo permite dominios en una allowlist de
+// red, y la herramienta de fetch de páginas no pudo traer los bytes de la
+// foto de stock encontrada por restricción de "provenance"). Como solución
+// práctica, se usó un ícono SVG simple (línea, estilo "Checklist" ya
+// existente en este mismo index.html) en vez de una foto real para la
+// tarjeta de Snowboard School — el usuario puede reemplazarlo más adelante
+// subiendo una foto a icons/cards/snowboard.jpg y cambiando esa entrada de
+// `icon` a `img` en index.html, o pasándome un link directo de imagen en el
+// chat para que lo intente de nuevo.
+//
+// Se creó `snowboard.html` nuevo, replicando el mismo motor JS/CSS de
+// ski.html (dashboard, progreso, quiz, audio con fallback a voz del
+// navegador) pero con contenido 100% propio de snowboard: 32 módulos en 5
+// niveles (Fundamentos y equipo: 6, Técnica de principiante: 6,
+// Equipamiento y venta técnica: 9, Perfeccionamiento: 6, Avanzado y fuera
+// de pista: 5), cubriendo vocabulario (nose/tail, toe/heel edge, stance
+// regular/goofy, switch), postura y caídas, giros (J-turn, linking turns,
+// carving), venta consultiva de tabla+binding+bota como sistema
+// interdependiente (camber/rocker/híbrido, flex, shape twin/directional,
+// ancho según talla de bota, sistemas de binding strap-in/rear-entry/
+// step-on, sistemas de cordones traditional/speed-lace/BOA), park (jumps,
+// boxes, switch), y avanzado/backcountry (seguridad en avalanchas DVA/
+// sonda/pala, splitboarding, disciplinas de competición, tecnología
+// moderna). Claves de localStorage separadas de ski.html
+// (snowboard_progress_v1__Sebas, snowboard_activity_v1__Sebas) para no
+// pisar el progreso del curso de ski. Audio pregrabado apuntando a un
+// bucket nuevo de Supabase, 'snowboard-audio/' (todavía no creado — el
+// curso cae al fallback de voz del navegador hasta que se genere y suba
+// audio real, igual que le pasó a ski.html antes de tener audio Cartesia).
+//
+// Se agregó la tarjeta "Snowboard School" a `index.html` (array APPS) y
+// `snowboard.html` al precache de este archivo. No se tocó ski.html en
+// esta versión (el contenido de tuning de la v71 queda igual).
+//
+// Verificado con Node (32 módulos, 5 niveles, sin ids duplicados, todos
+// los quizzes con exactamente 5 preguntas bien formadas) y revisado el
+// texto completo con un escaneo de regex para detectar conjugaciones "vos"
+// que se hubieran colado (se encontraron y corrigieron bastantes esta vez:
+// tenés→tienes, querés→quieres, arrancás→arrancas, aplicás→aplicas,
+// mirás→miras, podés→puedes, necesitás→necesitas, deslizás→deslizas,
+// trabajás/acompañás→trabajas/acompañas, conocés→conoces (x3),
+// pasás→pasas (x2), inclinás→inclinas (x2), caés/volvés→caes/vuelves,
+// recordás→recuerdas, sabés→sabes, y los imperativos llevá/apoyá/
+// empujate→lleva/apoya/empújate), para mantener consistencia de "tú" con
+// el resto del sitio.
+//
+// Pendiente: audio de los 32 módulos (ver tarea de audio pendiente en
+// claude/ski-app-updates.md, que ahora cubre tanto ski como snowboard);
+// reemplazar el ícono de la tarjeta por una foto real si el usuario la
+// consigue; el usuario debe crear el bucket 'snowboard-audio' en Supabase
+// cuando llegue el momento de subir audio.
+//
 // v71: el usuario pidió (verbatim) "vamos hacer el audio denuevo de todo el
 // curso con la nueva voz, al igual quiero mejorar el curso de ski con mas
 // info especifica y tambien agregar snowboard, quiero cuestion de angulos a
@@ -498,6 +564,7 @@ const ASSETS = [
   './salud.html',
   './recetas.html',
   './ski.html',
+  './snowboard.html',
   './nuevayork.html',
   './style.css',
   './manifest.json',
@@ -512,6 +579,7 @@ const ASSETS = [
   './icons/cards/salud.jpg',
   './icons/cards/recetas.jpg',
   './icons/cards/ski.jpg',
+  './icons/cards/snowboard.jpg',
   './icons/cards/nuevayork.jpg',
   './icons/ny/liberty.jpg',
   './icons/ny/staten.jpg',
