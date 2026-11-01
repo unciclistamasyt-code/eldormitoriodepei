@@ -10,18 +10,20 @@
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
   :root{
-    --bg:#f6f8fb;
-    --panel:#ffffff;
-    --panel2:#eef2f7;
-    --line:#e3e8f0;
-    --ink:#3c4655;
-    --muted:#8792a3;
+    --bg:#0a0e14;
+    --panel:#121822;
+    --panel2:#1a2230;
+    --line:#2a3342;
+    --ink:#eef2f7;
+    --muted:#8d98ac;
     --ice:#1cb0f6;
     --violet:#58cc02;
     --coral:#ff9600;
     --green:#58cc02;
-    --red:#ff4b4b;
+    --red:#ff5c5c;
+    --brand: var(--ice);
     --grad: linear-gradient(90deg, var(--ice), var(--violet));
+    color-scheme: dark;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -130,7 +132,7 @@
   .continue-card .eyebrow-coral{margin-bottom:6px;}
   .continue-card h3{margin:0 0 4px;font-size:16px;font-weight:800;}
   .continue-card p{margin:0;color:var(--muted);font-size:12.5px;font-weight:600;}
-  .continue-card .arrow{font-size:20px;color:var(--ice);flex-shrink:0;}
+  .continue-card .arrow{font-size:20px;color:var(--brand);flex-shrink:0;}
 
   /* ---------- repaso general card ---------- */
   .review-card{
@@ -146,11 +148,11 @@
     width:40px;height:40px;border-radius:12px;background:var(--panel2);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
-  .review-card .review-icon svg{width:20px;height:20px;stroke:var(--ice);fill:none;stroke-width:2;}
+  .review-card .review-icon svg{width:20px;height:20px;stroke:var(--brand);fill:none;stroke-width:2;}
   .review-card .review-text{flex:1;}
   .review-card .review-title{font-size:15px;font-weight:800;margin-bottom:2px;}
   .review-card .review-sub{font-size:12.5px;color:var(--muted);font-weight:600;}
-  .review-card .review-chev{font-size:18px;color:var(--ice);flex-shrink:0;}
+  .review-card .review-chev{font-size:18px;color:var(--brand);flex-shrink:0;}
 
   /* ---------- resultado de quiz con calificación cualitativa ---------- */
   .result-grade{font-size:15px;color:var(--ink);margin:4px 0 2px;font-weight:800;}
@@ -210,9 +212,9 @@
   .heat-scroll{overflow-x:auto;padding-bottom:4px;}
   .heat-grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);gap:3px;width:max-content;}
   .heat-cell{width:11px;height:11px;border-radius:3px;background:var(--panel2);}
-  .heat-cell.l1{background:#dbeefe;}
-  .heat-cell.l2{background:#93d9fb;}
-  .heat-cell.l3{background:#4cc3f7;}
+  .heat-cell.l1{background:rgba(28,176,246,0.18);}
+  .heat-cell.l2{background:rgba(28,176,246,0.4);}
+  .heat-cell.l3{background:rgba(28,176,246,0.65);}
   .heat-cell.l4{background:var(--ice);}
   .heat-cell.l5{background:var(--coral);}
   .heat-legend{display:flex;align-items:center;gap:5px;margin-top:10px;font-size:10.5px;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:700;justify-content:flex-end;}
@@ -238,24 +240,29 @@
   /* ---------- reading view ---------- */
   .reader{display:none;}
   .reader.show{display:block;}
-  .reader-eyebrow{font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;color:var(--ice);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+  .reader-eyebrow{font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
   .reader h1{font-size:24px;margin:0 0 16px;line-height:1.25;font-weight:800;}
   .reader-body{font-size:15px;line-height:1.7;color:var(--ink);}
   .reader-body p{margin:0 0 14px;}
-  .reader-body b{color:var(--ice);font-weight:800;}
+  .reader-body b{color:var(--brand);font-weight:800;}
   .audio-btn{
     display:flex;align-items:center;gap:10px;
     background:var(--panel2);border:2px solid var(--line);border-radius:14px;
     padding:12px 16px;margin:16px 0;cursor:pointer;font-size:13.5px;color:var(--ink);font-weight:700;
   }
   .audio-btn .ic{font-size:16px;}
+  .speed-row{display:flex;align-items:center;gap:8px;margin:-4px 0 16px;flex-wrap:wrap;}
+  .speed-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .speed-pills{display:flex;gap:6px;flex-wrap:wrap;}
+  .speed-pill{background:var(--panel2);border:2px solid var(--line);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;}
+  .speed-pill.active{background:var(--brand);color:#0a0e14;border-color:transparent;}
   .reader-actions{display:flex;gap:10px;margin-top:22px;}
   .btn{
     border:none;border-radius:14px;padding:14px 18px;font-family:'Nunito',sans-serif;
     font-weight:800;font-size:14px;cursor:pointer;flex:1;
     text-transform:uppercase;letter-spacing:.02em;
   }
-  .btn-primary{background:var(--violet);color:#fff;box-shadow:0 4px 0 #46a302;}
+  .btn-primary{background:var(--violet);color:#0a0e14;box-shadow:0 4px 0 #2e6a01;}
   .btn-ghost{background:var(--panel2);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);}
 
   /* ---------- quiz ---------- */
@@ -274,7 +281,7 @@
   .q-explain{font-size:13px;color:var(--muted);line-height:1.5;margin-top:6px;padding:12px 14px;background:var(--panel2);border-radius:12px;display:none;font-weight:600;}
   .q-explain.show{display:block;}
   .quiz-result{text-align:center;padding:30px 10px;}
-  .quiz-result .score{font-family:'Nunito',sans-serif;font-size:46px;font-weight:900;color:var(--ice);}
+  .quiz-result .score{font-family:'Nunito',sans-serif;font-size:46px;font-weight:900;color:var(--brand);}
   .quiz-result p{color:var(--muted);font-size:14px;font-weight:600;}
 
   .home-only{display:block;}
@@ -342,12 +349,12 @@
       <svg id="climbSvg" class="climb-svg" viewBox="0 0 400 230" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="mtnGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#c7d7e8"/>
-            <stop offset="100%" stop-color="#93a8c2"/>
+            <stop offset="0%" stop-color="#3a4a5e"/>
+            <stop offset="100%" stop-color="#1f2834"/>
           </linearGradient>
           <linearGradient id="mtnGrad2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#dbe6f0"/>
-            <stop offset="100%" stop-color="#b9c9db"/>
+            <stop offset="0%" stop-color="#28323f"/>
+            <stop offset="100%" stop-color="#171e27"/>
           </linearGradient>
         </defs>
         <!-- cielo -->
@@ -358,11 +365,11 @@
         <!-- montaña principal -->
         <polygon points="10,230 130,150 180,55 235,15 290,95 340,150 400,230" fill="url(#mtnGrad)"/>
         <!-- gorro de nieve -->
-        <polygon points="235,15 205,75 265,75" fill="#ffffff" opacity="0.9"/>
-        <polygon points="180,55 160,90 210,80" fill="#ffffff" opacity="0.6"/>
+        <polygon points="235,15 205,75 265,75" fill="#eef2f7" opacity="0.85"/>
+        <polygon points="180,55 160,90 210,80" fill="#eef2f7" opacity="0.55"/>
         <!-- bandera de cima -->
         <line x1="235" y1="15" x2="235" y2="0" stroke="var(--muted)" stroke-width="2"/>
-        <path id="summitFlag" d="M 235 1 L 250 5 L 235 9 Z" fill="var(--coral)"/>
+        <path id="summitFlag" d="M 235 1 L 250 5 L 235 9 Z" fill="var(--brand)"/>
         <!-- sendero en zigzag -->
         <path id="climbPath" d="M 55 220 L 150 198 L 85 172 L 185 150 L 110 120 L 205 95 L 150 65 L 235 15"
               fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="1 9" stroke-linecap="round"/>
@@ -410,6 +417,16 @@
     <div class="audio-btn" id="audioBtn" onclick="toggleAudio()">
       <span class="ic" id="audioIcon">▶</span>
       <span id="audioLabel">Escuchar el módulo</span>
+    </div>
+    <div class="speed-row">
+      <span class="speed-lbl">Velocidad</span>
+      <div class="speed-pills">
+        <button class="speed-pill" data-rate="0.75" onclick="setAudioRate(0.75)">0.75x</button>
+        <button class="speed-pill" data-rate="1" onclick="setAudioRate(1)">1x</button>
+        <button class="speed-pill" data-rate="1.25" onclick="setAudioRate(1.25)">1.25x</button>
+        <button class="speed-pill" data-rate="1.5" onclick="setAudioRate(1.5)">1.5x</button>
+        <button class="speed-pill" data-rate="2" onclick="setAudioRate(2)">2x</button>
+      </div>
     </div>
     <div class="reader-actions">
       <button class="btn btn-ghost" onclick="goHome()">Volver</button>
@@ -1594,14 +1611,14 @@ function renderClimb(stats){
     const reached = stats.done >= running;
     const g = document.createElementNS('http://www.w3.org/2000/svg','g');
     g.innerHTML = `
-      <circle cx="${cp.x}" cy="${cp.y}" r="5" fill="${reached?'var(--ice)':'var(--panel2)'}" stroke="${reached?'none':'var(--muted)'}" stroke-width="1.5"/>
+      <circle cx="${cp.x}" cy="${cp.y}" r="5" fill="${reached?'var(--brand)':'var(--panel2)'}" stroke="${reached?'none':'var(--muted)'}" stroke-width="1.5"/>
       <text x="${cp.x}" y="${cp.y-9}" text-anchor="middle" class="checkpoint-lbl">N${lv.id}</text>
     `;
     cpGroup.appendChild(g);
   });
 
   // bandera de cima encendida al terminar todo
-  document.getElementById('summitFlag').setAttribute('fill', stats.done>=stats.total ? 'var(--coral)' : 'var(--line)');
+  document.getElementById('summitFlag').setAttribute('fill', stats.done>=stats.total ? 'var(--brand)' : 'var(--line)');
 
   document.getElementById('climbMeta').textContent = stats.done>=stats.total ? '¡cumbre! 🏔️' : `${Math.round(pct*100)}% de la subida`;
   document.getElementById('climbNote').innerHTML = stats.done>=stats.total
@@ -1651,6 +1668,7 @@ function openModuleById(id){
   document.getElementById('rBody').innerHTML = mod.content;
   document.getElementById('audioIcon').textContent='▶';
   document.getElementById('audioLabel').textContent='Escuchar el módulo';
+  initSpeedUI();
   window.scrollTo(0,0);
 }
 
@@ -1662,6 +1680,21 @@ const AUDIO_BASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/obje
 let currentAudioEl = null;
 let speaking = false;
 let usingFallbackVoice = false;
+let audioRate = 1;
+try{ const savedRate = parseFloat(localStorage.getItem('ski_audioRate__Sebas')); if(savedRate && savedRate>0) audioRate = savedRate; }catch(e){}
+
+function setAudioRate(r){
+  audioRate = r;
+  try{ localStorage.setItem('ski_audioRate__Sebas', String(r)); }catch(e){}
+  if(currentAudioEl) currentAudioEl.playbackRate = r;
+  initSpeedUI();
+}
+
+function initSpeedUI(){
+  document.querySelectorAll('.speed-pill').forEach(b=>{
+    b.classList.toggle('active', parseFloat(b.dataset.rate)===audioRate);
+  });
+}
 
 function resetAudioUI(){
   speaking = false;
@@ -1701,6 +1734,7 @@ function toggleAudio(){
   // Primer play: intentar cargar el MP3 real desde Supabase
   const audioUrl = AUDIO_BASE_URL + mod.id + '.mp3';
   const audioEl = new Audio(audioUrl);
+  audioEl.playbackRate = audioRate;
   currentAudioEl = audioEl;
 
   audioEl.addEventListener('ended', () => { resetAudioUI(); });
@@ -1731,7 +1765,7 @@ function speakWithBrowserVoice(mod){
   }
   const text = mod.content.replace(/<[^>]+>/g,' ');
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'es-MX'; utter.rate = 1;
+  utter.lang = 'es-MX'; utter.rate = audioRate;
   utter.onend = () => { resetAudioUI(); };
   window.speechSynthesis.speak(utter);
   speaking = true;

@@ -211,6 +211,11 @@
     background: none;
     max-width: 160px;
   }
+  .speed-row { display: flex; align-items: center; gap: 8px; margin: -8px 0 18px; flex-wrap: wrap; }
+  .speed-lbl { font-size: 11px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .speed-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .speed-pill { background: none; border: 1px solid var(--line); border-radius: 20px; padding: 5px 11px; font-size: 12px; font-weight: 600; color: var(--text-dim); cursor: pointer; }
+  .speed-pill.active { background: var(--flag); color: #fff; border-color: transparent; }
 
   /* ---- Diagramas ----
      Ilustraciones propias en SVG (no son fotos ni diagramas bajados de
@@ -234,6 +239,40 @@
   .forecastRow { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
   .forecastRow span:last-child { color: var(--text-dim); }
   .forecastEta { font-size: 13.5px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); line-height: 1.5; }
+
+  /* ---- Dashboard (racha, semana, estadísticas, mes, heatmap) ---- */
+  .streakRow { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .streakBadge { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 16px; border: 1px solid var(--flag); background: rgba(217,112,112,0.08); flex-shrink: 0; }
+  .streakBadge .n { font-size: 20px; font-weight: 700; color: var(--flag); line-height: 1.1; }
+  .streakBadge .lbl { font-size: 8.5px; color: var(--flag); opacity: .85; text-transform: uppercase; letter-spacing: .05em; margin-top: 1px; }
+  .weekStrip { display: flex; gap: 6px; flex: 1; }
+  .dayCell { flex: 1; aspect-ratio: 1; border-radius: 8px; background: var(--bg-soft); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 9.5px; color: var(--text-dim); }
+  .dayCell.active { background: var(--flag); color: #fff; border-color: transparent; }
+  .dayCell.today { outline: 2px solid var(--flag); outline-offset: 1px; }
+
+  .statGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+  .statCard { padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; }
+  .statCard .lbl { font-size: 10.5px; color: var(--text-dim); margin-bottom: 5px; }
+  .statCard .val { font-size: 18px; font-weight: 600; }
+  .statCard .val small { font-size: 11.5px; color: var(--text-dim); font-weight: 400; }
+
+  .dashPanel { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 22px; }
+  .dashPanelTitle { font-size: 13.5px; font-weight: 600; margin-bottom: 10px; }
+
+  .monthChart { display: flex; align-items: flex-end; gap: 6px; height: 64px; margin: 6px 0 4px; }
+  .monthCol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; justify-content: flex-end; height: 100%; }
+  .monthBar { width: 60%; border-radius: 5px 5px 0 0; background: var(--flag); min-height: 2px; }
+  .monthLbl { font-size: 9px; color: var(--text-dim); text-transform: uppercase; }
+
+  .heatGrid { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin: 4px 0 10px; }
+  .heatCell { width: 100%; aspect-ratio: 1; border-radius: 2px; background: var(--bg-soft); }
+  .heatCell.l1 { background: rgba(217,112,112,0.2); }
+  .heatCell.l2 { background: rgba(217,112,112,0.4); }
+  .heatCell.l3 { background: rgba(217,112,112,0.6); }
+  .heatCell.l4 { background: rgba(217,112,112,0.8); }
+  .heatCell.l5 { background: var(--flag); }
+  .heatLegend { display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: var(--text-dim); justify-content: flex-end; }
+  .heatLegend .heatCell { width: 9px; height: 9px; }
 
   /* ---- Feedback del quiz ---- */
   .feedbackBox {
@@ -1412,6 +1451,123 @@ function formatMinutes(min) {
   return rem ? `${h} h ${rem} min` : `${h} h`;
 }
 
+/* ================= Dashboard (racha, semana, heatmap, mes) =================
+   Todo se deriva de los timestamps que ya guarda progress.completed[id].at —
+   no hace falta ningún storage nuevo. */
+function dayKey(ts) {
+  const d = new Date(ts);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString().slice(0, 10);
+}
+function computeGolfStats() {
+  const entries = Object.entries(progress.completed).filter(([, v]) => v && v.at);
+  const byDay = {};
+  entries.forEach(([, v]) => { const k = dayKey(v.at); byDay[k] = (byDay[k] || 0) + 1; });
+
+  // Racha actual: cuenta hacia atrás desde hoy (si hoy no tiene actividad
+  // todavía, no rompe la racha — simplemente empieza a contar desde ayer).
+  let streak = 0;
+  const cursor = new Date(); cursor.setHours(0, 0, 0, 0);
+  if (!byDay[dayKey(cursor.getTime())]) cursor.setDate(cursor.getDate() - 1);
+  while (byDay[dayKey(cursor.getTime())]) { streak++; cursor.setDate(cursor.getDate() - 1); }
+
+  // Racha récord: la corrida más larga de días consecutivos con actividad.
+  const sortedDays = Object.keys(byDay).sort();
+  let record = 0, run = 0, prevD = null;
+  sortedDays.forEach(k => {
+    const d = new Date(k + 'T00:00:00');
+    run = (prevD && Math.round((d - prevD) / 86400000) === 1) ? run + 1 : 1;
+    record = Math.max(record, run);
+    prevD = d;
+  });
+
+  // Semana actual (lunes a domingo) para la tira de días.
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const isoDow = (today.getDay() + 6) % 7; // 0=lunes
+  const monday = new Date(today); monday.setDate(today.getDate() - isoDow);
+  const week = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    week.push({ label: ['L', 'M', 'X', 'J', 'V', 'S', 'D'][i], active: !!byDay[dayKey(d.getTime())], isToday: dayKey(d.getTime()) === dayKey(today.getTime()) });
+  }
+
+  // Heatmap: últimas 20 semanas (140 días), 5 columnas por semana visualmente
+  // en una grilla de 20 columnas x 7 filas, una celda por día.
+  const heatDays = [];
+  for (let i = 139; i >= 0; i--) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    const n = byDay[dayKey(d.getTime())] || 0;
+    let cls = 'heatCell';
+    if (n >= 5) cls += ' l5'; else if (n >= 3) cls += ' l4'; else if (n === 2) cls += ' l3'; else if (n === 1) cls += ' l2';
+    heatDays.push(cls);
+  }
+
+  // Módulos completados por mes (últimos 6 meses con datos, o los últimos 6
+  // meses calendario si no hay suficiente historial).
+  const byMonth = {};
+  entries.forEach(([, v]) => { const m = new Date(v.at).toISOString().slice(0, 7); byMonth[m] = (byMonth[m] || 0) + 1; });
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const key = d.toISOString().slice(0, 7);
+    months.push({ key, label: d.toLocaleDateString('es-ES', { month: 'short' }).replace('.', ''), count: byMonth[key] || 0 });
+  }
+  const monthMax = Math.max(1, ...months.map(m => m.count));
+
+  return { streak, record, week, heatDays, months, monthMax };
+}
+
+function renderDashboard(app, fc) {
+  const gs = computeGolfStats();
+
+  const streakRow = document.createElement('div');
+  streakRow.className = 'streakRow';
+  streakRow.innerHTML = `
+    <div class="streakBadge"><span class="n">${gs.streak}</span><span class="lbl">racha</span></div>
+    <div class="weekStrip">
+      ${gs.week.map(d => `<div class="dayCell${d.active ? ' active' : ''}${d.isToday ? ' today' : ''}">${d.label}</div>`).join('')}
+    </div>
+  `;
+  app.appendChild(streakRow);
+
+  const statGrid = document.createElement('div');
+  statGrid.className = 'statGrid';
+  statGrid.innerHTML = `
+    <div class="statCard"><div class="lbl">Módulos completados</div><div class="val">${fc.completedCount}<small> / ${fc.totalCount}</small></div></div>
+    <div class="statCard"><div class="lbl">Contenido completado</div><div class="val">${formatMinutes(fc.completedMinutes)}</div></div>
+    <div class="statCard"><div class="lbl">Racha récord</div><div class="val">${gs.record}<small> día${gs.record === 1 ? '' : 's'}</small></div></div>
+    <div class="statCard"><div class="lbl">Promedio en quizzes</div><div class="val">${fc.avgScorePct !== null ? fc.avgScorePct + '%' : '—'}</div></div>
+  `;
+  app.appendChild(statGrid);
+
+  const monthPanel = document.createElement('div');
+  monthPanel.className = 'dashPanel';
+  monthPanel.innerHTML = `
+    <div class="dashPanelTitle">Módulos por mes</div>
+    <div class="monthChart">
+      ${gs.months.map(m => `<div class="monthCol"><div class="monthBar" style="height:${Math.max(4, m.count / gs.monthMax * 56)}px"></div><div class="monthLbl">${m.label}</div></div>`).join('')}
+    </div>
+  `;
+  app.appendChild(monthPanel);
+
+  const heatPanel = document.createElement('div');
+  heatPanel.className = 'dashPanel';
+  heatPanel.innerHTML = `
+    <div class="dashPanelTitle">Actividad reciente</div>
+    <div class="heatGrid">${gs.heatDays.map(cls => `<div class="${cls}"></div>`).join('')}</div>
+    <div class="heatLegend">menos <span class="heatCell"></span><span class="heatCell l2"></span><span class="heatCell l3"></span><span class="heatCell l4"></span><span class="heatCell l5"></span> más</div>
+  `;
+  app.appendChild(heatPanel);
+
+  const forecastCard = document.createElement('div');
+  forecastCard.className = 'forecastCard';
+  forecastCard.innerHTML = `
+    <div class="forecastTitle">Estimación de finalización</div>
+    <div class="forecastEta" style="margin-top:0;padding-top:0;border-top:none;">${fc.etaText}</div>
+  `;
+  app.appendChild(forecastCard);
+}
+
 /* ================= Navegación (pila de vistas) ================= */
 let viewStack = [{ view: 'niveles' }];
 
@@ -1441,9 +1597,24 @@ document.getElementById('backBtn').addEventListener('click', (e) => {
    segundos, que es el workaround estándar para ese bug. */
 
 const VOICE_PREF_KEY = 'golf_voice_pref';
+const AUDIO_RATE_KEY = 'golf_audio_rate';
 let availableVoices = [];
 let speakWatchdog = null;
 let speakChain = null; // { chunks, idx, btn } — para poder cancelar
+let audioRate = 1;
+try { const savedRate = parseFloat(localStorage.getItem(AUDIO_RATE_KEY)); if (savedRate && savedRate > 0) audioRate = savedRate; } catch (e) {}
+
+function setAudioRate(r) {
+  audioRate = r;
+  try { localStorage.setItem(AUDIO_RATE_KEY, String(r)); } catch (e) {}
+  if (speakChain && speakChain.currentAudio) speakChain.currentAudio.playbackRate = r;
+  initSpeedUI();
+}
+function initSpeedUI() {
+  document.querySelectorAll('.speed-pill').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.rate) === audioRate);
+  });
+}
 
 function refreshVoices() {
   if (!('speechSynthesis' in window)) return;
@@ -1549,6 +1720,7 @@ function googleTtsUrl(text) {
 function playGoogleTtsChunk(text) {
   return new Promise((resolve, reject) => {
     const audio = new Audio(googleTtsUrl(text));
+    audio.playbackRate = audioRate;
     let settled = false;
     const finish = (ok, err) => {
       if (settled) return;
@@ -1572,7 +1744,7 @@ function playSynthChunk(text, voice) {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = voice ? voice.lang : 'es-ES';
     if (voice) utter.voice = voice;
-    utter.rate = 0.98;
+    utter.rate = 0.98 * audioRate;
     utter.onend = () => resolve();
     utter.onerror = () => resolve();
     window.speechSynthesis.speak(utter);
@@ -1603,6 +1775,7 @@ function pregenAudioUrl(moduleId) {
 
 function playPregenAudio(moduleId, btn, text, fallbackVoice) {
   const audio = new Audio(pregenAudioUrl(moduleId));
+  audio.playbackRate = audioRate;
   speakChain = { btn, currentAudio: audio };
   btn.classList.add('playing');
   const fallToLive = () => {
@@ -1711,16 +1884,7 @@ function renderNiveles(app) {
   app.appendChild(reviewBtn);
 
   const fc = courseForecast();
-  const forecastCard = document.createElement('div');
-  forecastCard.className = 'forecastCard';
-  forecastCard.innerHTML = `
-    <div class="forecastTitle">Tu progreso</div>
-    <div class="forecastRow"><span>Módulos completados</span><span>${fc.completedCount}/${fc.totalCount}</span></div>
-    <div class="forecastRow"><span>Contenido completado</span><span>${formatMinutes(fc.completedMinutes)} de ${formatMinutes(fc.totalMinutes)}</span></div>
-    ${fc.avgScorePct !== null ? `<div class="forecastRow"><span>Promedio en quizzes</span><span>${fc.avgScorePct}%</span></div>` : ''}
-    <div class="forecastEta">${fc.etaText}</div>
-  `;
-  app.appendChild(forecastCard);
+  renderDashboard(app, fc);
 
   CURRICULUM.forEach(level => {
     const stats = levelStats(level);
@@ -1806,12 +1970,12 @@ function renderLeccion(app, data) {
   if (voiceOpts.length > 1) {
     const select = document.createElement('select');
     select.className = 'voiceSelect';
-    select.title = 'Voz de respaldo sin internet';
+    select.title = 'Voz de respaldo de tu dispositivo';
     const preferred = getPreferredVoice();
     voiceOpts.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v.name;
-      opt.textContent = '(sin internet) ' + v.name.replace(/^Microsoft |^Google /, '');
+      opt.textContent = v.name.replace(/^Microsoft |^Google /, '');
       if (preferred && v.name === preferred.name) opt.selected = true;
       select.appendChild(opt);
     });
@@ -1820,14 +1984,29 @@ function renderLeccion(app, data) {
   }
   app.appendChild(listenRow);
 
+  const speedRow = document.createElement('div');
+  speedRow.className = 'speed-row';
+  speedRow.innerHTML = `
+    <span class="speed-lbl">Velocidad</span>
+    <div class="speed-pills">
+      <button class="speed-pill" data-rate="0.75" onclick="setAudioRate(0.75)">0.75x</button>
+      <button class="speed-pill" data-rate="1" onclick="setAudioRate(1)">1x</button>
+      <button class="speed-pill" data-rate="1.25" onclick="setAudioRate(1.25)">1.25x</button>
+      <button class="speed-pill" data-rate="1.5" onclick="setAudioRate(1.5)">1.5x</button>
+      <button class="speed-pill" data-rate="2" onclick="setAudioRate(2)">2x</button>
+    </div>
+  `;
+  app.appendChild(speedRow);
+
   const voiceHint = document.createElement('div');
   voiceHint.className = 'modMeta';
   voiceHint.style.marginTop = '-14px';
   voiceHint.style.marginBottom = '18px';
   voiceHint.textContent = PREGEN_AUDIO_MODULES.has(m.id)
-    ? 'Este módulo tiene audio grabado con una voz humana real (no una síntesis) — la primera vez que lo escuchas necesita internet para descargarlo, pero después queda guardado en tu teléfono y se reproduce sin conexión. Si por algún motivo falla, cae automáticamente a la voz de tu dispositivo elegida arriba.'
-    : 'Por defecto "Escuchar el módulo" usa una voz en español más natural (necesita internet). Si no hay conexión o el servicio falla, cae automáticamente a la voz de tu dispositivo elegida arriba — que no incluye "Siri Voice": eso es una limitación de iOS, Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, nunca la voz de Siri en sí.';
+    ? 'Este módulo tiene audio grabado con una voz humana real (no una síntesis).'
+    : 'Por defecto "Escuchar el módulo" usa una voz en español más natural. Si falla, cae automáticamente a la voz de tu dispositivo elegida arriba — que no incluye "Siri Voice": eso es una limitación de iOS, Safari solo expone al selector las voces descargadas en Ajustes → Accesibilidad → Contenido hablado → Voces, nunca la voz de Siri en sí.';
   app.appendChild(voiceHint);
+  initSpeedUI();
 
   const body = document.createElement('div');
   body.className = 'lessonBody';
