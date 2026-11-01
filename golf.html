@@ -15,6 +15,13 @@
 
 <link rel="stylesheet" href="style.css" />
 <style>
+  /* En pantallas anchas (desktop), el .screen del style.css compartido no
+     tiene max-width — se estira a todo el ancho del navegador. ski.html y
+     snowboard.html sí limitan su .wrap a 760px centrado, lo que les da ese
+     look más "contenido"/con borde. Replicamos lo mismo acá solo para
+     golf.html, sin tocar style.css (que también usan index/menu/ruleta). */
+  .screen { max-width: 760px; margin: 0 auto; }
+
   .topTitle {
     font-size: 15px;
     font-weight: 600;

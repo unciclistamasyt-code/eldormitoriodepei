@@ -1,4 +1,17 @@
-const CACHE = 'app-v76';
+const CACHE = 'app-v77';
+// v77: fix chico de layout en golf.html — el usuario mandó screenshots
+// comparando golf.html (abierto en Chrome de escritorio) contra
+// snowboard.html y notó que golf se ve "muy abierto a toda la página"
+// mientras que ski/snowboard se ven más contenidos, con borde. Causa: el
+// .screen de golf.html viene del style.css compartido del sitio (el mismo
+// que usan index.html/menu.html/ruleta.html), que no tiene max-width — se
+// estira a todo el ancho del navegador en pantallas grandes. ski.html y
+// snowboard.html en cambio limitan su .wrap a max-width:760px con
+// margin:0 auto, lo que los centra y les da ese look "contenido". Se
+// agregó la misma regla (.screen{max-width:760px;margin:0 auto;}) pero
+// SOLO en el <style> propio de golf.html, sin tocar style.css (para no
+// afectar las otras páginas del sitio que lo comparten).
+//
 // v76: rediseño visual "más parecido a las imágenes" que mandó el usuario
 // (mockups de ChatGPT "GolfBetter" y "SnowPro"/"SkiPro"): se le agregó a los
 // 3 cursos un lenguaje visual de app más pulido, inspirado en esos mockups
