@@ -1,4 +1,48 @@
-const CACHE = 'app-v74';
+const CACHE = 'app-v75';
+// v75: rediseño visual + funcional de los 3 cursos (golf, ski, snowboard),
+// pedido por el usuario:
+// - Modo oscuro en ski.html y snowboard.html (antes tenían su propio tema
+//   claro "Duolingo" independiente del style.css del sitio; golf.html ya
+//   era oscuro porque usa el style.css compartido). Se cambiaron los
+//   valores de :root (--bg/--panel/--panel2/--line/--ink/--muted) a una
+//   paleta oscura, se agregó color-scheme:dark, y se reemplazaron los
+//   pocos colores hardcodeados que asumían fondo claro (pasos del
+//   heatmap l1-l3, gradiente SVG de la montaña, sombra del botón
+//   primario, gorro de nieve). Se introdujo una variable --brand nueva
+//   para diferenciar el acento principal entre cursos sin tocar la
+//   semántica de color del heatmap/checkpoints (que sigue usando
+//   --ice/--coral literales): ski.html usa --brand:var(--ice) (azul
+//   hielo) y snowboard.html usa --brand:var(--coral) (naranja), aplicado
+//   solo en elementos de acento (continue-card, review-card, eyebrow,
+//   score del quiz, flag/checkpoint de la cima). snowboard.html además
+//   recibió una paleta base más cálida (marrón/negro) distinta de la de
+//   ski (azul/negro) para que ambos cursos se sientan distintos.
+// - Se quitó el aviso de texto "necesita internet la primera vez" de
+//   golf.html (voiceHint y el selector de voz de respaldo) — el
+//   comportamiento real de descarga-la-primera-vez-y-cachear no cambió
+//   en nada, solo se simplificó el texto visible al usuario.
+// - Control de velocidad de audio (0.75x/1x/1.25x/1.5x/2x) agregado a
+//   los 3 cursos, con pastillas de selección debajo del botón de
+//   escuchar. Afecta tanto el elemento <audio> real (.playbackRate)
+//   como el fallback de voz del navegador (SpeechSynthesisUtterance.rate).
+//   En golf.html afecta los 3 caminos de audio que tiene (audio
+//   pregrabado ElevenLabs/Cartesia, Google Translate TTS en vivo, y la
+//   voz del dispositivo). La preferencia se guarda en localStorage por
+//   curso (ski_audioRate__Sebas, snowboard_audioRate__Sebas,
+//   golf_audio_rate) y se aplica automáticamente al volver a abrir un
+//   módulo.
+// - golf.html: se agregó un dashboard de progreso equivalente al de
+//   ski.html/snowboard.html — racha actual, racha récord, tira de la
+//   semana (L-D), grilla de estadísticas, módulos completados por mes
+//   (últimos 6 meses) y heatmap de actividad (últimos 140 días) — todo
+//   derivado de los timestamps que ya guardaba progress.completed[id].at,
+//   sin agregar ninguna clave nueva de localStorage. Se mantuvo la
+//   estimación de fecha de finalización (courseForecast/etaText) que ya
+//   existía, ahora mostrada dentro del panel de dashboard. No se replicó
+//   la ilustración SVG de la montaña/escalador (es una metáfora
+//   específica de ski/snow) — en su lugar golf tiene estadísticas
+//   equivalentes sin esa pieza visual.
+//
 // v74: golf.html — se agregó el Nivel 6 ("Taller: clubmaking y fitting
 // técnico", 6 módulos nuevos: swingweight, lie/loft, shafts a fondo, grips,
 // banco de taller/reshaft, y cómo vender el servicio) y se regeneraron los
