@@ -1,4 +1,41 @@
-const CACHE = 'app-v75';
+const CACHE = 'app-v76';
+// v76: rediseño visual "más parecido a las imágenes" que mandó el usuario
+// (mockups de ChatGPT "GolfBetter" y "SnowPro"/"SkiPro"): se le agregó a los
+// 3 cursos un lenguaje visual de app más pulido, inspirado en esos mockups
+// pero sin copiarlos 1:1 (el usuario fue explícito en que eran solo
+// referencia). Sin fotos reales — el código ya evita fotos a propósito
+// ("Ilustraciones propias en SVG... así no dependen de conexión ni de
+// derechos de terceros"), así que el hero usa un gradiente/patrón propio en
+// vez de una foto de golfista/esquiador.
+// - Hero banner nuevo arriba de la pantalla principal: eyebrow + título
+//   grande en dos líneas (segunda línea en el color de marca del curso) +
+//   subtítulo + botón pill "Seguir aprendiendo"/"Empezar a aprender" que
+//   lleva directo al primer módulo sin completar (o a Repaso general si ya
+//   está todo hecho).
+// - Tarjeta "continuá donde ibas" (continue-card en ski/snowboard,
+//   lesson-card en golf) rediseñada: ahora tiene un ícono en una tarjeta
+//   redondeada tintada con el color de marca, una barra de progreso del
+//   nivel actual con el porcentaje, y un botón pill "Continuar lección →"
+//   — antes era solo texto + una flecha.
+// - Grilla nueva "Explorar niveles": 4 tiles con ícono (el número de nivel
+//   en una tarjeta tintada) + nombre corto, para saltar directo a un nivel
+//   sin tener que bajar por toda la lista.
+// - Fila nueva de 3 estadísticas con íconos (🏆 módulos completados, ⏱️
+//   tiempo aprendido, 🔥 racha) — un resumen rápido al estilo "Your
+//   Progress" del mockup, antes de las estadísticas más detalladas que ya
+//   existían (que se mantienen más abajo, sin tocarlas).
+// - golf.html: mismo patrón (hero/lesson-card/explore-grid/progress-row),
+//   con un acento nuevo lima (--lime:#8ed64f) para el hero/CTAs/íconos,
+//   separado del rojo de las banderitas de los diagramas (--flag), que no
+//   se tocó. ski.html/snowboard.html reutilizan la variable --brand que ya
+//   existía (azul hielo en ski, naranja/coral en snowboard) para que el
+//   hero/tiles/continue-card respeten el acento de cada curso sin agregar
+//   una paleta nueva.
+// - No se tocó la navegación (sigue siendo una sola pantalla con vista de
+//   lector superpuesta, como siempre) ni se agregó una barra de tabs
+//   abajo como la del mockup — ese cambio de estructura no se pidió y
+//   hubiera sido mucho más invasivo que un rediseño visual.
+//
 // v75: rediseño visual + funcional de los 3 cursos (golf, ski, snowboard),
 // pedido por el usuario:
 // - Modo oscuro en ski.html y snowboard.html (antes tenían su propio tema

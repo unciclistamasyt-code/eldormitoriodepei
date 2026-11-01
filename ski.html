@@ -62,6 +62,42 @@
   }
   .top-back.show{display:inline-flex;}
 
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    background:var(--panel);border:2px solid var(--line);border-radius:22px;
+    padding:24px 20px 22px;margin-bottom:14px;overflow:hidden;
+    box-shadow:0 4px 0 var(--line);
+  }
+  .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--grad);}
+  .hero::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(28,176,246,0.18),transparent 70%);pointer-events:none;}
+  .hero-eyebrow{font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);margin-bottom:9px;position:relative;}
+  .hero-title{font-size:24px;line-height:1.25;font-weight:900;margin:0 0 7px;position:relative;}
+  .hero-title b{color:var(--brand);}
+  .hero-sub{font-size:13px;color:var(--muted);margin:0 0 16px;font-weight:600;position:relative;}
+  .hero-cta{position:relative;display:inline-flex;align-items:center;gap:8px;background:var(--grad);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:13.5px;padding:12px 20px;border-radius:999px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.15);}
+  .hero-cta svg{width:12px;height:12px;fill:#fff;}
+
+  /* ---------- explorar niveles (grilla de íconos) ---------- */
+  .explore-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px;}
+  .explore-tile{
+    background:var(--panel);border:2px solid var(--line);border-radius:16px;
+    padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:7px;
+    text-align:center;cursor:pointer;box-shadow:0 3px 0 var(--line);
+  }
+  .explore-tile-icon{width:36px;height:36px;border-radius:11px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--brand);}
+  .explore-tile-label{font-size:9.5px;color:var(--muted);line-height:1.25;font-weight:700;}
+
+  /* ---------- fila de progreso rápida ---------- */
+  .progress-row{
+    display:flex;background:var(--panel);border:2px solid var(--line);border-radius:18px;
+    padding:16px 8px;margin-bottom:14px;box-shadow:0 4px 0 var(--line);
+  }
+  .progress-item{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .progress-icon{font-size:17px;}
+  .progress-num{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;}
+  .progress-lbl{font-size:9.5px;color:var(--muted);line-height:1.25;font-weight:700;}
+
   /* ---------- header / greeting ---------- */
   .greet{
     background:var(--panel);
@@ -125,14 +161,21 @@
   .continue-card{
     background:var(--panel);border:2px solid var(--line);border-radius:18px;
     padding:16px 18px;margin-bottom:14px;
-    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    display:flex;align-items:flex-start;gap:14px;
     cursor:pointer;
     box-shadow:0 4px 0 var(--line);
   }
+  .continue-card-icon{width:46px;height:46px;border-radius:13px;background:var(--panel2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .continue-card-icon svg{width:21px;height:21px;stroke:var(--brand);fill:none;stroke-width:2;}
+  .continue-card-body{flex:1;min-width:0;}
   .continue-card .eyebrow-coral{margin-bottom:6px;}
-  .continue-card h3{margin:0 0 4px;font-size:16px;font-weight:800;}
-  .continue-card p{margin:0;color:var(--muted);font-size:12.5px;font-weight:600;}
-  .continue-card .arrow{font-size:20px;color:var(--brand);flex-shrink:0;}
+  .continue-card h3{margin:0 0 9px;font-size:16px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .continue-card p{margin:0;color:var(--muted);font-size:12.5px;font-weight:600;display:none;}
+  .continue-progress-row{display:flex;align-items:center;gap:8px;margin-bottom:11px;}
+  .continue-progress{flex:1;height:8px;border-radius:4px;background:var(--panel2);overflow:hidden;}
+  .continue-progress-fill{height:100%;background:var(--grad);border-radius:4px;}
+  .continue-progress-pct{font-family:'Nunito',sans-serif;font-size:11px;color:var(--muted);font-weight:700;flex-shrink:0;}
+  .continue-card-btn{display:inline-flex;align-items:center;gap:6px;background:var(--grad);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;padding:8px 14px;border-radius:999px;}
 
   /* ---------- repaso general card ---------- */
   .review-card{
@@ -301,6 +344,16 @@
   <!-- ============ HOME (dashboard) ============ -->
   <div id="home" class="home-only">
 
+    <div class="hero">
+      <div class="hero-eyebrow">⛷️ Ski School</div>
+      <h1 class="hero-title">Esquiá mejor.<br><b>Llegá más lejos.</b></h1>
+      <p class="hero-sub">Aprendé. Practicá. Progresá.</p>
+      <div class="hero-cta" id="heroCta">
+        <svg viewBox="0 0 24 24"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+        <span id="heroCtaLabel">Empezar a aprender</span>
+      </div>
+    </div>
+
     <div class="greet">
       <div class="greet-row">
         <div class="greet-left">
@@ -325,13 +378,20 @@
     </div>
 
     <div class="continue-card" id="continueCard" style="display:none;" onclick="openModuleById(continueId)">
-      <div>
+      <div class="continue-card-icon"><svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg></div>
+      <div class="continue-card-body">
         <div class="eyebrow-coral">CONTINÚA DONDE IBAS</div>
         <h3 id="continueTitle"></h3>
         <p id="continueSub"></p>
+        <div class="continue-progress-row">
+          <div class="continue-progress"><div class="continue-progress-fill" id="continueProgressFill" style="width:0%"></div></div>
+          <div class="continue-progress-pct" id="continueProgressPct">0%</div>
+        </div>
+        <div class="continue-card-btn">Continuar lección →</div>
       </div>
-      <div class="arrow">→</div>
     </div>
+
+    <div class="explore-grid" id="exploreGrid"></div>
 
     <div class="review-card" id="reviewCard">
       <div class="review-icon"><svg viewBox="0 0 24 24"><path d="M4 12 a8 8 0 1 1 2.5 5.8"/><path d="M4 12 L4 17 L9 17"/></svg></div>
@@ -341,6 +401,8 @@
       </div>
       <div class="review-chev">→</div>
     </div>
+
+    <div class="progress-row" id="progressRow"></div>
 
     <div class="stat-grid" id="statGrid"></div>
 
@@ -1474,9 +1536,46 @@ function renderDashboard(){
       continueId = mod.id;
       document.getElementById('continueTitle').textContent = mod.title;
       document.getElementById('continueSub').textContent = `Nivel ${mod.nivel} · la dejaste a medias`;
+      const lvMods = MODULES.filter(m=>m.nivel===mod.nivel);
+      const lvDone = lvMods.filter(m=>progress[m.id]?.completed).length;
+      const lvPct = lvMods.length ? Math.round(lvDone/lvMods.length*100) : 0;
+      document.getElementById('continueProgressFill').style.width = lvPct+'%';
+      document.getElementById('continueProgressPct').textContent = lvPct+'%';
       cont.style.display='flex';
     } else cont.style.display='none';
   } else cont.style.display='none';
+
+  // hero: botón principal — continúa donde ibas, si no hay nada a medias
+  // va al primer módulo sin completar, y si ya está todo completo invita a repasar
+  const heroCta = document.getElementById('heroCta');
+  const heroCtaLabel = document.getElementById('heroCtaLabel');
+  const firstIncomplete = MODULES.find(m=>!progress[m.id]?.completed);
+  if(inProgress && MODULES.find(m=>m.id===inProgress[0])){
+    heroCtaLabel.textContent = 'Seguir aprendiendo';
+    heroCta.onclick = () => openModuleById(inProgress[0]);
+  } else if(firstIncomplete){
+    heroCtaLabel.textContent = s.done===0 ? 'Empezar a aprender' : 'Seguir aprendiendo';
+    heroCta.onclick = () => openModuleById(firstIncomplete.id);
+  } else {
+    heroCtaLabel.textContent = 'Repasar el curso';
+    heroCta.onclick = () => startRepaso();
+  }
+
+  // explorar niveles (grilla de íconos)
+  const exploreGrid = document.getElementById('exploreGrid');
+  exploreGrid.innerHTML = LEVELS.slice(0,4).map(lv=>`
+    <div class="explore-tile" onclick="scrollToLevel(${lv.id})">
+      <div class="explore-tile-icon">${lv.id}</div>
+      <div class="explore-tile-label">${lv.name.split(/,| y /)[0]}</div>
+    </div>`).join('');
+
+  // fila de progreso rápida (estilo "Your Progress")
+  const progressRow = document.getElementById('progressRow');
+  progressRow.innerHTML = `
+    <div class="progress-item"><div class="progress-icon">🏆</div><div class="progress-num">${s.done}</div><div class="progress-lbl">Lecciones<br>completadas</div></div>
+    <div class="progress-item"><div class="progress-icon">⏱️</div><div class="progress-num">${fmtTime(s.timeSec)}</div><div class="progress-lbl">Tiempo<br>aprendido</div></div>
+    <div class="progress-item"><div class="progress-icon">🔥</div><div class="progress-num">${s.streakNow}</div><div class="progress-lbl">Racha<br>de días</div></div>
+  `;
 
   // repaso general card
   const reviewCard = document.getElementById('reviewCard');

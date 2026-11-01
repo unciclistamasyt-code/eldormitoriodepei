@@ -34,6 +34,75 @@
     flex-direction: column;
   }
 
+  :root { --lime: #8ed64f; --lime-dim: rgba(142,214,79,0.14); }
+
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    border-radius: 22px;
+    padding: 22px 20px 20px;
+    margin-bottom: 20px;
+    background: linear-gradient(145deg, rgba(142,214,79,0.16), rgba(10,10,12,0) 62%), var(--bg-soft);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; right: -36px; top: -36px; width: 170px; height: 170px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(142,214,79,0.2), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow { position: relative; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--lime); font-weight: 700; margin-bottom: 9px; }
+  .hero-title { position: relative; font-size: 23px; line-height: 1.25; font-weight: 800; margin: 0 0 7px; }
+  .hero-title b { color: var(--lime); }
+  .hero-sub { position: relative; font-size: 13px; color: var(--text-dim); margin: 0 0 16px; }
+  .hero-cta {
+    position: relative; display: inline-flex; align-items: center; gap: 8px;
+    background: var(--lime); color: #0a0a0c; font-weight: 700; font-size: 13.5px;
+    padding: 11px 20px; border-radius: 999px;
+  }
+  .hero-cta svg { width: 12px; height: 12px; fill: #0a0a0c; }
+
+  /* ---- Tarjeta "seguí donde ibas" ---- */
+  .lesson-card {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 15px; border-radius: 18px; border: 1px solid var(--line);
+    margin-bottom: 18px;
+  }
+  .lesson-card-icon {
+    width: 50px; height: 50px; border-radius: 14px; flex-shrink: 0;
+    background: var(--lime-dim);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lesson-card-icon svg { width: 22px; height: 22px; stroke: var(--lime); fill: none; stroke-width: 1.8; }
+  .lesson-card-body { flex: 1; min-width: 0; }
+  .lesson-card-eyebrow { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 4px; }
+  .lesson-card-title { font-size: 14.5px; font-weight: 700; margin-bottom: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lesson-progress-row { display: flex; align-items: center; gap: 8px; }
+  .lesson-progress { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .lesson-progress-fill { height: 100%; background: var(--lime); border-radius: 3px; }
+  .lesson-progress-pct { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+  .lesson-card-btn {
+    margin-top: 11px; display: inline-flex; align-items: center; gap: 6px;
+    background: var(--lime); color: #0a0a0c; font-weight: 700; font-size: 12.5px;
+    padding: 8px 14px; border-radius: 999px;
+  }
+
+  /* ---- Explorar niveles (grilla de íconos) ---- */
+  .explore-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-bottom: 20px; }
+  .explore-tile { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px 4px; border-radius: 16px; border: 1px solid var(--line); text-align: center; }
+  .explore-tile.locked { opacity: 0.35; }
+  .explore-tile-icon { width: 36px; height: 36px; border-radius: 11px; background: var(--lime-dim); display: flex; align-items: center; justify-content: center; font-size: 13.5px; font-weight: 800; color: var(--lime); }
+  .explore-tile-label { font-size: 9.5px; color: var(--text-dim); line-height: 1.25; }
+
+  /* ---- Fila de progreso (estilo "Your Progress") ---- */
+  .progress-row { display: flex; border: 1px solid var(--line); border-radius: 16px; padding: 16px 8px; margin-bottom: 20px; }
+  .progress-item { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .progress-icon { font-size: 16px; }
+  .progress-num { font-size: 16px; font-weight: 800; }
+  .progress-lbl { font-size: 9px; color: var(--text-dim); line-height: 1.25; }
+
   /* ---- Selector de usuario ---- */
   .userSwitch { display: flex; gap: 8px; margin-bottom: 20px; }
   .userPill {
@@ -54,18 +123,18 @@
     gap: 12px;
     padding: 14px 16px;
     border: 1px solid var(--line);
-    border-radius: 14px;
-    margin-bottom: 22px;
+    border-radius: 16px;
+    margin-bottom: 20px;
   }
   .reviewBtn.disabled { opacity: 0.4; }
   .reviewIcon {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    border: 1px solid var(--line);
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: var(--lime-dim);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .reviewIcon svg { width: 17px; height: 17px; stroke: var(--text); fill: none; stroke-width: 1.6; }
+  .reviewIcon svg { width: 17px; height: 17px; stroke: var(--lime); fill: none; stroke-width: 1.8; }
   .reviewText { flex: 1; }
   .reviewTitle { font-size: 14px; font-weight: 600; }
   .reviewSub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
@@ -73,19 +142,21 @@
 
   /* ---- Niveles ---- */
   .levelCard {
-    padding: 16px 2px;
-    border-bottom: 1px solid var(--line);
+    padding: 14px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 14px;
   }
   .levelCard.locked { opacity: 0.4; }
   .levelNum {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    border: 1px solid var(--line);
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: var(--lime-dim);
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; color: var(--text-dim);
+    font-size: 12px; font-weight: 700; color: var(--lime);
     flex-shrink: 0;
   }
   .levelBody { flex: 1; min-width: 0; }
@@ -1517,8 +1588,14 @@ function computeGolfStats() {
   return { streak, record, week, heatDays, months, monthMax };
 }
 
-function renderDashboard(app, fc) {
-  const gs = computeGolfStats();
+function renderDashboard(app, fc, gs) {
+  gs = gs || computeGolfStats();
+
+  const detailTitle = document.createElement('div');
+  detailTitle.className = 'dashPanelTitle';
+  detailTitle.style.marginBottom = '10px';
+  detailTitle.textContent = 'Estadísticas detalladas';
+  app.appendChild(detailTitle);
 
   const streakRow = document.createElement('div');
   streakRow.className = 'streakRow';
@@ -1856,6 +1933,93 @@ function render() {
   else if (top.view === 'repaso') renderRepaso(app, top.data);
 }
 
+/* ================= Hero / tarjeta "seguí donde ibas" / explorar =================
+   Piezas nuevas inspiradas en los mockups que mandó el usuario (GolfBetter):
+   banner con título grande + botón pill, tarjeta de "continuar" con barra de
+   progreso, grilla de íconos para saltar a un nivel, y una fila de 3
+   estadísticas con íconos. Todo se arma a partir de los mismos datos que ya
+   existían (progress.completed, CURRICULUM, courseForecast/computeGolfStats). */
+function nextIncompleteModule() {
+  for (const level of CURRICULUM) {
+    if (level.locked) continue;
+    for (const m of level.modules) {
+      if (!progress.completed[m.id]) return { level, module: m };
+    }
+  }
+  return null;
+}
+
+function renderHero(app, next) {
+  const hero = document.createElement('div');
+  hero.className = 'hero';
+  hero.innerHTML = `
+    <div class="hero-eyebrow">⛳ Golf School</div>
+    <h1 class="hero-title">Jugá mejor.<br><b>Cada ronda.</b></h1>
+    <p class="hero-sub">Construí tu técnica, un módulo a la vez.</p>
+    <div class="hero-cta">
+      <svg viewBox="0 0 24 24"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+      <span>${next ? 'Seguir aprendiendo' : 'Repasar el curso'}</span>
+    </div>
+  `;
+  hero.querySelector('.hero-cta').addEventListener('click', () => {
+    if (next) push('leccion', { moduleId: next.module.id });
+    else if (Object.keys(progress.completed).length > 0) startRepaso();
+  });
+  app.appendChild(hero);
+}
+
+function renderLessonCard(app, next) {
+  if (!next) return;
+  const { level, module: m } = next;
+  const stats = levelStats(level);
+  const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
+  const card = document.createElement('div');
+  card.className = 'lesson-card';
+  card.innerHTML = `
+    <div class="lesson-card-icon"><svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg></div>
+    <div class="lesson-card-body">
+      <div class="lesson-card-eyebrow">${level.name} · continuá donde ibas</div>
+      <div class="lesson-card-title">${m.title}</div>
+      <div class="lesson-progress-row">
+        <div class="lesson-progress"><div class="lesson-progress-fill" style="width:${pct}%"></div></div>
+        <div class="lesson-progress-pct">${pct}%</div>
+      </div>
+      <div class="lesson-card-btn">Continuar lección →</div>
+    </div>
+  `;
+  card.addEventListener('click', () => push('leccion', { moduleId: m.id }));
+  app.appendChild(card);
+}
+
+function renderExploreGrid(app) {
+  const grid = document.createElement('div');
+  grid.className = 'explore-grid';
+  CURRICULUM.slice(0, 4).forEach(level => {
+    const tile = document.createElement('div');
+    tile.className = 'explore-tile' + (level.locked ? ' locked' : '');
+    const shortLabel = level.subtitle.split(/,| y /)[0];
+    tile.innerHTML = `
+      <div class="explore-tile-icon">${level.name.replace('Nivel ', '')}</div>
+      <div class="explore-tile-label">${shortLabel}</div>
+    `;
+    if (!level.locked) tile.addEventListener('click', () => push('nivel', { levelId: level.id }));
+    grid.appendChild(tile);
+  });
+  app.appendChild(grid);
+}
+
+function renderProgressRow(app, fc, gs) {
+  const hours = Math.round((fc.completedMinutes / 60) * 10) / 10;
+  const row = document.createElement('div');
+  row.className = 'progress-row';
+  row.innerHTML = `
+    <div class="progress-item"><div class="progress-icon">🏆</div><div class="progress-num">${fc.completedCount}</div><div class="progress-lbl">Módulos<br>completados</div></div>
+    <div class="progress-item"><div class="progress-icon">⏱️</div><div class="progress-num">${hours}</div><div class="progress-lbl">Horas<br>aprendidas</div></div>
+    <div class="progress-item"><div class="progress-icon">🔥</div><div class="progress-num">${gs.streak}</div><div class="progress-lbl">Racha<br>de días</div></div>
+  `;
+  app.appendChild(row);
+}
+
 function renderNiveles(app) {
   const userSwitch = document.createElement('div');
   userSwitch.className = 'userSwitch';
@@ -1869,6 +2033,13 @@ function renderNiveles(app) {
   app.appendChild(userSwitch);
 
   const totalDone = Object.keys(progress.completed).length;
+  const next = nextIncompleteModule();
+  const fc = courseForecast();
+  const gs = computeGolfStats();
+
+  renderHero(app, next);
+  renderLessonCard(app, next);
+  renderExploreGrid(app);
 
   const reviewBtn = document.createElement('div');
   reviewBtn.className = 'reviewBtn' + (totalDone === 0 ? ' disabled' : '');
@@ -1883,8 +2054,13 @@ function renderNiveles(app) {
   if (totalDone > 0) reviewBtn.addEventListener('click', () => startRepaso());
   app.appendChild(reviewBtn);
 
-  const fc = courseForecast();
-  renderDashboard(app, fc);
+  renderProgressRow(app, fc, gs);
+
+  const levelListTitle = document.createElement('div');
+  levelListTitle.className = 'dashPanelTitle';
+  levelListTitle.style.marginBottom = '10px';
+  levelListTitle.textContent = 'Todos los niveles';
+  app.appendChild(levelListTitle);
 
   CURRICULUM.forEach(level => {
     const stats = levelStats(level);
@@ -1905,6 +2081,8 @@ function renderNiveles(app) {
     if (!level.locked) card.addEventListener('click', () => push('nivel', { levelId: level.id }));
     app.appendChild(card);
   });
+
+  renderDashboard(app, fc, gs);
 }
 
 function renderNivel(app, data) {
