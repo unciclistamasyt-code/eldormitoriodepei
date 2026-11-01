@@ -1,4 +1,10 @@
-const CACHE = 'app-v73';
+const CACHE = 'app-v74';
+// v74: golf.html — se agregó el Nivel 6 ("Taller: clubmaking y fitting
+// técnico", 6 módulos nuevos: swingweight, lie/loft, shafts a fondo, grips,
+// banco de taller/reshaft, y cómo vender el servicio) y se regeneraron los
+// 34 audios existentes con la voz Laura de Cartesia (antes ElevenLabs),
+// más los 6 audios nuevos del Nivel 6 — los 40 mp3 viven en el mismo bucket
+// de Supabase (site-media/audio/), mismo path que antes.
 // v73: el usuario mandó directamente, como archivo adjunto en el chat, una
 // foto real de un snowboarder carveando en nieve — así se resolvió el
 // bloqueo de red descripto en el changelog de v72 (no hizo falta volver a
