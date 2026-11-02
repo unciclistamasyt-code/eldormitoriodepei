@@ -829,12 +829,24 @@
   <script>
     var btns = document.querySelectorAll('.tabBtn');
     var views = document.querySelectorAll('.view');
+    // Al cambiar de pestaña, volvemos al inicio del contenido de la guía
+    // (justo donde arranca .topbar), NO al tope absoluto del documento —
+    // ahí arriba está el hero de video de pantalla completa. Antes se
+    // usaba scrollTo({top:0}), que mandaba al usuario hasta el video cada
+    // vez que tocaba una pestaña (Diciembre, Tours, etc.) y tenía que
+    // volver a bajar. topbarEl.offsetTop da la posición natural de
+    // .topbar en el documento (no se ve afectada por su position:sticky).
+    var topbarEl = document.querySelector('.topbar');
+    function scrollToGuideTop() {
+      if (!topbarEl) return;
+      window.scrollTo({ top: topbarEl.offsetTop, behavior: 'instant' });
+    }
     btns.forEach(function(btn){
       btn.addEventListener('click', function(){
         var tab = btn.dataset.tab;
         btns.forEach(function(b){ b.classList.toggle('active', b === btn); });
         views.forEach(function(v){ v.classList.toggle('show', v.id === 'view-' + tab); });
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        scrollToGuideTop();
       });
     });
 

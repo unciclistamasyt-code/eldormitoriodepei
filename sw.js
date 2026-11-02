@@ -1,4 +1,16 @@
-const CACHE = 'app-v79';
+const CACHE = 'app-v80';
+// v80: fix de scroll en nuevayork.html — el usuario reportó que cada vez
+// que tocaba una pestaña (Diciembre, Tours, cualquiera) la página subía
+// hasta la imagen/video principal y tenía que volver a bajar. Causa: el
+// listener de click de .tabBtn hacía `window.scrollTo({top: 0})`, que es
+// el tope absoluto del documento — ahí arriba está el hero de video de
+// pantalla completa agregado en v63. Arreglo: ahora se calcula
+// `document.querySelector('.topbar').offsetTop` (la posición natural de
+// la barra superior en el documento, sin verse afectada por su
+// position:sticky) y se scrollea ahí en vez de a 0 — así cada cambio de
+// pestaña lleva al inicio del contenido de la guía, nunca de vuelta al
+// video. No se tocó nada más de la página.
+//
 // v79: nuevayork.html — ampliación grande pedida por el usuario ("quiero
 // agregar mucha información de cosas que hacer en Nueva York... teatro,
 // shows, comida, estatuas, espectáculos, eventos gratis, tours, todo lo
