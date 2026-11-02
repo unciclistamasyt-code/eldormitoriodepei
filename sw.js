@@ -1,4 +1,44 @@
-const CACHE = 'app-v80';
+const CACHE = 'app-v81';
+// v81: comidas.html — dos pestañas nuevas pedidas por el usuario ("tengo
+// mas infor que me interesa y quiero que sea un tab al cual puedo ir me
+// gusta tener a la mano info de productos que llenen, proteicos y
+// fibra"), digitalizadas de dos PDFs nuevos que mandó: guia_comidas_
+// metas_y_alimentos.pdf y 30_Recetas_Cenas_Bowl_1.pdf. La página pasó de
+// ser una sola pantalla a tener una barra de pestañas propia
+// (.mainTabs/.mainTabBtn, con el acento --food ya existente) arriba de
+// #app: Semana (el horario que ya existía, sin cambios de contenido,
+// ahora vive en renderSemana()), Alimentos (nueva) y Recetas bowl
+// (nueva). render() ahora solo pinta la barra de tabs y despacha a la
+// función de la pestaña activa — como ya recreaba todo #app desde cero en
+// cada llamada (mismo patrón que toggleDay), cambiar de pestaña fue
+// agregar una variable activeTab + volver a llamar render(), sin tocar el
+// mecanismo existente.
+// - Alimentos: metas por comida (días libres de 3 comidas vs. días de
+//   trabajo de 2), la fórmula de 5 pasos para armar una comida, y la
+//   lista completa de alimentos para combinar (72 alimentos en 6
+//   categorías: proteínas, legumbres, cereales y tubérculos, verduras,
+//   frutas, grasas y semillas) con kcal/proteína/fibra por porción, en
+//   acordeones reusando el mismo estilo .tip-group ya usado en
+//   Pendientes y recomendaciones. También el índice de saciedad (14
+//   alimentos, estudio Holt 1995), una segunda tabla de alimentos que
+//   sacian por proteína/fibra/volumen (14 más), y la tabla de "tus
+//   alimentos habituales" con veredicto (9 filas). A propósito NO se
+//   incluyó la parte de ejercicio, agua ni retención de líquidos del
+//   mismo PDF — el usuario pidió específicamente información de comida
+//   que llena/proteica/con fibra, no la rutina de ejercicio.
+// - Recetas bowl: las 30 recetas de cena método bowl del segundo PDF,
+//   cada una en un acordeón con ingredientes (marcando con ● las
+//   porciones medidas, igual que el PDF) y preparación paso a paso, más
+//   un filtro por tipo de proteína (chips: Todos/Pollo/Salmón/Camarones/
+//   Pescado blanco/Atún/Pavo) para encontrar una receta rápido.
+// - Verificado: node --check del script, simulación de render con DOM
+//   simulado pasando por las 3 pestañas y sus interacciones (abrir un
+//   grupo de alimentos, filtrar recetas, abrir una receta, volver a
+//   Semana y abrir un día) sin excepciones, conteo de filas (72 + 30 +
+//   14 + 14 + 9) contra lo transcrito, y sin ids duplicados.
+// No se tocó index.html (comidas.html ya estaba en el menú) ni ninguna
+// otra página del sitio.
+//
 // v80: fix de scroll en nuevayork.html — el usuario reportó que cada vez
 // que tocaba una pestaña (Diciembre, Tours, cualquiera) la página subía
 // hasta la imagen/video principal y tenía que volver a bajar. Causa: el

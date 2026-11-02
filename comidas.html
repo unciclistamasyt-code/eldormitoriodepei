@@ -127,6 +127,48 @@
   .tip-body b { color: var(--text); }
 
   .footer-disclaimer { text-align: center; font-size: 10.5px; color: var(--text-dim); opacity: 0.7; margin: 10px 0 24px; line-height: 1.5; }
+
+  /* ---- Tabs (Semana / Alimentos / Recetas) ---- */
+  .mainTabs {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; gap: 6px; padding: 2px 0 14px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    background: var(--bg);
+  }
+  .mainTabs::-webkit-scrollbar { display: none; }
+  .mainTabBtn {
+    flex-shrink: 0; padding: 8px 15px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 700; color: var(--text-dim);
+    background: var(--bg-soft); border: 1px solid var(--line);
+  }
+  .mainTabBtn.active { color: #0a0a0c; background: var(--food); border-color: var(--food); }
+
+  /* ---- Callout (cajas de nota, estilo PDF) ---- */
+  .calloutBox {
+    border: 1px solid var(--food); background: var(--food-dim);
+    border-radius: 14px; padding: 12px 14px; margin-bottom: 16px;
+    font-size: 12px; line-height: 1.55; color: var(--text-dim);
+  }
+  .calloutBox b { color: var(--text); }
+
+  /* ---- Filtro de proteína (Recetas) ---- */
+  .chipRow { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 14px; padding-bottom: 2px; }
+  .chipRow::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; padding: 7px 13px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 600; color: var(--text-dim);
+    background: var(--bg-soft); border: 1px solid var(--line); cursor: pointer;
+  }
+  .chip.active { color: #0a0a0c; background: var(--food); border-color: var(--food); }
+
+  /* ---- Lista de recetas (acordeón, reusa .tip-group pero con metadata extra) ---- */
+  .recipeMeta { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+  .recipeMeta b { color: var(--food); font-weight: 700; }
+  .recipeSection { font-size: 11.5px; font-weight: 700; color: var(--text); margin: 10px 0 4px; }
+  .recipeList { margin: 0; padding-left: 16px; font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .recipeList li { margin-bottom: 3px; }
+  .recipeSteps { margin: 0; padding-left: 16px; font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .recipeSteps li { margin-bottom: 5px; }
 </style>
 </head>
 <body>
@@ -337,6 +379,10 @@ const GOALS = [
 
 /* ---- Render ---- */
 let openDayId = null;
+let activeTab = 'semana';
+let recipeFilter = 'Todos';
+let openRecipeNum = null;
+let openFoodGroup = null;
 
 function fmtMacro(arr) {
   if (!arr) return '';
@@ -400,6 +446,27 @@ function render() {
   const app = document.getElementById('app');
   app.innerHTML = '';
 
+  const tabsEl = document.createElement('div');
+  tabsEl.className = 'mainTabs';
+  [
+    ['semana', '🍽️ Semana'],
+    ['alimentos', '📋 Alimentos'],
+    ['recetas', '🥣 Recetas bowl'],
+  ].forEach(([id, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'mainTabBtn' + (activeTab === id ? ' active' : '');
+    btn.textContent = label;
+    btn.addEventListener('click', () => { activeTab = id; render(); });
+    tabsEl.appendChild(btn);
+  });
+  app.appendChild(tabsEl);
+
+  if (activeTab === 'alimentos') { renderAlimentos(app); return; }
+  if (activeTab === 'recetas') { renderRecetas(app); return; }
+  renderSemana(app);
+}
+
+function renderSemana(app) {
   const todayIdx = new Date().getDay(); // 0=domingo
   const today = DAYS[todayIdx];
   const sum = shortSummary(today);
@@ -496,6 +563,456 @@ function render() {
     tipsPanel.appendChild(group);
   });
   app.appendChild(tipsPanel);
+
+  const footer = document.createElement('div');
+  footer.className = 'footer-disclaimer';
+  footer.textContent = 'Valores aproximados. No sustituye la guía de un médico o nutricionista.';
+  app.appendChild(footer);
+}
+
+/* ============================================================
+   Tab "Alimentos" — digitalizado de guia_comidas_metas_y_alimentos.pdf
+   que mandó el usuario (nov 2026). Se transcribió la parte de
+   objetivos por comida y las tablas de alimentos (proteína/fibra/
+   saciedad) tal cual el PDF. NO se incluyó el ejercicio, el agua ni
+   la retención de líquidos del mismo PDF — el usuario pidió
+   específicamente "productos que llenen, proteicos y fibra", así que
+   el tab se quedó enfocado en eso.
+   ============================================================ */
+
+const MEAL_TARGETS_FREE = [
+  { comida: 'Desayuno', kcal: 600, prot: 45, fib: 12 },
+  { comida: 'Almuerzo', kcal: 750, prot: 60, fib: 14 },
+  { comida: 'Cena', kcal: 650, prot: 50, fib: 12 },
+];
+const MEAL_TARGETS_WORK = [
+  { comida: 'Comida 1 (primera del día)', kcal: 950, prot: 80, fib: 20 },
+  { comida: 'Comida 2 (última del día)', kcal: 850, prot: 75, fib: 14 },
+];
+
+/* Cada fila: [alimento, porción, kcal, proteína g, fibra g] */
+const FOOD_CATEGORIES = [
+  { title: 'Proteínas (cocidas, salvo indicación)', rows: [
+    ['Pechuga de pollo', '150 g', 248, 46.5, 0],
+    ['Muslo de pollo sin piel', '150 g', 268, 37.5, 0],
+    ['Pechuga de pavo', '150 g', 202, 43.5, 0],
+    ['Res magra (lomo, solomillo)', '150 g', 285, 40.5, 0],
+    ['Carne molida magra (95/5)', '150 g', 256, 39, 0],
+    ['Lomo de cerdo magro', '150 g', 214, 39, 0],
+    ['Atún al agua (escurrido)', '120 g', 132, 30, 0],
+    ['Salmón', '150 g', 309, 33, 0],
+    ['Tilapia', '150 g', 192, 39, 0],
+    ['Merluza/bacalao', '150 g', 158, 34.5, 0],
+    ['Camarón', '150 g', 148, 36, 0],
+    ['Huevo entero', '100 g', 143, 13, 0],
+    ['Clara de huevo', '100 g', 52, 11, 0],
+    ['Requesón', '150 g', 147, 16.5, 0],
+    ['Yogur griego natural 0%', '200 g', 118, 20, 0],
+    ['Leche descremada', '250 ml', 85, 8.5, 0],
+    ['Tofu firme', '150 g', 216, 25.9, 3.5],
+    ['Proteína whey en polvo', '30 g', 120, 24, 0],
+  ]},
+  { title: 'Legumbres (cocidas): proteína + fibra', rows: [
+    ['Lentejas', '150 g', 174, 13.5, 11.8],
+    ['Frijoles negros', '150 g', 198, 13.3, 13.1],
+    ['Frijoles pintos', '150 g', 214, 13.5, 13.5],
+    ['Alubias blancas', '150 g', 208, 14.6, 9.4],
+    ['Garbanzos', '100 g', 164, 8.9, 7.6],
+    ['Edamame', '100 g', 121, 11.9, 5.2],
+  ]},
+  { title: 'Cereales y tubérculos (cocidos, salvo indicación)', rows: [
+    ['Avena cocida en agua', '250 g', 178, 6.2, 4.2],
+    ['Avena en hojuelas (seca)', '40 g', 156, 6.8, 4.2],
+    ['Arroz blanco', '200 g', 260, 5.4, 0.8],
+    ['Arroz integral', '200 g', 246, 5.4, 3.2],
+    ['Quinoa', '150 g', 180, 6.6, 4.2],
+    ['Pasta', '200 g', 316, 11.6, 3.6],
+    ['Pasta integral', '200 g', 248, 10.6, 7.8],
+    ['Papa', '300 g', 261, 5.7, 5.4],
+    ['Camote', '200 g', 180, 4, 6.6],
+    ['Pan integral (2 rebanadas)', '60 g', 151, 7.5, 3.6],
+    ['Tortilla de maíz (2 piezas)', '52 g', 113, 3, 3.3],
+  ]},
+  { title: 'Verduras (crudas, salvo indicación)', rows: [
+    ['Brócoli cocido', '150 g', 52, 3.6, 5],
+    ['Coliflor', '150 g', 38, 2.9, 3],
+    ['Espinaca', '100 g', 23, 2.9, 2.2],
+    ['Lechuga', '100 g', 15, 1.4, 1.3],
+    ['Pepino', '100 g', 15, 0.7, 0.5],
+    ['Tomate', '100 g', 18, 0.9, 1.2],
+    ['Calabacín', '150 g', 26, 1.8, 1.5],
+    ['Champiñones', '100 g', 22, 3.1, 1],
+    ['Repollo', '100 g', 25, 1.3, 2.5],
+    ['Zanahoria', '100 g', 41, 0.9, 2.8],
+    ['Pimiento rojo (morrón)', '100 g', 31, 1, 2.1],
+    ['Espárragos cocidos', '100 g', 22, 2.4, 2],
+    ['Ejotes cocidos', '150 g', 52, 2.9, 4.8],
+    ['Berenjena cocida', '150 g', 52, 1.2, 3.8],
+    ['Calabaza', '150 g', 39, 1.5, 0.8],
+    ['Apio', '100 g', 16, 0.7, 1.6],
+    ['Remolacha cocida', '100 g', 44, 1.7, 2],
+  ]},
+  { title: 'Frutas', rows: [
+    ['Manzana', '150 g', 78, 0.5, 3.6],
+    ['Pera', '150 g', 86, 0.6, 4.7],
+    ['Naranja', '150 g', 70, 1.4, 3.6],
+    ['Kiwi', '100 g', 61, 1.1, 3],
+    ['Fresas', '150 g', 48, 1.1, 3],
+    ['Arándanos', '100 g', 57, 0.7, 2.4],
+    ['Frambuesas', '100 g', 52, 1.2, 6.5],
+    ['Plátano', '100 g', 89, 1.1, 2.6],
+    ['Papaya', '150 g', 64, 0.8, 2.5],
+    ['Piña', '150 g', 75, 0.8, 2.1],
+    ['Sandía', '200 g', 60, 1.2, 0.8],
+    ['Mango', '100 g', 60, 0.8, 1.6],
+    ['Uvas', '100 g', 69, 0.7, 0.9],
+  ]},
+  { title: 'Grasas y semillas', rows: [
+    ['Aceite de oliva', '10 g', 88, 0, 0],
+    ['Aguacate', '50 g', 80, 1, 3.4],
+    ['Almendras', '20 g', 116, 4.2, 2.5],
+    ['Nueces', '20 g', 131, 3, 1.3],
+    ['Crema de cacahuate', '15 g', 88, 3.8, 0.9],
+    ['Semillas de chía', '10 g', 49, 1.6, 3.4],
+    ['Linaza molida', '10 g', 53, 1.8, 2.7],
+  ]},
+];
+
+/* Índice de saciedad (Holt y colaboradores, 1995): el pan blanco vale 100,
+   mientras más alto el número más sacia. Cada fila: [alimento, índice,
+   porción, kcal, prot g, fibra g, por qué sacia] */
+const SATIATION_INDEX = [
+  ['Papa hervida', 323, '300 g', 261, 5.7, 5.4, 'Mucha agua y fibra; la más saciante del estudio.'],
+  ['Pescado blanco (merluza)', '225*', '150 g', 158, 34.5, 0, 'Proteína alta con pocas calorías.'],
+  ['Avena cocida', 209, '250 g', 178, 6.2, 4.2, 'Fibra y mucha agua.'],
+  ['Naranja', 202, '150 g', 70, 1.4, 3.6, 'Fruta entera: fibra y agua.'],
+  ['Manzana', 197, '150 g', 78, 0.5, 3.6, 'Fruta entera: fibra y agua.'],
+  ['Pasta integral', 188, '200 g', 248, 10.6, 7.8, 'Sacia mucho más que la pasta blanca (119).'],
+  ['Res magra', 176, '150 g', 285, 40.5, 0, 'Proteína alta.'],
+  ['Frijoles negros', '168*', '150 g', 198, 13.3, 13.1, 'Proteína y fibra juntas.'],
+  ['Uvas', 162, '100 g', 69, 0.7, 0.9, 'Fruta con mucha agua.'],
+  ['Pan integral (2 rebanadas)', 157, '60 g', 151, 7.5, 3.6, 'Más fibra que el pan blanco.'],
+  ['Palomitas sin mantequilla', 154, '30 g', 116, 3.9, 4.4, 'Volumen y fibra; buen snack.'],
+  ['Huevos (2)', 150, '100 g', 143, 13, 0, 'Proteína alta.'],
+  ['Lentejas', '133*', '150 g', 174, 13.5, 11.8, 'Proteína y fibra juntas.'],
+  ['Arroz integral', 132, '200 g', 246, 5.4, 3.2, 'Parecido al arroz blanco (138).'],
+];
+
+/* Alimentos que sacian por proteína/fibra/volumen pero sin índice medido.
+   Cada fila: [alimento, porción, kcal, prot g, fibra g, por qué sacia] */
+const SATIATION_OTHER = [
+  ['Pechuga de pollo', '150 g', 248, 46.5, 0, 'Proteína alta.'],
+  ['Atún al agua', '120 g', 132, 30, 0, 'Proteína alta, casi sin grasa.'],
+  ['Camarón', '150 g', 148, 36, 0, 'Proteína alta con pocas calorías.'],
+  ['Clara de huevo', '100 g', 52, 11, 0, 'Proteína casi sin calorías.'],
+  ['Yogur griego 0%', '200 g', 118, 20, 0, 'Proteína alta y cremoso.'],
+  ['Requesón / cottage', '150 g', 147, 16.5, 0, 'Proteína alta.'],
+  ['Brócoli cocido', '150 g', 52, 3.6, 5, 'Volumen y fibra.'],
+  ['Coliflor', '150 g', 38, 2.9, 3, 'Volumen con pocas calorías.'],
+  ['Espinaca', '100 g', 23, 2.9, 2.2, 'Volumen casi sin calorías.'],
+  ['Calabacín', '150 g', 26, 1.8, 1.5, 'Volumen con pocas calorías.'],
+  ['Pepino', '200 g', 30, 1.4, 1, 'Mucha agua.'],
+  ['Champiñones', '100 g', 22, 3.1, 1, 'Volumen y algo de proteína.'],
+  ['Frambuesas', '100 g', 52, 1.2, 6.5, 'La fruta con más fibra de la lista.'],
+  ['Semillas de chía', '10 g', 49, 1.6, 3.4, 'Absorben agua; ponlas en yogur o avena.'],
+];
+
+/* Tus alimentos habituales — evaluados por el PDF. Cada fila:
+   [alimento+porción, kcal, prot g, fibra g, veredicto] */
+const HABITUAL_FOODS = [
+  ['Yogur griego 0% (200 g) + gelatina zero (100 g) + fresas (100 g)', '~160', '~22', 2, 'Agregar. Mucha proteína con pocas calorías.'],
+  ['Queso cottage (150 g)', 147, 16.5, 0, 'Agregar. Elige el bajo en sodio.'],
+  ['Queso cottage (150 g) + aguacate (50 g)', 227, 17.5, 3.4, 'Agregar. Limita el aguacate a 50 g.'],
+  ['Pepino con limón (200 g)', '~33', 1.4, 1, 'Agregar. Sin sal ni Tajín.'],
+  ['Frijoles de lata, escurridos y enjuagados (150 g)', '~130', '~8', '~8', 'Con cuidado: sodio. Enjuágalos o compra "sin sal añadida".'],
+  ['Rice paper: 4 hojas + carne molida magra cocida (120 g) + verduras (100 g)', '~350', '~34', '~2', 'Con cuidado: la salsa para mojar suma sodio y azúcar.'],
+  ['Rice paper: 4 hojas + solo verduras (150 g)', '~160', '~3', '~3', 'Con cuidado: casi sin proteína; no alcanza como comida.'],
+  ['Snack de seaweed (paquete de 5 g)', '~28', '~1', 0, 'Con cuidado: sal y yodo. No en grandes cantidades a diario.'],
+  ['Coca Zero (1 lata)', 0, 0, 0, 'Libre con moderación: 1 a 2 latas al día.'],
+];
+
+function renderRefTable(headers, rows) {
+  const thead = `<thead><tr>${headers.map((h, i) => `<th${i > 0 ? ' class="num"' : ''}>${h}</th>`).join('')}</tr></thead>`;
+  const tbody = `<tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td${i > 0 ? ' class="num"' : ''}>${c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  return `<table class="meal-table">${thead}${tbody}</table>`;
+}
+
+function renderAlimentos(app) {
+  const hero = document.createElement('div');
+  hero.className = 'hero';
+  hero.innerHTML = `
+    <div class="hero-eyebrow">📋 Guía de comidas</div>
+    <h1 class="hero-title">Metas y alimentos</h1>
+    <p class="hero-sub">Lista de alimentos para combinar en cada comida, con calorías, proteína y fibra por porción — pensada para tener a la mano qué llena, qué es proteico y qué tiene fibra.</p>
+    <p class="hero-disclaimer">Calculado para 93 kg y 183 cm. Aproximado porque no incluye la edad. No sustituye la guía de un médico o nutricionista.</p>
+  `;
+  app.appendChild(hero);
+
+  const intro = document.createElement('div');
+  intro.className = 'calloutBox';
+  intro.innerHTML = `<b>Cómo usarla:</b> cada comida debe acercarse a su meta de calorías, proteína y fibra. Combina alimentos de la lista de abajo hasta llegar. Acercarte al 10% está bien; lo más importante es no quedarte corto en proteína.`;
+  app.appendChild(intro);
+
+  const goalsPanel = document.createElement('div');
+  goalsPanel.className = 'panel';
+  goalsPanel.innerHTML = `
+    <div class="panel-title">Metas por comida — días libres (3 comidas)</div>
+    ${renderRefTable(['Comida', 'Kcal', 'Prot (g)', 'Fibra (g)'], MEAL_TARGETS_FREE.map(m => [m.comida, m.kcal, m.prot, m.fib]).concat([['<b>Total del día</b>', '<b>2,000</b>', '<b>155</b>', '<b>38</b>']]))}
+    <div class="panel-title" style="margin-top:16px;">Metas por comida — días de trabajo (2 comidas)</div>
+    ${renderRefTable(['Comida', 'Kcal', 'Prot (g)', 'Fibra (g)'], MEAL_TARGETS_WORK.map(m => [m.comida, m.kcal, m.prot, m.fib]).concat([['<b>Total del día</b>', '<b>1,800</b>', '<b>155</b>', '<b>34</b>']]))}
+  `;
+  app.appendChild(goalsPanel);
+
+  const formulaPanel = document.createElement('div');
+  formulaPanel.className = 'panel';
+  formulaPanel.innerHTML = `
+    <div class="panel-title">Cómo armar cada comida</div>
+    <ol class="recipeSteps">
+      <li><b>Una proteína principal:</b> 150 a 180 g cocida. Aporta unos 35 a 55 g de proteína.</li>
+      <li><b>Un carbohidrato con fibra:</b> papa, camote, arroz, avena, pasta o legumbres. De 100 a 300 g según las calorías que falten.</li>
+      <li><b>Verduras a voluntad:</b> 150 a 300 g. Casi no suman calorías y dan fibra y saciedad.</li>
+      <li><b>Una grasa:</b> 5 a 10 g de aceite, 50 g de aguacate o 20 g de frutos secos.</li>
+      <li><b>Fruta o yogur griego</b> si todavía te faltan calorías, fibra o proteína.</li>
+    </ol>
+    <div class="calloutBox" style="margin-top:12px;"><b>Cómo calcular:</b> calorías = gramos × (kcal por 100 g) ÷ 100. Ejemplo: 180 g de pechuga son 180 × 165 ÷ 100 = 297 kcal y 56 g de proteína. En la lista de abajo ya están los valores de una porción típica.</div>
+    <div class="calloutBox"><b>Libres:</b> agua, café negro, té sin azúcar y Coca Zero tienen 0 kcal.</div>
+  `;
+  app.appendChild(formulaPanel);
+
+  const listPanel = document.createElement('div');
+  listPanel.className = 'panel';
+  listPanel.innerHTML = `<div class="panel-title">Lista de alimentos para combinar</div>`;
+  FOOD_CATEGORIES.forEach((cat, i) => {
+    const group = document.createElement('div');
+    group.className = 'tip-group' + (openFoodGroup === i ? ' open' : '');
+    group.innerHTML = `
+      <div class="tip-head">
+        <h3>${cat.title}</h3>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></svg>
+      </div>
+      <div class="tip-body">${renderRefTable(['Alimento', 'Porción', 'Kcal', 'Prot (g)', 'Fibra (g)'], cat.rows)}</div>
+    `;
+    group.querySelector('.tip-head').addEventListener('click', () => {
+      openFoodGroup = (openFoodGroup === i) ? null : i;
+      render();
+    });
+    listPanel.appendChild(group);
+  });
+  app.appendChild(listPanel);
+
+  const ruleBox = document.createElement('div');
+  ruleBox.className = 'calloutBox';
+  ruleBox.innerHTML = `<b>Regla práctica para un alimento nuevo:</b> suele ayudar si da 8 g o más de proteína, o 3 g o más de fibra, por cada 100 g. Úsalo con más cuidado si pasa de unas 250 kcal por 100 g y casi no tiene proteína ni fibra (frituras, pan dulce, galletas, embutidos).`;
+  app.appendChild(ruleBox);
+
+  const satPanel = document.createElement('div');
+  satPanel.className = 'panel';
+  satPanel.innerHTML = `
+    <div class="panel-title">Alimentos que más sacian</div>
+    <p style="font-size:11.5px;color:var(--text-dim);line-height:1.5;margin:0 0 10px;">Índice de saciedad (Holt y colaboradores, 1995): compararon cuánto llena cada alimento con porciones de 240 kcal iguales. El pan blanco vale 100; mientras más alto el número, más sacia. Estudio pequeño — úsalo como guía, no como regla exacta.</p>
+    ${renderRefTable(['Alimento', 'Índice', 'Porción', 'Kcal', 'Prot (g)', 'Fibra (g)'], SATIATION_INDEX)}
+    <p style="font-size:10.5px;color:var(--text-dim);line-height:1.5;margin:8px 0 0;">* En el estudio: pescado blanco (ling), frijoles y lentejas en salsa de tomate.</p>
+  `;
+  app.appendChild(satPanel);
+
+  const lessSatPanel = document.createElement('div');
+  lessSatPanel.className = 'calloutBox';
+  lessSatPanel.innerHTML = `<b>Los que menos sacian:</b> salieron por debajo del pan blanco: croissant (47), pastel (65), dona (68), cacahuates (84), yogur de fresa bajo en grasa (88), papas de bolsa (91) y helado (96). Dan más calorías por lo poco que llenan. No hace falta prohibirlos, pero mídelos. El yogur del estudio era de fresa; el griego natural 0% tiene mucha más proteína.`;
+  app.appendChild(lessSatPanel);
+
+  const satOtherPanel = document.createElement('div');
+  satOtherPanel.className = 'panel';
+  satOtherPanel.innerHTML = `
+    <div class="panel-title">Sacian por proteína, fibra o volumen (sin índice medido)</div>
+    ${renderRefTable(['Alimento', 'Porción', 'Kcal', 'Prot (g)', 'Fibra (g)'], SATIATION_OTHER)}
+  `;
+  app.appendChild(satOtherPanel);
+
+  const howToPanel = document.createElement('div');
+  howToPanel.className = 'calloutBox';
+  howToPanel.innerHTML = `
+    <b>Cómo usarlo:</b>
+    <ul class="recipeList" style="margin-top:6px;">
+      <li>En cada comida combina una proteína, una papa, legumbre o avena, y verduras.</li>
+      <li>Prefiere la fruta entera al jugo: la naranja y la manzana sacian el doble que el pan blanco.</li>
+      <li>Empieza la comida por la ensalada o las verduras y come despacio.</li>
+      <li>Cambia la pasta y el pan blancos por integrales.</li>
+    </ul>
+  `;
+  app.appendChild(howToPanel);
+
+  const habitualPanel = document.createElement('div');
+  habitualPanel.className = 'panel';
+  habitualPanel.innerHTML = `
+    <div class="panel-title">Tus alimentos habituales</div>
+    ${renderRefTable(['Alimento (porción)', 'Kcal', 'Prot (g)', 'Fibra (g)', 'Veredicto'], HABITUAL_FOODS)}
+    <p style="font-size:11.5px;color:var(--text-dim);line-height:1.55;margin:10px 0 0;">Pepino, gelatina, seaweed, Coca Zero y rice paper de solo vegetales sacian, pero casi no aportan calorías ni proteína. No dejes que te llenen antes de la comida principal. La proteína sale de yogur, cottage, carne molida y frijoles.</p>
+  `;
+  app.appendChild(habitualPanel);
+
+  const footer = document.createElement('div');
+  footer.className = 'footer-disclaimer';
+  footer.textContent = 'Valores aproximados. No sustituye la guía de un médico o nutricionista.';
+  app.appendChild(footer);
+}
+
+/* ============================================================
+   Tab "Recetas bowl" — digitalizado de 30_Recetas_Cenas_Bowl_1.pdf
+   que mandó el usuario (nov 2026). Método del bowl: base de volumen
+   ilimitada (vegetales) + porciones medidas (marcadas ● en el PDF:
+   papa, arroz, quinoa, aceite, queso, huevo, frutos secos, aguacate,
+   legumbres, tortillas, maíz, pan rallado, batata) que sí suman
+   calorías. 2 porciones por receta, 450-550 kcal aprox. por porción.
+   ============================================================ */
+
+const RECIPES = [
+  { num: 1, title: 'Pollo al horno con papas asadas y ensalada de pepino', protein: 'Pollo', kcal: 520,
+    ingredients: ['2 pechugas de pollo (150 g c/u)', '300 g papa en cubos ●', '1 cda aceite de oliva ●', '300 g pepino', '1 taza tomate cherry', 'vinagre, sal, pimentón, romero'],
+    prep: ['Precalentar el horno a 200°C.', 'Sazonar el pollo con pimentón, sal y romero.', 'Mezclar las papas con el aceite de oliva y sal.', 'Hornear el pollo y las papas juntos 30-35 minutos, volteando a la mitad.', 'Preparar una ensalada de pepino y tomate cherry con vinagre y sal.', 'Servir el pollo con las papas y la ensalada.'] },
+  { num: 2, title: 'Salmón al horno con espárragos y limón', protein: 'Salmón', kcal: 500,
+    ingredients: ['2 filetes de salmón (120 g c/u) ●', '300 g espárragos', '1 cda aceite de oliva ●', '1 limón', '2 dientes de ajo', 'sal y pimienta'],
+    prep: ['Precalentar el horno a 200°C.', 'Colocar el salmón y los espárragos en una bandeja para hornear.', 'Rociar con aceite de oliva, ajo picado, sal, pimienta y rodajas de limón.', 'Hornear 15-18 minutos.', 'Servir con un poco más de jugo de limón.'] },
+  { num: 3, title: 'Camarones al ajillo con arroz integral y calabacín', protein: 'Camarones', kcal: 470,
+    ingredients: ['300 g camarones pelados', '1.5 tazas arroz integral cocido ●', '2 calabacines en rodajas', '4 dientes de ajo', '1 cda aceite de oliva ●', 'perejil, chile en hojuelas (opcional)'],
+    prep: ['Cocinar el arroz integral según las instrucciones del paquete.', 'Saltear el ajo en el aceite de oliva.', 'Agregar los camarones y cocinar 3-4 minutos.', 'Incorporar el calabacín en rodajas y cocinar 3 minutos más.', 'Servir sobre el arroz con perejil picado.'] },
+  { num: 4, title: 'Pechuga rellena de espinaca y champiñones con puré de papa', protein: 'Pollo', kcal: 530,
+    ingredients: ['2 pechugas de pollo abiertas en mariposa', '2 tazas espinaca', '1 taza champiñones picados', '30 g queso light ●', '400 g papa ●', 'un chorrito de leche descremada', 'ajo, sal, pimienta'],
+    prep: ['Saltear la espinaca y los champiñones con ajo hasta que se ablanden.', 'Rellenar las pechugas con la mezcla y el queso, cerrar con palillos.', 'Cocinar en sartén tapado 8-10 minutos por lado, o al horno 25 minutos a 200°C.', 'Hervir la papa hasta que esté tierna y hacer puré con la leche descremada.', 'Servir el pollo relleno sobre el puré de papa.'] },
+  { num: 5, title: 'Merluza a la plancha con quinoa y brócoli', protein: 'Pescado blanco', kcal: 460,
+    ingredients: ['2 filetes de merluza (150 g c/u)', '1.5 tazas quinoa cocida ●', '300 g brócoli', '1 cda aceite de oliva ●', 'limón, ajo, sal'],
+    prep: ['Cocinar la quinoa según las instrucciones del paquete.', 'Sazonar la merluza y cocinarla en plancha 3-4 minutos por lado.', 'Cocinar el brócoli al vapor 5 minutos.', 'Servir todo junto con aceite de oliva y jugo de limón.'] },
+  { num: 6, title: 'Ensalada de garbanzos con atún y vegetales', protein: 'Atún', kcal: 480,
+    ingredients: ['1 taza garbanzos cocidos ●', '2 latas atún en agua (160 g escurrido)', '1 pepino', '1 tomate', '1 pimiento', '1/4 cebolla morada', '1 cda aceite de oliva ●', 'vinagre, sal, orégano'],
+    prep: ['Escurrir los garbanzos y el atún.', 'Picar el pepino, tomate, pimiento y cebolla.', 'Mezclar todo en un bowl grande.', 'Aliñar con aceite de oliva, vinagre, sal y orégano.', 'Servir frío o a temperatura ambiente.'] },
+  { num: 7, title: 'Pollo al curry ligero con arroz y coliflor', protein: 'Pollo', kcal: 510,
+    ingredients: ['2 pechugas de pollo en cubos', '1.5 tazas arroz cocido ●', '2 tazas coliflor', '1/2 cebolla', '1 cdta curry en polvo', '1/4 taza leche de coco light ●', 'caldo de pollo, ajo, jengibre'],
+    prep: ['Sofreír la cebolla y el ajo hasta que estén transparentes.', 'Agregar el pollo y dorarlo por todos lados.', 'Añadir el curry, el jengibre, el caldo y la leche de coco light.', 'Incorporar la coliflor y cocinar tapado 12-15 minutos.', 'Servir sobre el arroz.'] },
+  { num: 8, title: 'Salmón teriyaki con repollo salteado y arroz', protein: 'Salmón', kcal: 540,
+    ingredients: ['2 filetes de salmón (120 g c/u) ●', '1 taza arroz cocido ●', '3 tazas repollo', '2 cdas salsa de soja', '1 cdta miel o sirope sin azúcar ●', 'ajo, jengibre', 'spray de aceite'],
+    prep: ['Mezclar la soja, la miel/sirope, el ajo y el jengibre para la salsa teriyaki.', 'Cocinar el salmón en sartén con spray de aceite 3-4 minutos por lado.', 'Agregar la salsa los últimos 2 minutos de cocción.', 'Saltear el repollo aparte 5 minutos.', 'Servir el salmón con el repollo y el arroz.'] },
+  { num: 9, title: 'Tacos de pollo con tortillas integrales y pico de gallo', protein: 'Pollo', kcal: 500,
+    ingredients: ['2 pechugas de pollo en tiras', '4 tortillas integrales pequeñas ●', '1 tomate', '1/4 cebolla', 'cilantro', 'jugo de limón', 'lechuga', 'salsa picante al gusto'],
+    prep: ['Cocinar el pollo sazonado en sartén 8-10 minutos y desmenuzar o cortar en tiras.', 'Preparar el pico de gallo con tomate, cebolla, cilantro y limón picados.', 'Calentar las tortillas.', 'Armar los tacos con lechuga, pollo y pico de gallo.'] },
+  { num: 10, title: 'Pavo al horno con batata y ejotes', protein: 'Pavo', kcal: 520,
+    ingredients: ['2 filetes de pechuga de pavo (150 g c/u)', '300 g batata/camote en cubos ●', '250 g ejotes', '1 cda aceite de oliva ●', 'romero, sal, pimienta'],
+    prep: ['Precalentar el horno a 200°C.', 'Mezclar la batata con el aceite, sal y romero, y hornear 20 minutos.', 'Agregar el pavo sazonado y los ejotes a la misma bandeja.', 'Hornear 15-18 minutos más hasta que el pavo esté cocido.'] },
+  { num: 11, title: 'Sopa de lentejas con pollo desmenuzado y vegetales', protein: 'Pollo', kcal: 470,
+    ingredients: ['1 taza lentejas cocidas ●', '200 g pechuga de pollo', '1 zanahoria', '1 tallo de apio', '1/2 cebolla', 'ajo', 'caldo de pollo bajo en sodio', 'comino, sal'],
+    prep: ['Cocinar el pollo en el caldo hasta que esté listo y desmenuzarlo.', 'En la misma olla, sofreír la cebolla, el ajo, la zanahoria y el apio.', 'Agregar las lentejas cocidas y el pollo desmenuzado.', 'Cocinar 10 minutos a fuego medio y sazonar con comino y sal.'] },
+  { num: 12, title: 'Camarones salteados con fideos de calabacín y maíz', protein: 'Camarones', kcal: 440,
+    ingredients: ['300 g camarones pelados', '2 calabacines en espiral', '1/2 taza maíz dulce ●', '2 dientes de ajo', '1 cda aceite de oliva ●', 'limón, chile en hojuelas, cilantro'],
+    prep: ['Saltear el ajo en el aceite de oliva.', 'Agregar los camarones y cocinar 3-4 minutos.', 'Añadir el maíz y cocinar 2 minutos.', 'Incorporar los fideos de calabacín y cocinar 2 minutos más sin pasarlos de cocción.', 'Terminar con jugo de limón y cilantro.'] },
+  { num: 13, title: 'Pollo fajitas con pimientos, cebolla y tortilla integral', protein: 'Pollo', kcal: 510,
+    ingredients: ['2 pechugas de pollo en tiras', '2 pimientos en tiras', '1 cebolla en tiras', '4 tortillas integrales pequeñas ●', 'comino, pimentón, ajo en polvo', 'jugo de limón'],
+    prep: ['Sazonar el pollo con comino, pimentón y ajo en polvo.', 'Saltear el pollo en sartén caliente 5-6 minutos y reservar.', 'Saltear los pimientos y la cebolla 5 minutos.', 'Combinar todo, agregar el jugo de limón.', 'Servir con las tortillas calientes.'] },
+  { num: 14, title: 'Salmón en papillote con papas baby y eneldo', protein: 'Salmón', kcal: 530,
+    ingredients: ['2 filetes de salmón (120 g c/u) ●', '250 g papas baby ●', 'eneldo fresco', '1 limón', '1 cda aceite de oliva ●', 'sal, pimienta'],
+    prep: ['Precalentar el horno a 200°C.', 'Cortar papel para hornear en dos porciones.', 'Colocar el salmón y las papas baby cortadas en mitades en cada paquete.', 'Agregar eneldo, limón, aceite, sal y pimienta.', 'Cerrar bien los paquetes y hornear 20-25 minutos.'] },
+  { num: 15, title: 'Pescado blanco empanizado ligero con ensalada', protein: 'Pescado blanco', kcal: 460,
+    ingredients: ['2 filetes de tilapia o merluza (150 g c/u)', '1/3 taza avena molida o pan rallado integral ●', '1 huevo ●', 'lechuga, tomate, pepino', 'spray de aceite', 'limón, sal, pimentón'],
+    prep: ['Batir el huevo en un plato hondo.', 'Pasar el pescado por el huevo y luego por la avena molida sazonada con pimentón y sal.', 'Cocinar en sartén con spray de aceite 4-5 minutos por lado hasta dorar.', 'Preparar una ensalada simple de lechuga, tomate y pepino.', 'Servir con jugo de limón.'] },
+  { num: 16, title: 'Albóndigas de pavo con salsa de tomate y espagueti integral', protein: 'Pavo', kcal: 520,
+    ingredients: ['300 g pavo molido', '1 huevo ●', '2 cdas pan rallado integral ●', '1 diente de ajo', '1.5 tazas salsa de tomate baja en azúcar', '1 taza espagueti integral cocido ●', 'albahaca, sal'],
+    prep: ['Mezclar el pavo molido con huevo, pan rallado, ajo picado, sal y pimienta.', 'Formar albóndigas y dorarlas en sartén por todos lados.', 'Agregar la salsa de tomate y cocinar tapado 10-12 minutos.', 'Servir sobre el espagueti integral con albahaca fresca.'] },
+  { num: 17, title: 'Pollo a la mostaza y miel con brócoli y arroz', protein: 'Pollo', kcal: 500,
+    ingredients: ['2 pechugas de pollo', '1 cda mostaza Dijon', '1 cdta miel o sirope sin azúcar ●', '300 g brócoli', '1 taza arroz cocido ●', 'ajo, sal'],
+    prep: ['Mezclar la mostaza, la miel/sirope, el ajo y la sal para la marinada.', 'Marinar el pollo unos minutos y cocinarlo en sartén o al horno 20 minutos.', 'Cocinar el brócoli al vapor.', 'Servir el pollo con el brócoli y el arroz.'] },
+  { num: 18, title: 'Bowl de atún, aguacate, arroz y pepino estilo poke', protein: 'Atún', kcal: 510,
+    ingredients: ['250 g atún (fresco en cubos o en agua)', '1/2 aguacate ●', '1 taza arroz cocido ●', '1 pepino', '1 zanahoria', 'salsa de soja, sésamo, jugo de lima'],
+    prep: ['Cocinar el arroz y dejar enfriar un poco.', 'Cortar el atún, el pepino y la zanahoria en cubos o tiras finas.', 'Marinar el atún con soja, sésamo y lima unos minutos.', 'Armar el bowl con el arroz, los vegetales, el atún y el aguacate en láminas.'] },
+  { num: 19, title: 'Chili de pavo con frijoles negros y vegetales', protein: 'Pavo', kcal: 490,
+    ingredients: ['300 g pavo molido', '1 taza frijoles negros cocidos ●', '1 taza tomate triturado', '1 pimiento', '1/2 cebolla', 'ajo, comino, chile en polvo', 'caldo'],
+    prep: ['Dorar el pavo molido con la cebolla y el ajo.', 'Agregar el pimiento, el tomate triturado, los frijoles, el comino y el chile en polvo.', 'Cocinar a fuego medio-bajo 20-25 minutos, removiendo ocasionalmente.', 'Ajustar la sal y servir.'] },
+  { num: 20, title: 'Pollo al horno con papas y pimientos estilo mediterráneo', protein: 'Pollo', kcal: 520,
+    ingredients: ['2 pechugas o muslos de pollo sin piel', '300 g papa en cubos ●', '2 pimientos en tiras', '10 aceitunas', '1 cda aceite de oliva ●', 'orégano, limón, ajo'],
+    prep: ['Precalentar el horno a 200°C.', 'Mezclar las papas y los pimientos con aceite, ajo, orégano y sal.', 'Colocar el pollo sazonado encima de las verduras.', 'Hornear todo junto 30-35 minutos.', 'Terminar con aceitunas y jugo de limón.'] },
+  { num: 21, title: 'Salmón con costra de almendras y espinaca salteada', protein: 'Salmón', kcal: 550,
+    ingredients: ['2 filetes de salmón (120 g c/u) ●', '2 cdas almendras molidas ●', '1 cda mostaza Dijon', '3 tazas espinaca', 'ajo', 'spray de aceite', 'sal'],
+    prep: ['Untar el salmón con mostaza y cubrir con las almendras molidas.', 'Hornear a 200°C durante 15-18 minutos.', 'Saltear la espinaca con ajo y spray de aceite 2-3 minutos.', 'Servir el salmón con la espinaca salteada.'] },
+  { num: 22, title: 'Camarones al coco con arroz y brócoli', protein: 'Camarones', kcal: 500,
+    ingredients: ['300 g camarones pelados', '1/3 taza leche de coco light ●', 'curry en polvo o paprika', '1 taza arroz cocido ●', '300 g brócoli', 'ajo, cilantro'],
+    prep: ['Sofreír el ajo y agregar los camarones, cocinar 2-3 minutos.', 'Incorporar la leche de coco light y el curry, cocinar 4-5 minutos más.', 'Cocinar el brócoli al vapor.', 'Servir con el arroz y cilantro fresco.'] },
+  { num: 23, title: 'Ensalada tibia de pollo, quinoa, garbanzos y vegetales', protein: 'Pollo', kcal: 530,
+    ingredients: ['2 pechugas de pollo en cubos', '1 taza quinoa cocida ●', '1/2 taza garbanzos cocidos ●', '1 tomate', '1 pepino', '1 pimiento', '1 cda aceite de oliva ●', 'limón, sal'],
+    prep: ['Cocinar el pollo sazonado en sartén 8-10 minutos.', 'Cocinar la quinoa según las instrucciones del paquete.', 'Mezclar en un bowl grande el pollo, la quinoa, los garbanzos y los vegetales picados.', 'Aliñar con aceite de oliva, limón y sal.', 'Servir tibio o frío.'] },
+  { num: 24, title: 'Pechuga rellena de queso light y tomate con ensalada', protein: 'Pollo', kcal: 490,
+    ingredients: ['2 pechugas de pollo en mariposa', '40 g queso mozzarella light ●', '1 tomate en rodajas', 'albahaca fresca', 'ensalada verde de acompañamiento', 'spray de aceite, sal, pimienta'],
+    prep: ['Rellenar las pechugas con el queso, el tomate y la albahaca, cerrar con palillos.', 'Cocinar en sartén con spray de aceite, tapado, 8-10 minutos por lado (o al horno 25 minutos).', 'Servir con una ensalada verde simple.'] },
+  { num: 25, title: 'Merluza al horno con papas y alcaparras', protein: 'Pescado blanco', kcal: 470,
+    ingredients: ['2 filetes de merluza (150 g c/u)', '250 g papa en rodajas finas ●', '1 cda alcaparras', '1 limón, ajo', '1 cda aceite de oliva ●', 'perejil, sal'],
+    prep: ['Precalentar el horno a 200°C.', 'Colocar las papas en rodajas en la base de una bandeja con un poco de aceite y sal, hornear 15 minutos.', 'Agregar el pescado encima con ajo, alcaparras, limón y el resto del aceite.', 'Hornear 15-18 minutos más.', 'Terminar con perejil fresco.'] },
+  { num: 26, title: 'Tazón de pavo molido estilo asiático con arroz y vegetales', protein: 'Pavo', kcal: 510,
+    ingredients: ['300 g pavo molido', '1 taza arroz cocido ●', '1 zanahoria', '2 tazas repollo', 'ajo, jengibre', '2 cdas salsa de soja', 'sésamo, cebollín'],
+    prep: ['Dorar el pavo molido con el ajo y el jengibre.', 'Agregar la zanahoria y el repollo en tiras finas, saltear 4-5 minutos.', 'Añadir la salsa de soja y mezclar bien.', 'Servir sobre el arroz con sésamo y cebollín.'] },
+  { num: 27, title: 'Pollo al limón con papas y espárragos', protein: 'Pollo', kcal: 500,
+    ingredients: ['2 pechugas de pollo', '250 g papa en cubos ●', '250 g espárragos', 'jugo de limón', 'ajo', '1 cda aceite de oliva ●', 'orégano, sal'],
+    prep: ['Precalentar el horno a 200°C.', 'Mezclar las papas con aceite, ajo, orégano y sal, hornear 15 minutos.', 'Agregar el pollo sazonado con limón y los espárragos.', 'Hornear 20 minutos más, hasta que el pollo esté bien cocido.'] },
+  { num: 28, title: 'Camarones con quinoa, elote y aguacate', protein: 'Camarones', kcal: 520,
+    ingredients: ['300 g camarones pelados', '1 taza quinoa cocida ●', '1/2 taza elote/maíz desgranado ●', '1/2 aguacate ●', 'jugo de lima, cilantro, ajo', 'spray de aceite'],
+    prep: ['Cocinar la quinoa según las instrucciones del paquete.', 'Saltear los camarones con ajo y spray de aceite 3-4 minutos.', 'Mezclar la quinoa con el elote, los camarones, el cilantro y el jugo de lima.', 'Servir con láminas de aguacate encima.'] },
+  { num: 29, title: 'Salmón a la plancha con ensalada de papa y huevo', protein: 'Salmón', kcal: 540,
+    ingredients: ['2 filetes de salmón (120 g c/u) ●', '250 g papa cocida en cubos ●', '2 huevos cocidos ●', '1 pepino', '1/4 cebolla morada', '1 cdta mostaza', '1 cda aceite de oliva ●', 'vinagre, sal'],
+    prep: ['Cocinar la papa hasta que esté tierna, dejar enfriar y cortar en cubos.', 'Cocinar el salmón en plancha 3-4 minutos por lado.', 'Mezclar la papa con el huevo picado, el pepino, la cebolla, la mostaza, el aceite y el vinagre.', 'Servir el salmón sobre la ensalada de papa.'] },
+  { num: 30, title: 'Sopa de pescado blanco con papas y vegetales', protein: 'Pescado blanco', kcal: 460,
+    ingredients: ['2 filetes de tilapia o merluza (150 g c/u)', '250 g papa en cubos ●', '1 zanahoria', '1 tallo de apio', '1/2 cebolla', 'caldo de pescado o pollo bajo en sodio', '1/2 taza leche descremada', 'ajo, perejil'],
+    prep: ['Sofreír la cebolla, el ajo, la zanahoria y el apio.', 'Agregar la papa y el caldo, cocinar 12-15 minutos hasta que la papa esté tierna.', 'Agregar el pescado en trozos y cocinar 5-6 minutos más.', 'Incorporar la leche descremada al final y ajustar la sal.', 'Terminar con perejil fresco.'] },
+];
+
+function renderRecetas(app) {
+  const hero = document.createElement('div');
+  hero.className = 'hero';
+  hero.innerHTML = `
+    <div class="hero-eyebrow">🥣 Método del bowl</div>
+    <h1 class="hero-title">30 recetas de cena</h1>
+    <p class="hero-sub">Base de volumen ilimitada (vegetales como pepino, brócoli, espinaca, calabacín, pimiento, espárragos, coliflor, champiñones) + porciones medidas marcadas con ● (papa, arroz, quinoa, aceite, queso, huevo, frutos secos, aguacate, legumbres, tortillas, maíz, pan rallado, batata) — esas sí suman calorías. 2 porciones por receta, 450-550 kcal aprox. por porción.</p>
+  `;
+  app.appendChild(hero);
+
+  const proteins = ['Todos', ...Array.from(new Set(RECIPES.map(r => r.protein)))];
+  const chipRow = document.createElement('div');
+  chipRow.className = 'chipRow';
+  proteins.forEach(p => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (recipeFilter === p ? ' active' : '');
+    chip.textContent = p;
+    chip.addEventListener('click', () => { recipeFilter = p; render(); });
+    chipRow.appendChild(chip);
+  });
+  app.appendChild(chipRow);
+
+  const listPanel = document.createElement('div');
+  listPanel.className = 'panel';
+  const filtered = recipeFilter === 'Todos' ? RECIPES : RECIPES.filter(r => r.protein === recipeFilter);
+  filtered.forEach(r => {
+    const group = document.createElement('div');
+    group.className = 'tip-group' + (openRecipeNum === r.num ? ' open' : '');
+    group.innerHTML = `
+      <div class="tip-head">
+        <div>
+          <h3>${r.num}. ${r.title}</h3>
+          <div class="recipeMeta"><b>${r.protein}</b> · ~${r.kcal} kcal por porción (2 porciones)</div>
+        </div>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></svg>
+      </div>
+      <div class="tip-body">
+        <div class="recipeSection">Ingredientes (● = porción medida, no ilimitada)</div>
+        <ul class="recipeList">${r.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+        <div class="recipeSection">Preparación</div>
+        <ol class="recipeSteps">${r.prep.map(p => `<li>${p}</li>`).join('')}</ol>
+      </div>
+    `;
+    group.querySelector('.tip-head').addEventListener('click', () => {
+      openRecipeNum = (openRecipeNum === r.num) ? null : r.num;
+      render();
+    });
+    listPanel.appendChild(group);
+  });
+  app.appendChild(listPanel);
+
+  const reminder = document.createElement('div');
+  reminder.className = 'calloutBox';
+  reminder.innerHTML = `<b>Recordatorio:</b> llena el bowl con la base de vegetales primero, agrega la proteína, y suma solo una porción medida de papa/arroz/queso/etc. por comida — no combines varias porciones medidas grandes en la misma cena si el objetivo es mantenerte cerca de las 450-550 kcal.`;
+  app.appendChild(reminder);
 
   const footer = document.createElement('div');
   footer.className = 'footer-disclaimer';
