@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>&nbsp;</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content=" " />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+<style>
+  /* Mismo fix que golf.html: en desktop, .screen (del style.css compartido)
+     no tiene max-width y se estira a todo el navegador. */
+  .screen { max-width: 760px; margin: 0 auto; }
+
+  :root { --food: #e0a84e; --food-dim: rgba(224,168,78,0.14); }
+
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    border-radius: 22px;
+    padding: 22px 20px 20px;
+    margin-bottom: 18px;
+    background: linear-gradient(145deg, rgba(224,168,78,0.16), rgba(10,10,12,0) 62%), var(--bg-soft);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; right: -36px; top: -36px; width: 170px; height: 170px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(224,168,78,0.2), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow { position: relative; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--food); font-weight: 700; margin-bottom: 9px; }
+  .hero-title { position: relative; font-size: 21px; line-height: 1.3; font-weight: 800; margin: 0 0 7px; }
+  .hero-sub { position: relative; font-size: 13px; color: var(--text-dim); margin: 0 0 10px; line-height: 1.5; }
+  .hero-disclaimer { position: relative; font-size: 10.5px; color: var(--text-dim); opacity: 0.75; margin: 0; line-height: 1.4; }
+
+  /* ---- Tarjeta "hoy" ---- */
+  .today-card {
+    border: 1px solid var(--food); border-radius: 18px;
+    padding: 16px; margin-bottom: 18px;
+    background: var(--food-dim);
+  }
+  .today-eyebrow { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--food); font-weight: 700; margin-bottom: 4px; }
+  .today-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+  .today-meals { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--text-dim); margin-bottom: 10px; }
+  .today-meals b { color: var(--text); font-weight: 600; }
+  .today-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--food); color: #0a0a0c; font-weight: 700; font-size: 12.5px;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  }
+
+  /* ---- Grilla de días ---- */
+  .week-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+  @media (min-width: 420px) { .week-grid { grid-template-columns: repeat(7, 1fr); } }
+  .day-chip {
+    border: 1px solid var(--line); border-radius: 13px; padding: 10px 4px;
+    text-align: center; cursor: pointer;
+  }
+  .day-chip.ayuno { border-color: rgba(224,168,78,0.4); }
+  .day-chip.open { border-color: var(--food); background: var(--food-dim); }
+  .day-chip-name { font-size: 11px; font-weight: 700; }
+  .day-chip-tag { font-size: 8.5px; color: var(--text-dim); margin-top: 2px; }
+
+  /* ---- Panel de detalle de un día ---- */
+  .day-detail { border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 18px; }
+  .day-detail-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .day-detail-head h2 { font-size: 16px; margin: 0; font-weight: 700; }
+  .day-detail-totals { font-size: 11px; color: var(--text-dim); margin-bottom: 14px; }
+  .day-detail-totals b { color: var(--text); }
+
+  .meal-block { margin-bottom: 16px; }
+  .meal-block:last-child { margin-bottom: 0; }
+  .meal-title { font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+  .meal-macros { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+  .meal-macros span { margin-right: 10px; }
+  .meal-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .meal-table th, .meal-table td { text-align: left; padding: 5px 4px; border-bottom: 1px solid var(--line); }
+  .meal-table th { color: var(--text-dim); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .meal-table td.num { text-align: right; white-space: nowrap; }
+  .meal-table th.num { text-align: right; }
+  .meal-table tr:last-child td { border-bottom: none; }
+  .meal-empty { font-size: 11.5px; color: var(--text-dim); font-style: italic; }
+
+  /* ---- Metas / totales ---- */
+  .panel { border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 18px; }
+  .panel-title { font-size: 13.5px; font-weight: 600; margin-bottom: 12px; }
+  .goals-table, .totals-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .goals-table th, .goals-table td, .totals-table th, .totals-table td {
+    text-align: left; padding: 7px 4px; border-bottom: 1px solid var(--line);
+  }
+  .goals-table th, .totals-table th { color: var(--text-dim); font-weight: 600; font-size: 10px; text-transform: uppercase; }
+  .goals-table td.num, .goals-table th.num, .totals-table td.num, .totals-table th.num { text-align: right; }
+  .goals-table tr:last-child td, .totals-table tr:last-child td { border-bottom: none; }
+  .totals-table tr.meta-row td { color: var(--text-dim); font-size: 11px; font-weight: 600; }
+
+  /* ---- Tips accordion ---- */
+  .tip-group { margin-bottom: 10px; }
+  .tip-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 2px; cursor: pointer; border-bottom: 1px solid var(--line);
+  }
+  .tip-head h3 { font-size: 13.5px; margin: 0; font-weight: 600; }
+  .tip-head .chev { width: 13px; height: 13px; stroke: var(--text-dim); fill: none; stroke-width: 1.8; transition: transform 0.2s ease; flex-shrink: 0; }
+  .tip-group.open .tip-head .chev { transform: rotate(90deg); }
+  .tip-body { display: none; padding: 12px 2px 4px; font-size: 12.5px; color: var(--text-dim); line-height: 1.6; }
+  .tip-group.open .tip-body { display: block; }
+  .tip-body ul { margin: 0; padding-left: 18px; }
+  .tip-body li { margin-bottom: 8px; }
+  .tip-body b { color: var(--text); }
+
+  .footer-disclaimer { text-align: center; font-size: 10.5px; color: var(--text-dim); opacity: 0.7; margin: 10px 0 24px; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="topbar">
+      <a class="back" id="backBtn" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5 L8 12 L15 19"/></svg>
+      </a>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="scroll fade-in" id="app"></div>
+  </div>
+
+<script>
+/* ============================================================
+   Horario semanal de comidas — Sebastián y María
+   Digitalizado del PDF que mandó el usuario (horario_semanal_comidas.pdf,
+   nov 2026). Mismo horario todas las semanas, sin fecha de fin — por eso
+   no hay progreso/checkboxes, es una referencia de consulta rápida.
+   Todo vive en este archivo, sin backend ni localStorage.
+   ============================================================ */
+
+/* ---- Platos reutilizados (varios días repiten exactamente el mismo) ---- */
+const DESAYUNO = {
+  title: 'Desayuno (los dos)',
+  seb: [560, 47, 11], maria: [433, 35, 8],
+  items: [
+    ['Huevos duros', '3 huevos', '2 huevos', '5 huevos', '-'],
+    ['Hashbrown Cavendish (al horno o freidora)', '1 pieza', '1 pieza', '2 piezas', '-'],
+    ['Yogur griego natural 0%', '250 g', '200 g', '450 g', '-'],
+    ['Frambuesas', '150 g', '100 g', '250 g', '-'],
+  ],
+};
+const SNACK_MARIA = {
+  title: 'Snack (solo María)',
+  maria: [207, 19, 4],
+  items: [
+    ['Yogur griego natural 0%', '-', '150 g', '150 g', '-'],
+    ['Fresas', '-', '100 g', '100 g', '-'],
+    ['Almendras', '-', '15 g', '15 g', '-'],
+  ],
+};
+const FRIJOL_CARNE = {
+  title: 'Almuerzo (juntos): Frijol pinto + carne',
+  seb: [753, 51, 25], maria: [578, 38, 17],
+  items: [
+    ['Frijol pinto La Costeña (½ taza = 130 g)', '380 g', '200 g', '580 g', '-'],
+    ['Carne molida extra magra (peso crudo)', '150 g', '120 g', '270 g', 'ya en crudo'],
+    ['Papa cocida', '150 g', '150 g', '300 g', '-'],
+    ['Lechuga', '100 g', '100 g', '200 g', '-'],
+    ['Guacamole Yucatan (vasito de 57 g)', '1 vaso', '1 vaso', '2 vasos', '-'],
+  ],
+};
+const BURRITO_BOWL = {
+  title: 'Cena (juntos): Burrito bowl',
+  seb: [798, 67, 24], maria: [597, 48, 16],
+  items: [
+    ['Carne molida extra magra (peso crudo)', '200 g', '150 g', '350 g', 'ya en crudo'],
+    ['Lechuga', '100 g', '100 g', '200 g', '-'],
+    ['Zanahoria', '80 g', '80 g', '160 g', '-'],
+    ['Lentejas de lata (1 lata de 540 mL, escurridas ≈ 400 g)', '250 g', '150 g', '400 g', '-'],
+    ['Rice paper Blue Dragon (30 kcal por hoja)', '4 hojas', '4 hojas', '8 hojas', '-'],
+  ],
+};
+const KONJAC_CAMARONES = {
+  title: 'Almuerzo (juntos): Konjac + camarones',
+  seb: [688, 60, 11], maria: [518, 51, 9],
+  items: [
+    ['Konjac Haiku (bolsa de 250 g = 3 porciones)', '166 g', '83 g', '249 g', '-'],
+    ['Arroz blanco cocido', '150 g', '100 g', '250 g', '~90 g seco'],
+    ['Camarón cocido', '150 g', '150 g', '300 g', '~380 g crudo'],
+    ['Huevos', '2 huevos', '1 huevo', '3 huevos', '-'],
+    ['Pimiento', '100 g', '100 g', '200 g', '-'],
+    ['Repollo', '100 g', '100 g', '200 g', '-'],
+    ['Cacahuates', '15 g', '10 g', '25 g', '-'],
+    ['Salsa pad thai Blue Dragon (2 cdas = 33 g)', '1 porción', '1 porción', '2 porciones', '-'],
+  ],
+};
+const KONJAC_CAMARONES_CENA = { ...KONJAC_CAMARONES, title: 'Cena (juntos): Konjac + camarones' };
+const BOWL_ATUN = {
+  title: 'Cena (juntos): Bowl de atún',
+  seb: [714, 88, 12], maria: [456, 51, 8],
+  items: [
+    ['Atún al agua (lata de 120 g)', '2 latas', '1 lata', '3 latas', '-'],
+    ['Pepino', '250 g', '200 g', '450 g', '-'],
+    ['Cebolla', '50 g', '50 g', '100 g', '-'],
+    ['Yogur griego natural 0% (en vez de mayonesa)', '200 g', '150 g', '350 g', '-'],
+    ['Camote cocido', '300 g', '200 g', '500 g', '-'],
+    ['Mostaza y limón, sin sal', '1 porción', '1 porción', '2 porciones', '-'],
+  ],
+};
+const CAMOTE_POLLO_MARIA = {
+  title: 'Almuerzo (solo María): Camote + pollo',
+  maria: [502, 46, 13],
+  items: [
+    ['Camote cocido', '-', '250 g', '250 g', '-'],
+    ['Pechuga de pollo cocida', '-', '120 g', '120 g', '~160 g crudo'],
+    ['Brócoli cocido', '-', '150 g', '150 g', '-'],
+    ['Miel (1 cdta) + sriracha + limón', '-', '1 porción', '1 porción', '-'],
+  ],
+};
+const PAPA_POLLO_GRANDE = {
+  title: 'Cena (juntos): Papa + pollo — versión grande para Sebastián',
+  seb: [1266, 110, 24], maria: [468, 46, 9],
+  items: [
+    ['Papa cocida', '500 g', '250 g', '750 g', '-'],
+    ['Pechuga de pollo cocida', '300 g', '120 g', '420 g', '~560 g crudo'],
+    ['Brócoli cocido', '250 g', '150 g', '400 g', '-'],
+    ['Aguacate', '100 g', '-', '100 g', '-'],
+    ['Aceite de oliva', '10 g', '-', '10 g', '-'],
+  ],
+};
+const BOWL_ATUN_MARIA = {
+  title: 'Almuerzo (solo María): Bowl de atún',
+  maria: [456, 51, 8],
+  items: [
+    ['Atún al agua (lata de 120 g)', '-', '1 lata', '1 lata', '-'],
+    ['Pepino', '-', '200 g', '200 g', '-'],
+    ['Cebolla', '-', '50 g', '50 g', '-'],
+    ['Yogur griego natural 0% (en vez de mayonesa)', '-', '150 g', '150 g', '-'],
+    ['Camote cocido', '-', '200 g', '200 g', '-'],
+    ['Mostaza y limón, sin sal', '-', '1 porción', '1 porción', '-'],
+  ],
+};
+const CAMOTE_POLLO_GRANDE = {
+  title: 'Cena (juntos): Camote + pollo — versión grande para Sebastián',
+  seb: [1227, 110, 28], maria: [502, 46, 13],
+  items: [
+    ['Camote cocido', '500 g', '250 g', '750 g', '-'],
+    ['Pechuga de pollo cocida', '300 g', '120 g', '420 g', '~560 g crudo'],
+    ['Brócoli cocido', '250 g', '150 g', '400 g', '-'],
+    ['Miel (1 cdta) + sriracha + limón', '1 porción', '1 porción', '2 porciones', '-'],
+    ['Aguacate', '50 g', '-', '50 g', '-'],
+    ['Aceite de oliva (para hornear el camote)', '10 g', '-', '10 g', '-'],
+  ],
+};
+const KONJAC_CAMARONES_MARIA = {
+  title: 'Almuerzo (solo María): Konjac + camarones',
+  maria: [528, 51, 13],
+  items: [
+    ['Konjac Haiku (bolsa de 250 g = 3 porciones)', '-', '250 g', '250 g', '-'],
+    ['Arroz blanco cocido', '-', '100 g', '100 g', '~40 g seco'],
+    ['Camarón cocido', '-', '150 g', '150 g', '~190 g crudo'],
+    ['Huevos', '-', '1 huevo', '1 huevo', '-'],
+    ['Pimiento', '-', '100 g', '100 g', '-'],
+    ['Repollo', '-', '100 g', '100 g', '-'],
+    ['Cacahuates', '-', '10 g', '10 g', '-'],
+    ['Salsa pad thai Blue Dragon (2 cdas = 33 g)', '-', '1 porción', '1 porción', '-'],
+  ],
+};
+const BURRITO_BOWL_GRANDE = {
+  title: 'Cena (juntos): Burrito bowl — versión grande para Sebastián',
+  seb: [1411, 118, 30], maria: [597, 48, 16],
+  items: [
+    ['Carne molida extra magra (peso crudo)', '300 g', '150 g', '450 g', 'ya en crudo'],
+    ['Lechuga', '150 g', '100 g', '250 g', '-'],
+    ['Zanahoria', '100 g', '80 g', '180 g', '-'],
+    ['Lentejas de lata (1 lata de 540 mL, escurridas ≈ 400 g)', '250 g', '150 g', '400 g', '-'],
+    ['Rice paper Blue Dragon (30 kcal por hoja)', '6 hojas', '4 hojas', '10 hojas', '-'],
+    ['Arroz blanco cocido', '100 g', '-', '100 g', '~40 g seco'],
+    ['Guacamole Yucatan (vasito de 57 g)', '1 vaso', '-', '1 vaso', '-'],
+    ['Yogur griego natural 0% (de postre)', '250 g', '-', '250 g', '-'],
+  ],
+};
+
+const AYUNO = { title: 'Almuerzo: Sebastián en ayuno', ayuno: true };
+
+/* ---- Los 7 días ---- */
+const DAYS = [
+  { id: 'domingo', name: 'Domingo', tag: null, sebMeals: 3,
+    total: { seb: [2111, 166, 60], maria: [1815, 140, 44] },
+    meals: [DESAYUNO, FRIJOL_CARNE, BURRITO_BOWL, SNACK_MARIA] },
+  { id: 'lunes', name: 'Lunes', tag: null, sebMeals: 3,
+    total: { seb: [1962, 195, 34], maria: [1614, 156, 29] },
+    meals: [DESAYUNO, KONJAC_CAMARONES, BOWL_ATUN, SNACK_MARIA] },
+  { id: 'martes', name: 'Martes', tag: 'Ayuno Sebastián', sebMeals: 2,
+    total: { seb: [1826, 158, 35], maria: [1610, 145, 34] },
+    meals: [DESAYUNO, CAMOTE_POLLO_MARIA, PAPA_POLLO_GRANDE, SNACK_MARIA] },
+  { id: 'miercoles', name: 'Miércoles', tag: null, sebMeals: 3,
+    total: { seb: [2001, 158, 48], maria: [1736, 143, 37] },
+    meals: [DESAYUNO, FRIJOL_CARNE, KONJAC_CAMARONES_CENA, SNACK_MARIA] },
+  { id: 'jueves', name: 'Jueves', tag: 'Ayuno Sebastián', sebMeals: 2,
+    total: { seb: [1787, 157, 39], maria: [1597, 151, 33] },
+    meals: [DESAYUNO, BOWL_ATUN_MARIA, CAMOTE_POLLO_GRANDE, SNACK_MARIA] },
+  { id: 'viernes', name: 'Viernes', tag: 'Ayuno Sebastián', sebMeals: 2,
+    total: { seb: [1971, 165, 40], maria: [1765, 152, 40] },
+    meals: [DESAYUNO, KONJAC_CAMARONES_MARIA, BURRITO_BOWL_GRANDE, SNACK_MARIA] },
+  { id: 'sabado', name: 'Sábado', tag: 'Ayuno Sebastián', sebMeals: 2,
+    total: { seb: [1826, 158, 35], maria: [1564, 151, 29] },
+    meals: [DESAYUNO, BOWL_ATUN_MARIA, PAPA_POLLO_GRANDE, SNACK_MARIA] },
+];
+
+/* resumen corto (desayuno/almuerzo/cena) para la tarjeta "hoy" y los chips */
+function shortSummary(day) {
+  const alm = day.sebMeals === 2
+    ? `Sebastián: ayuno · María: ${day.meals[1].title.split(': ')[1]}`
+    : day.meals[1].title.split(': ')[1];
+  const cena = day.meals[2].title.split(': ')[1];
+  return { desayuno: 'Huevo + hashbrown + yogur', almuerzo: alm, cena: cena };
+}
+
+const GOALS = [
+  { who: 'Sebastián, 3 comidas (dom, lun, mié)', kcal: 2000, prot: 155, fib: 38 },
+  { who: 'Sebastián, 2 comidas (mar, jue, vie, sáb)', kcal: 1800, prot: 155, fib: 34 },
+  { who: 'María (3 comidas todos los días)', kcal: 1600, prot: 120, fib: 28 },
+];
+
+/* ---- Render ---- */
+let openDayId = null;
+
+function fmtMacro(arr) {
+  if (!arr) return '';
+  return `${arr[0]} kcal · ${arr[1]} g P · ${arr[2]} g F`;
+}
+
+function renderMealTable(meal) {
+  if (meal.ayuno) return `<div class="meal-empty">Sebastián no come en este horario (ayuno).</div>`;
+  const rows = meal.items.map(it => `
+    <tr>
+      <td>${it[0]}</td>
+      <td class="num">${it[1]}</td>
+      <td class="num">${it[2]}</td>
+      <td class="num">${it[3]}</td>
+      <td class="num">${it[4]}</td>
+    </tr>`).join('');
+  return `
+    <table class="meal-table">
+      <thead><tr><th>Ingrediente</th><th class="num">Seb.</th><th class="num">María</th><th class="num">Total</th><th class="num">Crudo</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function renderDayDetail(day) {
+  const macrosLine = [];
+  day.meals.forEach(m => {
+    if (m.ayuno) return;
+    const parts = [];
+    if (m.seb) parts.push(`Seb: ${fmtMacro(m.seb)}`);
+    if (m.maria) parts.push(`María: ${fmtMacro(m.maria)}`);
+    macrosLine.push(parts.join(' · '));
+  });
+
+  return `
+    <div class="day-detail" id="detail-${day.id}">
+      <div class="day-detail-head"><h2>${day.name}</h2></div>
+      <div class="day-detail-totals">
+        Total del día — <b>Sebastián:</b> ${fmtMacro(day.total.seb)}${day.sebMeals === 2 ? ' (2 comidas)' : ''} ·
+        <b>María:</b> ${fmtMacro(day.total.maria)}
+      </div>
+      ${day.meals.map(m => `
+        <div class="meal-block">
+          <div class="meal-title">${m.title}</div>
+          <div class="meal-macros">${m.ayuno ? '' : [m.seb ? `<span>Sebastián: ${fmtMacro(m.seb)}</span>` : '', m.maria ? `<span>María: ${fmtMacro(m.maria)}</span>` : ''].join('')}</div>
+          ${renderMealTable(m)}
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function toggleDay(id) {
+  openDayId = (openDayId === id) ? null : id;
+  render();
+  if (openDayId) {
+    const el = document.getElementById('detail-' + openDayId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  const todayIdx = new Date().getDay(); // 0=domingo
+  const today = DAYS[todayIdx];
+  const sum = shortSummary(today);
+
+  const hero = document.createElement('div');
+  hero.className = 'hero';
+  hero.innerHTML = `
+    <div class="hero-eyebrow">🍽️ Horario de comidas</div>
+    <h1 class="hero-title">Sebastián y María</h1>
+    <p class="hero-sub">De domingo a sábado — se repite igual cada semana. Los dos comen lo mismo y cada uno se sirve su porción. María suma un snack de yogur, fresas y almendras todos los días; el huevo del desayuno se repite siempre, el resto de las proteínas rota sin repetir el día anterior.</p>
+    <p class="hero-disclaimer">Valores aproximados. No sustituye la guía de un médico o nutricionista.</p>
+  `;
+  app.appendChild(hero);
+
+  const todayCard = document.createElement('div');
+  todayCard.className = 'today-card';
+  todayCard.innerHTML = `
+    <div class="today-eyebrow">Hoy</div>
+    <div class="today-title">${today.name}${today.tag ? ' · ' + today.tag : ''}</div>
+    <div class="today-meals">
+      <div><b>Desayuno:</b> ${sum.desayuno}</div>
+      <div><b>Almuerzo:</b> ${sum.almuerzo}</div>
+      <div><b>Cena:</b> ${sum.cena}</div>
+    </div>
+    <div class="today-toggle">Ver detalle de hoy →</div>
+  `;
+  todayCard.querySelector('.today-toggle').addEventListener('click', () => toggleDay(today.id));
+  app.appendChild(todayCard);
+
+  const grid = document.createElement('div');
+  grid.className = 'week-grid';
+  DAYS.forEach(day => {
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (day.tag ? ' ayuno' : '') + (openDayId === day.id ? ' open' : '');
+    chip.innerHTML = `
+      <div class="day-chip-name">${day.name.slice(0, 3)}</div>
+      <div class="day-chip-tag">${day.tag ? 'Ayuno' : day.sebMeals + ' comidas'}</div>
+    `;
+    chip.addEventListener('click', () => toggleDay(day.id));
+    grid.appendChild(chip);
+  });
+  app.appendChild(grid);
+
+  if (openDayId) {
+    const day = DAYS.find(d => d.id === openDayId);
+    const detailWrap = document.createElement('div');
+    detailWrap.innerHTML = renderDayDetail(day);
+    app.appendChild(detailWrap.firstElementChild);
+  }
+
+  const goalsPanel = document.createElement('div');
+  goalsPanel.className = 'panel';
+  goalsPanel.innerHTML = `
+    <div class="panel-title">Metas diarias</div>
+    <table class="goals-table">
+      <thead><tr><th>Quién</th><th class="num">Kcal</th><th class="num">Prot. (g)</th><th class="num">Fibra (g)</th></tr></thead>
+      <tbody>
+        ${GOALS.map(g => `<tr><td>${g.who}</td><td class="num">${g.kcal}</td><td class="num">${g.prot}</td><td class="num">${g.fib}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+  app.appendChild(goalsPanel);
+
+  const totalsPanel = document.createElement('div');
+  totalsPanel.className = 'panel';
+  totalsPanel.innerHTML = `
+    <div class="panel-title">Totales por día</div>
+    <table class="totals-table">
+      <thead><tr><th>Día</th><th class="num">Seb. kcal</th><th class="num">Seb. P</th><th class="num">Seb. F</th><th class="num">María kcal</th><th class="num">María P</th><th class="num">María F</th></tr></thead>
+      <tbody>
+        ${DAYS.map(d => `<tr><td>${d.name}</td><td class="num">${d.total.seb[0]}</td><td class="num">${d.total.seb[1]}</td><td class="num">${d.total.seb[2]}</td><td class="num">${d.total.maria[0]}</td><td class="num">${d.total.maria[1]}</td><td class="num">${d.total.maria[2]}</td></tr>`).join('')}
+        <tr class="meta-row"><td>Meta</td><td class="num">1,800–2,000</td><td class="num">155</td><td class="num">34–38</td><td class="num">1,600</td><td class="num">120</td><td class="num">28</td></tr>
+      </tbody>
+    </table>
+  `;
+  app.appendChild(totalsPanel);
+
+  const tipsPanel = document.createElement('div');
+  tipsPanel.className = 'panel';
+  tipsPanel.innerHTML = `<div class="panel-title">Pendientes y recomendaciones</div>`;
+  TIPS.forEach(t => {
+    const group = document.createElement('div');
+    group.className = 'tip-group';
+    group.innerHTML = `
+      <div class="tip-head">
+        <h3>${t.title}</h3>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 5 L16 12 L9 19"/></svg>
+      </div>
+      <div class="tip-body">${t.body}</div>
+    `;
+    group.querySelector('.tip-head').addEventListener('click', () => {
+      group.classList.toggle('open');
+    });
+    tipsPanel.appendChild(group);
+  });
+  app.appendChild(tipsPanel);
+
+  const footer = document.createElement('div');
+  footer.className = 'footer-disclaimer';
+  footer.textContent = 'Valores aproximados. No sustituye la guía de un médico o nutricionista.';
+  app.appendChild(footer);
+}
+
+const TIPS = [
+  {
+    title: 'Etiquetas usadas',
+    body: `<ul>
+      <li><b>Frijoles La Costeña:</b> 90 kcal, 5 g de proteína, 6 g de fibra y 390 mg de sodio por ½ taza (130 g). La lata trae unas 4.5 porciones (~580 g): entre los dos usan la lata completa, 380 g Sebastián y 200 g María, sin sobras. Los frijoles de lata llevan la mitad de calorías, proteína y fibra que los cocidos en casa, por eso las porciones son grandes.</li>
+      <li><b>Guacamole Yucatan:</b> un vasito de 57 g tiene 90 kcal, 1 g de proteína, 4 g de fibra y 265 mg de sodio.</li>
+      <li><b>Salsa pad thai Blue Dragon:</b> 100 kcal, 16 g de azúcar y 260 mg de sodio por ¼ de taza (66 g). El plan usa 2 cucharadas (33 g): 50 kcal, 8 g de azúcar y 130 mg de sodio. La etiqueta es de la versión de EE. UU.; la de Canadá puede variar un poco.</li>
+      <li><b>Pendiente:</b> la etiqueta de la carne molida extra magra. Se usó un estimado de 170 kcal y 21 g de proteína por 100 g crudo.</li>
+    </ul>`,
+  },
+  {
+    title: 'Sodio y retención de líquidos',
+    body: `<ul>
+      <li>Apunta a unos 2,000 a 2,300 mg de sodio al día. Lo que más suma en este horario: los frijoles de lata (780 mg en la porción de Sebastián), el guacamole (265 mg por vasito), el atún en lata, el hashbrown (220 mg por pieza) y el rice paper (115 mg por 2 hojas).</li>
+      <li>Enjuaga y escurre los frijoles: así baja bastante el sodio. En el día de Sebastián con más frijoles (domingo y miércoles) el sodio se acerca al límite si no se enjuagan.</li>
+      <li>No pongan sal en el bowl de atún y usen poca salsa. En los días de 2 comidas de Sebastián, que la comida grande no sea muy salada.</li>
+    </ul>`,
+  },
+  {
+    title: 'Si algo no convence',
+    body: `<ul>
+      <li><b>Ensalada Taylor Farms + salmon bites:</b> por el azúcar y el sodio de los bites (12 g de azúcar y 450 mg de sodio por porción), úsalos como mucho una vez por semana, media bolsa para cada uno, y échale la mitad del aderezo y de las tiras de pan. Podría reemplazar la comida de konjac del lunes o del miércoles.</li>
+      <li><b>Si se cansan del pollo:</b> cámbienlo por 150 g de pavo cocido (43 g de proteína), 150 g de camarón (36 g) o 150 g de pescado blanco (34 a 39 g), manteniendo los mismos acompañantes.</li>
+      <li><b>Proteína de María:</b> con estas porciones llega a 140 a 156 g al día, por encima de su meta de 120 g (hasta unos 136 g está dentro del rango de 2 g por kg). No es un problema, pero si quiere puede recortar 20 g de pollo o carne en alguna comida.</li>
+      <li><b>Si la comida grande de Sebastián es demasiado:</b> puede dejar el yogur de postre para más tarde, pero la proteína del día baja unos 25 g.</li>
+      <li><b>Proteína en polvo:</b> por ahora el plan no la incluye. Si más adelante Sebastián quiere probarla, 30 g de polvo con agua (unas 120 kcal y 24 g de proteína) reemplazan el yogur de postre de los martes, jueves, viernes y sábados.</li>
+    </ul>`,
+  },
+  {
+    title: 'Para cocinar menos',
+    body: `<ul>
+      <li>Hiervan los huevos del desayuno el domingo: aguantan 5 a 7 días en el refrigerador con cáscara.</li>
+      <li>Cocinen la proteína (carne y pollo) de los dos a la vez, pesando la porción de cada uno antes de cocinarla.</li>
+      <li>Las papas y camotes se pueden hornear en lote para dos o tres comidas.</li>
+    </ul>`,
+  },
+  {
+    title: 'Cómo seguir el progreso',
+    body: `Usen el promedio semanal del peso (en ayunas, a la misma hora), midan la cintura cada 1 o 2 semanas y tomen una foto cada 2 semanas. Tomen 2 a 2.5 litros de agua al día y caminen 8,000 a 10,000 pasos.`,
+  },
+];
+
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>

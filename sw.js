@@ -1,4 +1,28 @@
-const CACHE = 'app-v77';
+const CACHE = 'app-v78';
+// v78: app nueva, comidas.html — el horario semanal de comidas que el
+// usuario mandó en PDF (10 páginas, "Sebastián y María"), digitalizado como
+// página del sitio para acceso rápido desde el celular en vez de tener que
+// abrir el PDF. Es una referencia estática que se repite cada semana (no
+// hay fechas reales, solo días Dom-Sáb), así que no necesita localStorage
+// ni backend: toda la data (comidas, ingredientes con cantidades exactas,
+// macros por comida y por día, metas diarias de Sebastián/María, y los
+// consejos de la última página del PDF) vive hardcodeada en el <script> de
+// la página. Estructura: hero arriba, tarjeta "Hoy" que detecta el día
+// actual (new Date().getDay()) y muestra un resumen rápido, grilla de 7
+// días (acordeón: tocar un día lo expande con el detalle completo de
+// desayuno/almuerzo/cena/snack, ingredientes y macros), tabla de metas
+// diarias, tabla de totales por día, y un acordeón de 5 consejos
+// (etiquetas, sodio, qué hacer si algo no convence, cómo cocinar menos,
+// cómo seguir el progreso). Comidas que se repiten entre días (desayuno,
+// snack de María, combinaciones de almuerzo/cena) se factorizaron en
+// objetos de JS compartidos para no repetir la transcripción. Los totales
+// por día se validaron contra la tabla "Totales por día" del PDF — coinciden
+// en los 7 días salvo dos redondeos de 1 unidad que ya venían así en el PDF
+// original (no los "corregí", se dejaron igual que la fuente). Se agregó
+// comidas.html al precache de este archivo y una tarjeta nueva "Comidas"
+// (ícono de calendario, sin foto) en index.html. No toca ninguna otra
+// página ni el handler de fetch de este archivo.
+//
 // v77: fix chico de layout en golf.html — el usuario mandó screenshots
 // comparando golf.html (abierto en Chrome de escritorio) contra
 // snowboard.html y notó que golf se ve "muy abierto a toda la página"
@@ -663,6 +687,7 @@ const ASSETS = [
   './menu.html',
   './salud.html',
   './recetas.html',
+  './comidas.html',
   './ski.html',
   './snowboard.html',
   './nuevayork.html',
