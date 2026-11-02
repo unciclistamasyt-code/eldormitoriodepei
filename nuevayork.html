@@ -74,7 +74,7 @@
     animation: heroFadeUp 0.7s ease forwards; animation-delay: 0.15s;
   }
   .hero-logo { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: 0.2px; white-space: nowrap; }
-  .hero-menu { display: flex; align-items: center; gap: 26px; }
+  .hero-menu { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-end; max-width: 560px; }
   .hero-menu a { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.9); }
   .hero-home-btn {
     font-size: 14px; font-weight: 400; color: #fff;
@@ -206,6 +206,12 @@
     border-radius: 12px; padding: 10px 12px; margin-bottom: 14px;
   }
 
+  .subhead {
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--accent); margin: 18px 2px 8px;
+  }
+  .subhead:first-child { margin-top: 2px; }
+
   .card {
     background: var(--panel); border: 1px solid var(--line);
     border-radius: 16px; overflow: hidden; margin-bottom: 14px;
@@ -253,6 +259,11 @@
       <div class="hero-menu">
         <a href="#" data-hero-tab="imperdibles">Imperdibles</a>
         <a href="#" data-hero-tab="diciembre">Diciembre</a>
+        <a href="#" data-hero-tab="teatro">Teatro</a>
+        <a href="#" data-hero-tab="comida">Comida</a>
+        <a href="#" data-hero-tab="estatuas">Estatuas</a>
+        <a href="#" data-hero-tab="tours">Tours</a>
+        <a href="#" data-hero-tab="cine">Cine</a>
         <a href="#" data-hero-tab="gratis">Gratis</a>
         <a href="#" data-hero-tab="curiosidades">Curiosidades</a>
       </div>
@@ -266,6 +277,11 @@
       <button class="hero-mobile-close" id="heroMobileClose" aria-label="Cerrar menú">✕</button>
       <a href="#" data-hero-tab="imperdibles">Imperdibles</a>
       <a href="#" data-hero-tab="diciembre">Diciembre 🎄</a>
+      <a href="#" data-hero-tab="teatro">Teatro y shows</a>
+      <a href="#" data-hero-tab="comida">Comida</a>
+      <a href="#" data-hero-tab="estatuas">Estatuas</a>
+      <a href="#" data-hero-tab="tours">Tours</a>
+      <a href="#" data-hero-tab="cine">Cine</a>
       <a href="#" data-hero-tab="gratis">Gratis</a>
       <a href="#" data-hero-tab="curiosidades">Curiosidades</a>
       <a href="index.html">⌂ Inicio</a>
@@ -287,12 +303,17 @@
 
   <div class="hero">
     <h1>🗽 Nueva York en diciembre</h1>
-    <p>Imperdibles, cosas especiales de la temporada, gratis y curiosidades — para tu viaje. Fechas de eventos de temporada aproximadas: confírmalas cerca de tu viaje, cambian un poco cada año.</p>
+    <p>Imperdibles, teatro y shows, comida, estatuas, tours, cine, gratis y curiosidades — para tu semana en la ciudad. Fechas de eventos de temporada: las marcadas "confirmado" ya están anunciadas oficialmente para 2026; el resto son estimadas por el patrón de años anteriores — revísalas cerca de tu viaje.</p>
   </div>
 
   <div class="tabs" id="tabs">
     <button class="tabBtn active" data-tab="imperdibles">Imperdibles</button>
     <button class="tabBtn" data-tab="diciembre">Diciembre 🎄</button>
+    <button class="tabBtn" data-tab="teatro">Teatro y shows</button>
+    <button class="tabBtn" data-tab="comida">Comida</button>
+    <button class="tabBtn" data-tab="estatuas">Estatuas</button>
+    <button class="tabBtn" data-tab="tours">Tours</button>
+    <button class="tabBtn" data-tab="cine">Cine</button>
     <button class="tabBtn" data-tab="gratis">Gratis</button>
     <button class="tabBtn" data-tab="curiosidades">Curiosidades</button>
   </div>
@@ -306,7 +327,8 @@
       <div class="body">
         <h3>Estatua de la Libertad <span class="badge">Imperdible</span></h3>
         <p>Regalo de Francia a EE.UU. (1886). El ferry a Liberty Island/Ellis Island sale de Battery Park; hay que reservar boleto con anticipación, sobre todo en temporada alta.</p>
-        <div class="tip"><b>Tip gratis:</b> si no quieres pagar el ferry oficial, el Staten Island Ferry pasa justo al lado y es 100% gratis (ver pestaña Gratis).</div>
+        <div class="tip"><b>Precio:</b> Statue Cruises (ferry oficial) desde $25.50 adulto, entrada general sin pedestal/corona (ver más opciones de tour en la pestaña Tours).</div>
+        <div class="tip"><b>Tip gratis:</b> si no quieres pagar el ferry oficial, el Staten Island Ferry pasa justo al lado y es 100% gratis (ver pestaña Gratis o Tours).</div>
       </div>
     </div>
 
@@ -333,6 +355,7 @@
       <div class="body">
         <h3>Empire State Building <span class="badge">Imperdible</span></h3>
         <p>102 pisos, mirador icónico con vista 360° de Manhattan. Alternativas con vista similar o mejor: Top of the Rock (incluye la vista con el Empire State en el marco) y One World Observatory.</p>
+        <div class="tip"><b>Precios (desde, adulto):</b> Empire State $46 · Top of the Rock $40 · Edge (Hudson Yards) $42 · One World Observatory $39. Varían por fecha/hora — en diciembre suelen estar más altos. New York CityPASS/New York Pass puede salir más barato si piensas visitar varios.</div>
         <div class="tip"><b>Tip:</b> compra el boleto con horario asignado con anticipación — en diciembre hay más gente por vacaciones.</div>
       </div>
     </div>
@@ -367,16 +390,22 @@
 
   <!-- DICIEMBRE -->
   <div class="view" id="view-diciembre">
-    <div class="sectionNote">Cosas que solo pasan (o se ven mejor) en la temporada navideña. Las fechas exactas de encendidos/mercados cambian un poco cada año — confírmalas cerca de tu viaje.</div>
+    <div class="sectionNote">Cosas que solo pasan (o se ven mejor) en la temporada navideña. Las que dicen "confirmado" ya están anunciadas oficialmente para 2026; el resto son estimadas por el patrón de años anteriores.</div>
 
     <div class="card">
       <img src="icons/ny/rock.jpg" alt="Árbol de Rockefeller Center" loading="lazy" />
       <div class="body">
         <h3>Árbol de Rockefeller Center <span class="badge dec">Diciembre</span></h3>
-        <p>El árbol de Navidad más famoso de EE.UU., un abeto de 20-30 metros con miles de luces LED, junto a la pista de hielo y la estatua dorada de Prometeo.</p>
-        <div class="tip"><b>Cuándo:</b> el encendido es siempre el miércoles después de Acción de Gracias — en 2026 Acción de Gracias es el 26 de noviembre, así que el encendido debería ser el <b>miércoles 2 de diciembre de 2026</b> (verifica la fecha exacta cerca del viaje, a veces varía). El árbol se queda encendido hasta inicios de enero.</div>
-        <div class="warn">⚠ El día del encendido la zona se cierra por horas y hay muchísima gente — si solo quieres ver el árbol, ve otro día por la noche, se ve igual de bien y sin las multitudes.</div>
+        <p>El árbol de Navidad más famoso de EE.UU., un abeto de 20-30 metros con miles de luces LED, junto a la pista de hielo y la estatua dorada de Prometeo. Dirección: Rockefeller Plaza, entre la Calle 48 y la 51, Quinta Avenida.</p>
+        <div class="tip"><b>Cuándo (confirmado oficialmente):</b> el encendido es el <b>miércoles 2 de diciembre de 2026</b> — justo en tu semana de viaje. La hora exacta de la ceremonia (normalmente entre 7 y 9 pm, transmitida por NBC) todavía no se anuncia. El árbol se queda encendido hasta inicios de enero.</div>
+        <div class="warn">⚠ El día del encendido la zona se cierra por horas y hay muchísima gente — si solo quieres ver el árbol sin las multitudes, ve otro día de esa misma semana por la noche, se ve igual de bien.</div>
       </div>
+    </div>
+
+    <div class="card">
+      <h3>Encendido de la Menorá más grande del mundo <span class="badge dec">Diciembre</span></h3>
+      <p>Jánuca 2026 empieza al atardecer del <b>viernes 4 de diciembre</b> (fecha fija del calendario hebreo, alta confianza). Chabad enciende cada año, la primera noche, la "World's Largest Menorah" en Grand Army Plaza (Quinta Avenida y Calle 59, junto a la entrada de Central Park South) — tradición consistente desde hace décadas, patrón anual confirmado aunque el anuncio puntual de 2026 aún no aparece.</p>
+      <div class="tip"><b>Gratis:</b> es un evento público al aire libre, entrada libre.</div>
     </div>
 
     <div class="card">
@@ -384,8 +413,8 @@
       <div class="body">
         <h3>Bryant Park Winter Village <span class="badge dec">Diciembre</span></h3>
         <p>Mercado navideño con casetas de artesanías/comida alrededor de una pista de hielo, justo detrás de la Biblioteca Pública de NY (Bryant Park).</p>
-        <div class="tip"><b>Cuándo:</b> para la temporada 2026 abre el <b>23 de octubre de 2026</b> y las casetas funcionan hasta el <b>3 de enero de 2027</b>; la pista de hielo se queda hasta el <b>28 de febrero de 2027</b> — en diciembre lo vas a encontrar abierto sin problema.</div>
-        <div class="tip"><b>Gratis:</b> entrar al mercado y caminar es gratis, solo pagas si patinas (alquiler de patines) o compras algo.</div>
+        <div class="tip"><b>Cuándo (confirmado):</b> la edición 2026-2027 ya abrió el <b>23 de octubre de 2026</b> y se queda hasta el <b>1 de marzo de 2027</b> — en tu semana lo vas a encontrar abierto sin problema.</div>
+        <div class="tip"><b>Gratis:</b> entrar al mercado y caminar es gratis. La pista de hielo es la única de la ciudad con entrada gratuita (solo pagas si alquilas patines).</div>
       </div>
     </div>
 
@@ -394,8 +423,14 @@
       <div class="body">
         <h3>Union Square Holiday Market <span class="badge dec">Diciembre</span></h3>
         <p>Otro mercado navideño clásico de la ciudad, con más de 150 casetas de artesanos locales — buena opción para regalos hechos a mano.</p>
-        <div class="tip"><b>Cuándo:</b> normalmente corre desde mediados de noviembre hasta el 24 de diciembre. Confirma el horario exacto del día que quieras ir.</div>
+        <div class="tip"><b>Cuándo (estimado por patrón 2025):</b> suele correr desde mediados de noviembre hasta el 24 de diciembre — debería estar abierto toda tu semana, pero confirma el horario del día exacto que quieras ir.</div>
       </div>
+    </div>
+
+    <div class="card">
+      <h3>Columbus Circle Holiday Market <span class="badge dec">Diciembre</span></h3>
+      <p>Mercado navideño en la esquina suroeste de Central Park, con casetas de regalos y comida — más chico que Union Square/Bryant Park pero igual de bonito, y queda a un paso del Lincoln Center si vas al Nutcracker.</p>
+      <div class="tip"><b>Cuándo (estimado por patrón 2025):</b> suele correr del 2 al 31 de diciembre, dom-jue 11am-7pm y vie-sáb 10am-8pm — cubriría toda tu semana. Entrada gratis.</div>
     </div>
 
     <div class="card">
@@ -414,6 +449,272 @@
         <p>Barrio residencial en Brooklyn donde varias casas se decoran de forma exageradamente elaborada en diciembre (luces, inflables, hasta animatronics) — es una tradición del vecindario, no un evento oficial.</p>
         <div class="tip"><b>Tip:</b> mejor de noche. Queda algo lejos de Manhattan (~35-45 min en auto/Uber); hay tours organizados en bus si prefieres no manejar tú el trayecto.</div>
       </div>
+    </div>
+  </div>
+
+  <!-- TEATRO Y SHOWS -->
+  <div class="view" id="view-teatro">
+    <div class="sectionNote">Broadway, Rockettes, ballet y más — lo que hay en cartelera para tu semana. Los precios de Broadway cambian todos los días según demanda; los rangos de abajo son de referencia.</div>
+
+    <div class="card">
+      <h3>TKTS Booth — boletos de Broadway con descuento</h3>
+      <p>Cabina oficial de boletos con hasta 50% de descuento para la función del mismo día (o la matiné del día siguiente). Ubicación principal: Broadway y W 47th St, Times Square (también hay en South Street Seaport y Lincoln Center).</p>
+      <div class="tip"><b>Horario:</b> lun/mar/vie 3-8pm; miér/jue/sáb/dom 11am-8pm (puede variar en feriados, confirma ese día). Se paga con tarjeta o efectivo + cargo de servicio de $8 por boleto.</div>
+    </div>
+
+    <div class="card">
+      <h3>Broadway: qué hay en cartelera <span class="badge">Pago</span></h3>
+      <p>Musicales de larga duración, muy probablemente activos en diciembre 2026 (confirman calendario detallado ~6 meses antes del viaje):</p>
+      <p>
+        <b>Wicked</b> (Gershwin Theatre) — desde $119, promedio ~$230<br/>
+        <b>Hadestown</b> (Walter Kerr Theatre) — desde $104, promedio ~$298<br/>
+        <b>The Lion King</b> (Minskoff Theatre) — desde $178, promedio ~$340<br/>
+        <b>Chicago</b> (Ambassador Theatre) — desde $94, promedio ~$232<br/>
+        <b>MJ the Musical</b> (Neil Simon Theatre) — desde $137, promedio ~$349<br/>
+        <b>Aladdin</b> (New Amsterdam Theatre) — desde ~$70 (balcón) hasta ~$200<br/>
+        También suelen seguir activos: Hamilton, Moulin Rouge! y Six.
+      </p>
+      <div class="tip"><b>Tip:</b> Hamilton tiene su propia lotería diaria "Ham4Ham" por app — boletos a $10, se sortean el mismo día de la función.</div>
+    </div>
+
+    <div class="card">
+      <h3>Radio City Christmas Spectacular (Rockettes) <span class="badge dec">Diciembre</span></h3>
+      <p>El show navideño clásico de Nueva York, con las bailarinas Rockettes. Dirección: Radio City Music Hall, 1260 Avenue of the Americas.</p>
+      <div class="tip"><b>Cuándo (confirmado):</b> temporada 2026 del <b>4 de noviembre de 2026 al 4 de enero de 2027</b> — cubre toda tu semana. Precio desde $50 en taquilla / $55 online, premium bastante más caro.</div>
+    </div>
+
+    <div class="card">
+      <h3>The Nutcracker — New York City Ballet <span class="badge dec">Diciembre</span></h3>
+      <p>El ballet navideño clásico de George Balanchine, en escena desde 1954. Dirección: David H. Koch Theater, Lincoln Center.</p>
+      <div class="tip"><b>Cuándo:</b> hay función confirmada el <b>2 de diciembre de 2026</b>, dentro de una temporada que normalmente corre de fines de noviembre a inicios de enero. Precio: de $95 a $392, sin descuento disponible en TKTS para este show.</div>
+    </div>
+
+    <div class="card">
+      <h3>Otros shows navideños de la semana <span class="badge dec">Diciembre</span></h3>
+      <p>Patrón histórico (muy probable que se repitan, fechas exactas 2026 aún no confirmadas): <b>A Christmas Carol</b> en el Perelman Performing Arts Center · <b>Handel's Messiah</b> por la NY Philharmonic en David Geffen Hall (normalmente ~10-13 dic, puede caer justo al final o fuera de tu semana) · <b>Cirque du Soleil</b> con su show navideño en el Theater at Madison Square Garden · residencias navideñas de cabaret íntimo en 54 Below.</p>
+    </div>
+  </div>
+
+  <!-- COMIDA -->
+  <div class="view" id="view-comida">
+    <div class="sectionNote">Lo que se está poniendo viral en TikTok ahora mismo, más los clásicos de toda la vida que nunca fallan.</div>
+
+    <div class="subhead">🔥 Viral en TikTok ahora</div>
+
+    <div class="curioCard">
+      <h4><span class="em">🍰</span> Dot Cakes</h4>
+      <p>Mini cake individual (vainilla, chocolate, red velvet) con betún espeso — los videos ASMR de la cuchara rompiéndolo tienen millones de vistas. Butterfield Market, Upper East Side, venta miércoles y sábados 11am/1pm. ~$13 c/u, límite 2 por persona, se agota en horas.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🥐</span> Croissant Suprême</h4>
+      <p>Croissant espiral relleno (chocolate, pistacho, o sabor de temporada). Lafayette Grand Café &amp; Bakery, 380 Lafayette St, NoHo. ~$10 c/u, tandas limitadas a horarios fijos (8am/12pm/4pm) — filas de hasta una hora.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🥯</span> Pop Up Bagels</h4>
+      <p>Bagel "rip and dip": se parte con la mano y se moja en cream cheese en vez de rebanarlo. Greenwich Village (y varias sucursales más en la ciudad). ~$3-4 por bagel, abre 7am y suele agotarse hacia las 2pm.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🧀</span> Pasta de Pasta</h4>
+      <p>Pasta (cacio e pepe u otra, según el día) servida directo de una rueda de queso parmesano gigante — el efecto visual es lo que la hizo viral. 165 1st Ave, East Village. Menos de $10.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🍪</span> Levain Bakery</h4>
+      <p>La cookie de chocolate con nuez, gruesa (170g), sigue siendo la panadería #1 en encuestas de TikTok de NYC aunque ya no es "nueva". Original en 167 W 74th St, Upper West Side. ~$5-6 c/u.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🥞</span> Win Son Bakery</h4>
+      <p>Sándwich de panqueque de cebollín con tocino, huevo y queso — fusión taiwanesa-americana que se volvió viral como "el mejor sándwich de desayuno de NYC". Williamsburg / East Village, Brooklyn.</p>
+    </div>
+
+    <div class="subhead">🗽 Clásicos de toda la vida</div>
+
+    <div class="curioCard">
+      <h4><span class="em">🥪</span> Katz's Delicatessen — pastrami</h4>
+      <p>El sándwich de pastrami más famoso de la ciudad, desde 1888. 205 E Houston St, Lower East Side. ~$30 (alcanza para 2 personas). Ojo: no pierdas el ticket que te dan al entrar, hay multa de $50.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🍕</span> Joe's Pizza</h4>
+      <p>Slice clásico estilo NY, se dobla para comerlo. 7 Carmine St, Greenwich Village, desde 1975. $4.50 la porción. Aparece en películas como Spider-Man.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🥯</span> Ess-a-Bagel</h4>
+      <p>Bagel con lox y cream cheese (18 variedades caseras). 831 Third Ave, Midtown East, desde 1976. Bagel individual ~$3-4 (el lox sube el precio); docena ~$16.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🍰</span> Junior's Restaurant — cheesecake</h4>
+      <p>El cheesecake original de Nueva York, desde 1950. 386 Flatbush Ave Ext, Downtown Brooklyn. ~$8-9 por rebanada.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🧀</span> Chopped Cheese</h4>
+      <p>Carne molida, cebolla y queso americano picados en la plancha, en pan hero — símbolo de la cultura bodega de NY. Origen: Hajji's Deli, East Harlem. ~$5-8.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🌯</span> The Halal Guys</h4>
+      <p>Platter de pollo y gyro con arroz y salsa blanca/roja. Carrito original en 53rd St &amp; 6th Ave, Midtown, desde los 90s (hoy ya es cadena mundial). Combos desde ~$10-12.</p>
+    </div>
+  </div>
+
+  <!-- ESTATUAS -->
+  <div class="view" id="view-estatuas">
+    <div class="sectionNote">Más allá de la Estatua de la Libertad (ver Imperdibles) — todas son espacio público y gratis de visitar.</div>
+
+    <div class="curioCard">
+      <h4><span class="em">🐂</span> Charging Bull (El Toro de Wall Street)</h4>
+      <p>Bowling Green, Broadway, Distrito Financiero. El escultor Arturo Di Modica la instaló sin permiso de madrugada en 1989 como "regalo de Navidad" para la ciudad — sigue ahí bajo un permiso "temporal" hace más de 35 años.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">👧</span> Fearless Girl</h4>
+      <p>Broad Street, justo frente a la Bolsa de Nueva York (NYSE). Estuvo frente al Toro en 2017, pero se mudó a esta ubicación en diciembre de 2018 tras el reclamo del escultor del Toro.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🐇</span> Alice in Wonderland</h4>
+      <p>Central Park, lado norte de Conservatory Water, cerca de la Calle 76 y Quinta Avenida. Donada en 1959; los niños pueden subirse a ella.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🐕</span> Balto</h4>
+      <p>Central Park, cerca de la Calle 67. Homenajea al perro que lideró el relevo de trineos que llevó antídoto a Nome, Alaska, en 1925 — viajó en avión a Nueva York para la develación de su propia estatua ese mismo año.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🌐</span> Unisphere</h4>
+      <p>Flushing Meadows-Corona Park, Queens. Construida para la Feria Mundial de 1964: 43 metros de alto, unas 700,000 libras de peso.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">⛵</span> Cristóbal Colón</h4>
+      <p>Centro de Columbus Circle. Inaugurada en 1892; curiosamente las naves de bronce de la columna (que deberían ser la Niña, la Pinta y la Santa María) están talladas como galeras romanas.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🎩</span> George Washington</h4>
+      <p>Escalinata de Federal Hall, Wall Street. Marca aproximadamente el lugar donde Washington juró como primer presidente en 1789.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🔥</span> Prometeo</h4>
+      <p>Plaza baja de Rockefeller Center, junto a la pista de hielo. Estatua dorada de 1934; el modelo real fue un salvavidas ítalo-americano que posó durante tres meses.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🌍</span> Atlas</h4>
+      <p>Frente al Rockefeller Center, cruzando la Quinta Avenida de la Catedral de San Patricio. Instalada en 1937, mide 14 metros en total y pesa 6,400 kg.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">👩</span> Civic Fame</h4>
+      <p>En la cima del Manhattan Municipal Building, 1 Centre Street. Es la segunda estatua más alta de Manhattan después de la Libertad — en 1935 se le desprendió un brazo de bronce de 68 kg que cayó por un tragaluz hasta una cafetería del piso 26.</p>
+    </div>
+  </div>
+
+  <!-- TOURS -->
+  <div class="view" id="view-tours">
+    <div class="sectionNote">Para moverte y ver la ciudad desde otro ángulo — gratis (con propina) o pagos.</div>
+
+    <div class="card">
+      <h3>Free walking tours <span class="badge free">Propina</span></h3>
+      <p>Empresas como Free Tours by Foot operan bajo el modelo "paga lo que quieras" (propina al final, no son 100% gratis). Tours de Central Park, Greenwich Village, Wall Street/Financiero, Harlem, y versiones navideñas de luces (Midtown y Dyker Heights).</p>
+      <div class="tip"><b>Tip:</b> se reserva online con anticipación (cancelación gratis con 24h de aviso). Propina sugerida en la industria: $10-20 por persona.</div>
+    </div>
+
+    <div class="card">
+      <h3>Circle Line Sightseeing Cruises <span class="badge">Pago</span></h3>
+      <p>Tours en barco alrededor de Manhattan, salen de Pier 83 (W 42nd St).</p>
+      <div class="tip"><b>Precios:</b> Statue of Liberty Cruise (1h) desde $29 · Landmarks Cruise (1.5h) desde $41 · Harbor Lights nocturno (2h) desde $44 · vuelta completa a Manhattan (2.5h) desde $49. Niños menores de 3 gratis.</div>
+    </div>
+
+    <div class="card">
+      <h3>Statue Cruises — ferry oficial a la Libertad/Ellis Island <span class="badge">Pago</span></h3>
+      <p>El único ferry autorizado para desembarcar en Liberty Island y Ellis Island.</p>
+      <div class="tip"><b>Precio:</b> $25.50 adulto, $22.50 adulto mayor (62+), $16.50 niño (4-12), gratis menores de 4.</div>
+    </div>
+
+    <div class="card">
+      <h3>Staten Island Ferry <span class="badge free">100% gratis</span></h3>
+      <p>Sigue siendo totalmente gratis, 24 horas los 365 días del año. Pasa muy cerca de la Estatua de la Libertad — la mejor vista gratuita que existe (ver también en la pestaña Gratis).</p>
+    </div>
+
+    <div class="card">
+      <h3>Helicóptero sobre Manhattan <span class="badge">Pago</span></h3>
+      <p>Tours cortos compartidos (12-20 min) desde ~$159-300; versiones "deluxe" más largas (25-30 min) desde ~$389-434; privados desde $700-1,500+.</p>
+    </div>
+
+    <div class="card">
+      <h3>Big Bus — hop-on-hop-off <span class="badge">Pago</span></h3>
+      <p>Bus turístico de dos pisos con paradas libres en los puntos principales.</p>
+      <div class="tip"><b>Precios:</b> 3h "Taster" ~$43 · 24h ~$53 · 48h (2 circuitos) ~$62 · 72h + tour de Brooklyn ~$89. Hay combos con Empire State + ferry de la Libertad desde $135.</div>
+    </div>
+
+    <div class="card">
+      <h3>Bicicleta en Central Park <span class="badge">Pago</span></h3>
+      <p>Alquiler simple desde ~$17.50-25 (sin límite de tiempo claro); tour guiado narrado de 2h desde ~$40-45.</p>
+    </div>
+
+    <div class="card">
+      <h3>Food tour en Chinatown / Little Italy <span class="badge">Pago o propina</span></h3>
+      <p>Versión "paga lo que quieras" de ~2h con paradas de comida (bollos de cerdo, dumplings fritos, bubble tea, pizza, cannoli) por Free Tours by Foot, o versiones pagadas de empresas de food tours que suelen rondar $65-75 por persona con 6-7 degustaciones.</p>
+    </div>
+  </div>
+
+  <!-- CINE -->
+  <div class="view" id="view-cine">
+    <div class="sectionNote">Lugares reales de la ciudad donde se filmaron escenas icónicas — todos se pueden ver gratis desde afuera.</div>
+
+    <div class="curioCard">
+      <h4><span class="em">🎬</span> Friends</h4>
+      <p>El edificio del exterior icónico del departamento: 90 Bedford Street, esquina con Grove St, Greenwich Village. Es un edificio residencial privado, solo se ve desde afuera.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🎄</span> Home Alone 2: Lost in New York</h4>
+      <p>Plaza Hotel, 768 Fifth Avenue (entre las calles 58 y 59). Ahí Kevin se registra con la tarjeta de su padre y pide el "sundae buffet" por room service. El lobby es de acceso público.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🧝</span> Elf</h4>
+      <p>Rockefeller Center, 45 Rockefeller Plaza — ahí Buddy el duende patina dando vueltas en la pista de hielo (la misma del árbol de Navidad).</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">👻</span> Ghostbusters</h4>
+      <p>El cuartel exterior: Hook &amp; Ladder 8, 14 North Moore Street, Tribeca — es un cuartel de bomberos activo del FDNY, se ve gratis desde afuera.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">💎</span> Breakfast at Tiffany's</h4>
+      <p>Tiffany &amp; Co., 727 Fifth Avenue — interior y exterior reales de la película de 1961. El piso 5 tiene memorabilia de la película, entrar a la tienda es gratis.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">👠</span> Gossip Girl</h4>
+      <p>Las escalinatas del Met, 1000 Fifth Avenue — punto de encuentro de los personajes en la serie. Sentarse ahí es gratis (entrar al museo tiene costo).</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🏙️</span> Sex and the City</h4>
+      <p>El edificio de Carrie Bradshaw: 64 Perry Street, West Village — es la fachada real usada para el rodaje (en la serie su dirección ficticia era otra calle). Residencia privada, solo se ve desde la vereda.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🕸️</span> Spider-Man: No Way Home</h4>
+      <p>Peter Pan Donut &amp; Pastry Shop, 727 Manhattan Avenue, Greenpoint, Brooklyn — panadería real en funcionamiento, se puede visitar y comprar.</p>
+    </div>
+
+    <div class="curioCard">
+      <h4><span class="em">🏛️</span> When Harry Met Sally</h4>
+      <p>Washington Square Park (la escena de la despedida con el arco de fondo) y Katz's Delicatessen, 205 E Houston St — ahí se filmó la icónica escena del "orgasmo falso" en una mesa marcada hoy con un cartel.</p>
     </div>
   </div>
 
@@ -465,9 +766,9 @@
     <div class="card">
       <img src="icons/ny/bryant.jpg" alt="MoMA y museos" loading="lazy" />
       <div class="body">
-        <h3>MoMA — viernes gratis por la tarde <span class="badge free">Gratis (con condición)</span></h3>
-        <p>El MoMA ofrece entrada gratuita los viernes por la tarde (patrocinado por UNIQLO), normalmente de 5:30 pm a 8:30 pm.</p>
-        <div class="warn">⚠ Suele requerir reservar el boleto gratis en línea con anticipación porque se llena rápido — revisa el sitio oficial del MoMA antes de ir, el horario puede variar en diciembre.</div>
+        <h3>MoMA — primer viernes del mes <span class="badge free">Gratis (con condición)</span></h3>
+        <p>UNIQLO Free Friday Nights: el MoMA es gratis el primer viernes de cada mes, de 4 a 8 pm. En diciembre de 2026 ese día es el <b>viernes 4 de diciembre</b> — justo en tu semana.</p>
+        <div class="warn">⚠ Solo aplica para residentes del estado de Nueva York (hasta 2 adultos, con comprobante de residencia) y requiere reservar cupo en línea con anticipación, se llena rápido. Si no son residentes, probablemente no califiquen — confirma en moma.org cerca de la fecha. El ticket normal del MoMA es $30.</div>
       </div>
     </div>
 

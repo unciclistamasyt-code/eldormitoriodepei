@@ -1,4 +1,58 @@
-const CACHE = 'app-v78';
+const CACHE = 'app-v79';
+// v79: nuevayork.html — ampliación grande pedida por el usuario ("quiero
+// agregar mucha información de cosas que hacer en Nueva York... teatro,
+// shows, comida, estatuas, espectáculos, eventos gratis, tours, todo lo
+// que se te ocurra"). Se investigó cada dato con WebSearch antes de
+// escribirlo (no de memoria) y se marcó explícitamente qué está
+// "confirmado oficialmente para 2026" vs. "estimado por patrón de años
+// anteriores" en cada caso. Cambios:
+// - 5 pestañas nuevas en la barra de tabs y en los dos menús del hero de
+//   video (desktop y móvil): Teatro y shows, Comida, Estatuas, Tours,
+//   Cine — además de las 4 que ya existían (Imperdibles, Diciembre,
+//   Gratis, Curiosidades). .hero-menu se puso flex-wrap:wrap con menos
+//   gap para que entren los 9 links en pantallas de escritorio normales.
+// - Teatro y shows: TKTS booth (horarios/descuento), precios actuales de
+//   Wicked/Hadestown/The Lion King/Chicago/MJ the Musical/Aladdin, lotería
+//   Ham4Ham de Hamilton ($10), Radio City Christmas Spectacular (temporada
+//   2026 confirmada: 4 nov 2026 - 4 ene 2027), The Nutcracker de NYC
+//   Ballet (función confirmada el 2 dic 2026), y otros shows navideños de
+//   patrón histórico (A Christmas Carol, Handel's Messiah, Cirque du
+//   Soleil, 54 Below).
+// - Comida: sección "viral en TikTok ahora" (Dot Cakes, Croissant Suprême,
+//   Pop Up Bagels, Pasta de Pasta, Levain Bakery, Win Son Bakery) y
+//   "clásicos de toda la vida" (Katz's, Joe's Pizza, Ess-a-Bagel, Junior's
+//   cheesecake, chopped cheese, Halal Guys) — cada uno con dirección y
+//   precio aproximado. Se agregó la clase CSS .subhead para los
+//   subtítulos de sección dentro de una pestaña.
+// - Estatuas: 10 estatuas/monumentos más allá de la Libertad (Charging
+//   Bull, Fearless Girl, Alice in Wonderland, Balto, Unisphere, Colón,
+//   Washington, Prometeo, Atlas, Civic Fame) con ubicación y dato curioso.
+// - Tours: free walking tours, Circle Line, Statue Cruises, Staten Island
+//   Ferry, helicóptero, Big Bus, bici en Central Park, food tour — con
+//   precios aproximados 2025/2026.
+// - Cine: 9 locaciones reales de rodaje con dirección exacta (Friends,
+//   Home Alone 2, Elf, Ghostbusters, Breakfast at Tiffany's, Gossip Girl,
+//   Sex and the City, Spider-Man: No Way Home, When Harry Met Sally).
+// - Diciembre: el encendido del árbol de Rockefeller ya no dice
+//   "estimado" — está CONFIRMADO oficialmente para el miércoles 2 de
+//   diciembre de 2026. Se agregó el encendido de la Menorá más grande del
+//   mundo en Grand Army Plaza (primera noche de Jánuca, viernes 4 de
+//   diciembre de 2026) y el Columbus Circle Holiday Market. Bryant Park
+//   Winter Village actualizado con la fecha confirmada de cierre (1 de
+//   marzo de 2027).
+// - Gratis: la tarjeta de MoMA se actualizó con el dato preciso (primer
+//   viernes del mes, 4-8pm, cae el 4 de diciembre de 2026 — pero solo
+//   aplica a residentes de NY con reserva previa).
+// - Imperdibles: se agregaron precios aproximados (Empire State $46, Top
+//   of the Rock $40, Edge $42, One World $39, ferry a la Libertad $25.50)
+//   directamente en las tarjetas de Empire State Building y Estatua de la
+//   Libertad que ya existían.
+// No se tocó el hero de video, la navegación con index.html, ni ninguna
+// otra página del sitio. No se agregaron fotos nuevas para las pestañas
+// nuevas (se usó el mismo estilo de tarjeta sin imagen / curioCard de
+// texto que ya usaba la pestaña Curiosidades) para evitar repetir los
+// problemas de calidad de imagen ya documentados en este mismo archivo.
+//
 // v78: app nueva, comidas.html — el horario semanal de comidas que el
 // usuario mandó en PDF (10 páginas, "Sebastián y María"), digitalizado como
 // página del sitio para acceso rápido desde el celular en vez de tener que
