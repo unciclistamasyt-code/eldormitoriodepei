@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T14:49:58.240905+00:00",
+  "generated_at": "2026-11-02T15:50:00.627481+00:00",
   "goal_weight": 81.2,
   "start_weight": 102.0,
   "weight_unit": "kg",
@@ -1888,17 +1888,17 @@
     },
     {
       "date": "2026-11-01",
-      "weight": null,
-      "weight_unit": null,
-      "goal_weight": null,
-      "start_weight": null,
-      "food_calories": null,
-      "exercise_calories_loseit": null,
-      "calorie_budget": null,
-      "net_calories": null,
-      "nothing_logged": null,
+      "weight": 93.2,
+      "weight_unit": "kg",
+      "goal_weight": 81.2,
+      "start_weight": 102.0,
+      "food_calories": 1445.0,
+      "exercise_calories_loseit": 0.0,
+      "calorie_budget": 2249.0,
+      "net_calories": 1445.0,
+      "nothing_logged": false,
       "steps": 617,
-      "steps_goal": null,
+      "steps_goal": 3039.0,
       "calories_total_garmin": 128.0,
       "calories_active_garmin": 16.0,
       "resting_heart_rate": 59,
@@ -1908,7 +1908,14 @@
       "activity_minutes": 0,
       "activity_count": 0,
       "activities_by_type": {},
-      "food_macros": null
+      "food_macros": {
+        "protein_g": 130.7,
+        "carbs_g": 87.4,
+        "fat_g": 69.8,
+        "sugar_g": 19.0,
+        "fiber_g": 18.4,
+        "sodium_mg": 972.3
+      }
     },
     {
       "date": "2026-11-02",
