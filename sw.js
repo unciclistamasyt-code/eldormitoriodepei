@@ -1,4 +1,50 @@
-const CACHE = 'app-v83';
+const CACHE = 'app-v86';
+// v86: clima.html — el usuario mandó la 10ª y última foto que faltaba
+// (la chaqueta Patagonia Retro-X, para "sudadera o fleece" / capa
+// media), procesada igual que las otras 9 (recorte + contorno blanco
+// tipo sticker, ver changelog de v85). Caso particular: esta prenda es
+// clara (crema) sobre un fondo también claro, a diferencia de las
+// prendas negras de las otras 9 fotos — igual se recortó limpio porque
+// el fondo real es muy uniforme (~240-244 de brillo) y la tela, aunque
+// clara, tiene textura de borrego con sombras que la mantienen por
+// debajo del umbral en casi toda su superficie. Con esto, las 11
+// prendas pedidas originalmente ya tienen foto real (bufanda fue
+// retirada a pedido del usuario, no cuenta). Se agregó
+// icons/clima/hoodie.png al precache de este archivo.
+// v85: clima.html — el usuario pidió (verbatim) "quiero algo asi para
+// todas las imagenes" mandando un ejemplo de camiseta con el fondo
+// quitado y un borde/contorno blanco tipo "sticker" (fondo transparente
+// a cuadros). Las 9 fotos que ya estaban en icons/clima/ (como JPEG con
+// fondo blanco de estudio, sin quitar) se reprocesaron a PNG con
+// transparencia real + ese mismo contorno blanco. Como este sandbox no
+// tiene salida de red hacia el modelo de IA que ya usa ropa.html para
+// esto (@imgly/background-removal descarga sus pesos desde
+// staticimgly.com, bloqueado por el proxy del entorno — confirmado con
+// curl), se usó en su lugar un recorte clásico con OpenCV: umbral de
+// brillo (las 9 fotos son todas estudio sobre blanco/crema) + flood
+// fill sobre esa máscara binaria (no sobre el color crudo) para que el
+// fondo solo se quite si está conectado al borde de la imagen —
+// un reflejo brillante aislado en tela negra (como pasó con la chaqueta
+// rompevientos, que con un primer intento de flood fill por color salió
+// toda perforada) nunca se confunde con fondo real porque no está
+// conectado a él. Luego un contorno blanco se arma dilatando la
+// silueta final. Las 9 imágenes se guardaron más chicas y con paleta
+// reducida (260x260, PNG indexado) para no pesar el precache — de
+// ~605KB a ~73KB en total.
+// Las tarjetas de capas y los chips de accesorios pasaron de círculo a
+// cuadrado redondeado (el círculo recortaba el contorno blanco de forma
+// despareja en prendas no centradas, como el paraguas o la capucha de
+// la chaqueta) — esto no afecta a "hoodie" (capa media), que sigue sin
+// foto y se ve con su ícono SVG de siempre dentro del mismo cuadro.
+// v84: clima.html — el usuario pidió (verbatim) "tambien quiero sensacion
+// termica". Antes el número grande del héroe ya era la sensación
+// térmica pero sin decirlo; ahora el número grande vuelve a ser la
+// temperatura real del aire (temperature_2m) y se agregó una línea
+// aparte, claramente rotulada "Sensación térmica X°C" (apparent_
+// temperature), debajo de la condición. Las reglas de capas siguen
+// calculándose con la sensación térmica (feelsLike), como ya era antes
+// — solo cambió qué se muestra en pantalla, no la lógica de qué ropa
+// sugerir. No se tocó ningún otro archivo.
 // v83: clima.html — el usuario mandó fotos reales (9) para reemplazar los
 // íconos SVG genéricos de las prendas de las tarjetas de capas y los
 // chips de accesorios: camiseta manga corta, camiseta térmica, chaqueta
@@ -847,15 +893,16 @@ const ASSETS = [
   './snowboard.html',
   './nuevayork.html',
   './clima.html',
-  './icons/clima/tshirt.jpg',
-  './icons/clima/thermal.jpg',
-  './icons/clima/puffer.jpg',
-  './icons/clima/shell.jpg',
-  './icons/clima/sunglasses.jpg',
-  './icons/clima/cap.jpg',
-  './icons/clima/beanie.jpg',
-  './icons/clima/gloves.jpg',
-  './icons/clima/umbrella.jpg',
+  './icons/clima/tshirt.png',
+  './icons/clima/hoodie.png',
+  './icons/clima/thermal.png',
+  './icons/clima/puffer.png',
+  './icons/clima/shell.png',
+  './icons/clima/sunglasses.png',
+  './icons/clima/cap.png',
+  './icons/clima/beanie.png',
+  './icons/clima/gloves.png',
+  './icons/clima/umbrella.png',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',

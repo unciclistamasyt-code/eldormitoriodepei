@@ -194,10 +194,10 @@
   }
   .layerCard.sel { border-color: var(--clima); }
   .layerCard .ic {
-    width: 46px;
-    height: 46px;
+    width: 58px;
+    height: 58px;
     margin: 0 auto 8px;
-    border-radius: 50%;
+    border-radius: 18px;
     background: var(--clima-soft);
     display: flex;
     align-items: center;
@@ -238,7 +238,7 @@
     background: var(--bg-soft);
   }
   .accessoryChip svg { width: 16px; height: 16px; stroke: var(--clima); fill: none; stroke-width: 1.6; }
-  .chipIc { width: 20px; height: 20px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--clima-soft); }
+  .chipIc { width: 24px; height: 24px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--clima-soft); }
   .chipIc svg { width: 14px; height: 14px; }
   .chipIc img { width: 100%; height: 100%; object-fit: cover; }
   .accessoryNone { font-size: 12.5px; color: var(--text-dim); margin-bottom: 20px; }
@@ -305,19 +305,20 @@ function svgIcon(key, extra) {
 }
 
 /* Fotos reales de las prendas (el usuario las mandó para reemplazar el
-   ícono SVG genérico). Si una prenda no tiene foto todavía (por ahora,
-   "hoodie" — capa media), se sigue usando el ícono SVG como respaldo,
-   así que agregar o quitar una foto nunca rompe nada. */
+   ícono SVG genérico). Si alguna prenda se queda sin foto en el futuro,
+   se sigue usando el ícono SVG como respaldo automáticamente — agregar
+   o quitar una foto de este mapa nunca rompe nada. */
 const PHOTO_ICONS = {
-  tshirt: 'icons/clima/tshirt.jpg',
-  thermal: 'icons/clima/thermal.jpg',
-  puffer: 'icons/clima/puffer.jpg',
-  shell: 'icons/clima/shell.jpg',
-  sunglasses: 'icons/clima/sunglasses.jpg',
-  cap: 'icons/clima/cap.jpg',
-  beanie: 'icons/clima/beanie.jpg',
-  gloves: 'icons/clima/gloves.jpg',
-  umbrella: 'icons/clima/umbrella.jpg'
+  tshirt: 'icons/clima/tshirt.png',
+  thermal: 'icons/clima/thermal.png',
+  hoodie: 'icons/clima/hoodie.png',
+  puffer: 'icons/clima/puffer.png',
+  shell: 'icons/clima/shell.png',
+  sunglasses: 'icons/clima/sunglasses.png',
+  cap: 'icons/clima/cap.png',
+  beanie: 'icons/clima/beanie.png',
+  gloves: 'icons/clima/gloves.png',
+  umbrella: 'icons/clima/umbrella.png'
 };
 function iconMedia(key, alt) {
   if (PHOTO_ICONS[key]) {
