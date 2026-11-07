@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>&nbsp;</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0a0a0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content=" " />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+<style>
+  .screen { max-width: 760px; margin: 0 auto; }
+
+  :root {
+    --clima: #5aa7e0;
+    --clima-soft: rgba(90,167,224,0.14);
+  }
+
+  .refreshBtn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.55;
+    transition: opacity 0.15s ease, transform 0.4s ease;
+  }
+  .refreshBtn:active { opacity: 1; }
+  .refreshBtn svg { width: 19px; height: 19px; }
+  .refreshBtn.spinning svg { animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- Hero ---- */
+  .hero {
+    border-radius: 22px;
+    padding: 22px 20px 20px;
+    margin-bottom: 18px;
+    background: linear-gradient(160deg, var(--heroA, #16324a), var(--heroB, #0a0a0c));
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero .eyebrow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    gap: 10px;
+  }
+  .hero .eyebrow .loc {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .hero .eyebrow .when { flex-shrink: 0; }
+  .hero .tempRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .hero .tempRow svg {
+    width: 58px;
+    height: 58px;
+    stroke: var(--clima);
+    fill: none;
+    stroke-width: 1.4;
+    flex-shrink: 0;
+  }
+  .hero .tempBlock { min-width: 0; }
+  .hero .temp {
+    font-size: 54px;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .hero .cond {
+    margin-top: 2px;
+    font-size: 14px;
+    color: var(--text-dim);
+    text-transform: capitalize;
+  }
+  .hero .minmax {
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 16px;
+  }
+  .hero .minmax b { color: var(--text); font-weight: 600; }
+
+  .heroSkeleton .temp, .heroSkeleton .cond { opacity: 0.3; }
+
+  /* ---- Status / ubicación ---- */
+  .statusBar {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 14px;
+    margin-bottom: 16px;
+  }
+  .statusBar.err { color: #e0a05a; border-color: rgba(224,160,90,0.35); }
+  .statusLinks {
+    text-align: center;
+    margin-top: -6px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 12px;
+  }
+  .statusLinks button { color: var(--clima); text-decoration: underline; }
+
+  .manualSearch { margin-bottom: 18px; }
+  .manualSearch .row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .manualSearch input {
+    flex: 1;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 11px 13px;
+    outline: none;
+  }
+  .manualSearch input::placeholder { color: var(--text-dim); }
+  .manualSearch .goBtn {
+    width: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .manualSearch .goBtn svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 1.6; }
+  .manualResults { display: flex; flex-direction: column; gap: 6px; }
+  .manualResult {
+    text-align: left;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13.5px;
+    background: var(--bg-soft);
+  }
+  .manualResult .name { font-weight: 600; }
+  .manualResult .sub { color: var(--text-dim); font-size: 12px; margin-top: 1px; }
+
+  .sectionTitle {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 4px 0 10px;
+  }
+
+  /* ---- Capas ---- */
+  .layersScroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    margin-bottom: 14px;
+  }
+  .layerCard {
+    flex-shrink: 0;
+    width: 128px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px 10px 12px;
+    background: var(--bg-soft);
+    text-align: center;
+    transition: border-color 0.15s ease;
+  }
+  .layerCard.sel { border-color: var(--clima); }
+  .layerCard .ic {
+    width: 46px;
+    height: 46px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background: var(--clima-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .layerCard .ic svg { width: 26px; height: 26px; stroke: var(--clima); fill: none; stroke-width: 1.5; }
+  .layerCard.skip .ic { background: var(--bg); }
+  .layerCard.skip .ic svg { stroke: var(--text-dim); opacity: 0.5; }
+  .layerCard .slot { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-dim); margin-bottom: 4px; }
+  .layerCard .item { font-size: 12.5px; font-weight: 600; line-height: 1.25; }
+  .layerCard.skip .item { color: var(--text-dim); font-weight: 400; font-size: 11.5px; }
+  .layerCard .chev { margin-top: 8px; opacity: 0.4; }
+  .layerCard .chev svg { width: 12px; height: 12px; stroke: var(--text-dim); fill: none; stroke-width: 1.6; }
+
+  .detailPanel {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    background: var(--bg-soft);
+  }
+  .detailPanel .dTitle { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .detailPanel .dWhy { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .detailPanel .dClose { margin-top: 10px; font-size: 12px; color: var(--clima); }
+
+  .accessoryRow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .accessoryChip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 12px 7px 8px;
+    font-size: 12.5px;
+    background: var(--bg-soft);
+  }
+  .accessoryChip svg { width: 16px; height: 16px; stroke: var(--clima); fill: none; stroke-width: 1.6; }
+  .accessoryNone { font-size: 12.5px; color: var(--text-dim); margin-bottom: 20px; }
+
+  .footer-disclaimer {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="topbar">
+      <a class="back" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5 L8 12 L15 19"/></svg>
+      </a>
+      <div class="spacer"></div>
+      <button class="refreshBtn" id="refreshBtn" aria-label="Actualizar ubicación"></button>
+    </div>
+    <div id="app" class="fade-in"></div>
+  </div>
+
+<script>
+/* ======================================================================
+   clima.html — clima automático + sugerencia de ropa por capas.
+   Usa Open-Meteo (gratis, sin API key) para el pronóstico y la
+   geolocalización del navegador para detectar dónde está el usuario sin
+   que tenga que escribir nada. Si la ubicación falla o se niega, se
+   ofrece buscar la ciudad a mano (Open-Meteo Geocoding).
+   ====================================================================== */
+
+/* ---------------- Iconos (SVG propios, trazo simple) ---------------- */
+const ICONS = {
+  refresh: '<path d="M4 4v6h6"/><path d="M20 20v-6h-6"/><path d="M4.5 15a8 8 0 0 0 14.6 3M19.5 9A8 8 0 0 0 4.9 6"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/>',
+  chev: '<path d="M9 5l6 7-6 7"/>',
+
+  tshirt: '<path d="M8 4L4.5 6.5 6.5 10 8 8.8V20h8V8.8L17.5 10 19.5 6.5 16 4c-1 1.5-2.5 2.3-4 2.3S9 5.5 8 4Z"/>',
+  thermal: '<path d="M8 4 3.5 7 5 11 7 9.5V20h2V11h6v9h2V9.5L19 11l1.5-4L16 4c-1 1.5-2.5 2.3-4 2.3S9 5.5 8 4Z"/>',
+  hoodie: '<path d="M9 3c0 2 1.3 3 3 3s3-1 3-3M8 5 4 8l2 3 1.5-1.2V20h9V9.8L18 11l2-3-4-3c-1 1.5-2.5 2.3-4 2.3S9 6.5 8 5Z"/><path d="M9.5 13h5"/>',
+  puffer: '<path d="M9 3.3C9 5.2 10.3 6.6 12 6.6S15 5.2 15 3.3M8.3 5L4.5 7.7 6.3 11 8 9.7V20H16V9.7L17.7 11 19.5 7.7 15.7 5C15.7 5 14.3 6.6 12 6.6S8.3 5 8.3 5Z"/><path d="M6 11.5H18M6 14.8H18M6 18H18"/>',
+  shell: '<path d="M12 3c-1.7 0-2.7 1.2-2.7 1.2L4.5 7 6.5 10.5 8 9V20h8V9l1.5 1.5 2-3.5-4.8-2.8S13.7 3 12 3Z"/><path d="M12 6v14"/>',
+
+  sunglasses: '<path d="M3 10h5.2c.9 0 1.6.7 1.6 1.6V13c0 1.2-1 2.2-2.2 2.2H6.4C5.1 15.2 4 14.1 4 12.8"/><path d="M21 10h-5.2c-.9 0-1.6.7-1.6 1.6V13c0 1.2 1 2.2 2.2 2.2h1.2c1.3 0 2.4-1.1 2.4-2.4"/><path d="M9.8 11.5h4.4M3 10l-1.5-.8M21 10l1.5-.8"/>',
+  cap: '<path d="M4 15.5C4 10.5 7.5 7 12 7s8 3.5 8 8.5H4Z"/><path d="M4 15.5h16v.7c0 1-.8 1.8-1.8 1.8H5.8C4.8 18 4 17.2 4 16.2v-.7Z"/><path d="M20 15.3 23 14.6"/>',
+  beanie: '<path d="M5 14.3C5 9.7 8.1 6.5 12 6.5s7 3.2 7 7.8H5Z"/><path d="M5 14.3h14V17c0 .8-.7 1.5-1.5 1.5h-11C5.7 18.5 5 17.8 5 17v-2.7Z"/><circle cx="12" cy="4.8" r="1.3"/>',
+  gloves: '<path d="M8 11.5V7.3C8 6.1 8.9 5.2 10 5.2s2 .9 2 2.1v3.6M12 9.3V6.6c0-1.1.8-1.9 1.8-1.9s1.8.8 1.8 1.9v5.4c0 3.2-2.1 5.8-4.8 5.8H9.6c-2.2 0-4-1.8-4-4v-2.7c0-1 .8-1.8 1.8-1.8.4 0 .8.1 1.1.4"/>',
+  scarf: '<path d="M4 8c2 1.3 5 2 8 2s6-.7 8-2"/><path d="M12 10v7c0 1 .8 1.8 1.8 1.8S15.6 18 15.6 17v-2"/>',
+  umbrella: '<path d="M3 12.5C3 7.8 7 4.5 12 4.5s9 3.3 9 8H3Z"/><path d="M12 4.5V18c0 1.4-1.1 2.5-2.4 2.5-.9 0-1.7-.5-2.1-1.2"/><path d="M3 12.5 5 11.6M21 12.5 19 11.6M12 12.5 10 11.6M12 12.5 14 11.6"/>',
+
+  sun: '<circle cx="12" cy="12" r="4.3"/><path d="M12 3.5v2.3M12 18.2v2.3M4.3 12h2.3M17.4 12h2.3M6.3 6.3l1.6 1.6M16.1 16.1l1.6 1.6M6.3 17.7l1.6-1.6M16.1 7.9l1.6-1.6"/>',
+  partly: '<path d="M9 8.3C9.2 6 11.1 4.2 13.5 4.2c2.2 0 4 1.5 4.4 3.6"/><path d="M6.8 19.5h10.6c1.9 0 3.5-1.5 3.5-3.4 0-1.9-1.6-3.4-3.5-3.4-.2 0-.4 0-.6.1-.6-2.2-2.6-3.8-5-3.8-2.9 0-5.2 2.3-5.3 5.1-1.7.3-3 1.7-3 3.4 0 1.9 1.6 3.4 3.3 3.4Z"/>',
+  cloud: '<path d="M6.5 17.3C4 17.3 2 15.3 2 12.9c0-2.2 1.6-4.1 3.8-4.4C6.5 5.6 9.1 3.6 12.2 3.6c3.4 0 6.2 2.6 6.5 5.9 1.9.3 3.3 2 3.3 4 0 2.2-1.8 3.9-4 3.9H6.5Z"/>',
+  rain: '<path d="M6.5 17.3C4 17.3 2 15.3 2 12.9c0-2.2 1.6-4.1 3.8-4.4C6.5 5.6 9.1 3.6 12.2 3.6c3.4 0 6.2 2.6 6.5 5.9 1.9.3 3.3 2 3.3 4 0 2.2-1.8 3.9-4 3.9H6.5Z"/><path d="M8 19.3l-1 2.4M12.5 19.3l-1 2.4M17 19.3l-1 2.4"/>',
+  snow: '<path d="M6.5 17.3C4 17.3 2 15.3 2 12.9c0-2.2 1.6-4.1 3.8-4.4C6.5 5.6 9.1 3.6 12.2 3.6c3.4 0 6.2 2.6 6.5 5.9 1.9.3 3.3 2 3.3 4 0 2.2-1.8 3.9-4 3.9H6.5Z"/><path d="M8 20v2M7 21h2M12.5 20v2M11.5 21h2M17 20v2M16 21h2"/>',
+  storm: '<path d="M6.5 17.3C4 17.3 2 15.3 2 12.9c0-2.2 1.6-4.1 3.8-4.4C6.5 5.6 9.1 3.6 12.2 3.6c3.4 0 6.2 2.6 6.5 5.9 1.9.3 3.3 2 3.3 4 0 2.2-1.8 3.9-4 3.9H6.5Z"/><path d="M13.2 17.3l-2.4 3.2h2l-1.8 2.6"/>',
+  fog: '<path d="M6.5 15.3C4 15.3 2 13.6 2 11.5c0-1.9 1.6-3.5 3.8-3.8C6.5 5 9.1 3.3 12.2 3.3c3.4 0 6.2 2.2 6.5 5 1.9.2 3.3 1.7 3.3 3.4 0 1.9-1.8 3.3-4 3.3H6.5Z"/><path d="M4 18.6h16M6 21h12"/>'
+};
+function svgIcon(key, extra) {
+  return '<svg viewBox="0 0 24 24"' + (extra || '') + '>' + (ICONS[key] || '') + '</svg>';
+}
+
+/* Tema de fondo del héroe según el tipo de clima (detalle visual, no
+   afecta la lógica de capas). */
+const HERO_THEME = {
+  sun: ['#2a5572', '#0a0a0c'],
+  partly: ['#24455c', '#0a0a0c'],
+  cloud: ['#1f3a4a', '#0a0a0c'],
+  rain: ['#1b3348', '#0a0a0c'],
+  snow: ['#2a3a4a', '#0a0a0c'],
+  storm: ['#241f3a', '#0a0a0c'],
+  fog: ['#242b33', '#0a0a0c']
+};
+
+/* ---------------- Clima (WMO weather codes -> etiqueta/icono) ----------------
+   Mismos códigos y etiquetas que ya se usan en ropa.html, para que el
+   lenguaje del clima sea consistente en todo el sitio. */
+const WEATHER_CODE_LABELS = {
+  0: 'despejado', 1: 'mayormente despejado', 2: 'parcialmente nublado', 3: 'nublado',
+  45: 'neblina', 48: 'neblina con escarcha',
+  51: 'llovizna', 53: 'llovizna', 55: 'llovizna fuerte',
+  61: 'lluvia', 63: 'lluvia', 65: 'lluvia fuerte',
+  71: 'nieve', 73: 'nieve', 75: 'nieve fuerte',
+  80: 'chubascos', 81: 'chubascos', 82: 'chubascos fuertes',
+  95: 'tormenta', 96: 'tormenta con granizo', 99: 'tormenta con granizo'
+};
+const WEATHER_CODE_ICON = {
+  0: 'sun', 1: 'sun', 2: 'partly', 3: 'cloud',
+  45: 'fog', 48: 'fog',
+  51: 'rain', 53: 'rain', 55: 'rain',
+  61: 'rain', 63: 'rain', 65: 'rain',
+  71: 'snow', 73: 'snow', 75: 'snow',
+  80: 'rain', 81: 'rain', 82: 'rain',
+  95: 'storm', 96: 'storm', 99: 'storm'
+};
+const RAIN_CODES = new Set([51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99]);
+const CLEAR_CODES = new Set([0, 1]);
+
+/* ---------------- Caché (1 hora, igual patrón que ropa.html) ---------------- */
+const WEATHER_CACHE_KEY = 'clima_app_cache_v1';
+const WEATHER_CACHE_MS = 60 * 60 * 1000;
+
+function loadWeatherCache() {
+  try {
+    const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || Date.now() - parsed.ts > WEATHER_CACHE_MS) return null;
+    return parsed.data;
+  } catch (e) { return null; }
+}
+function saveWeatherCache(data) {
+  try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); }
+  catch (e) { /* almacenamiento lleno o bloqueado — no es crítico */ }
+}
+
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
+/* ---------------- Llamadas a Open-Meteo ----------------
+   Se separan en dos llamadas a propósito: la primera pide solo campos
+   que ya están comprobados y funcionando en ropa.html (temperatura,
+   código de clima, viento, humedad, precipitación). La segunda intenta
+   pedir además probabilidad de lluvia e índice UV del día — campos que
+   no se pudieron verificar en documentación oficial desde este entorno.
+   Si esa segunda llamada falla por cualquier motivo (nombre de campo
+   incorrecto, red, etc.) se descarta en silencio y la app sigue
+   funcionando igual, solo sin esos dos datos extra (ver computeLayers). */
+async function fetchWeatherBase(lat, lon) {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
+    '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,precipitation' +
+    '&daily=temperature_2m_max,temperature_2m_min,weathercode' +
+    '&timezone=auto&forecast_days=1';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('clima: HTTP ' + res.status);
+  return res.json();
+}
+async function fetchWeatherExtras(lat, lon) {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
+    '&daily=precipitation_probability_max,uv_index_max' +
+    '&timezone=auto&forecast_days=1';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('extras: HTTP ' + res.status);
+  return res.json();
+}
+
+async function fetchWeather(lat, lon) {
+  const base = await fetchWeatherBase(lat, lon);
+  const cur = base.current || {};
+  const daily = base.daily || {};
+  const code = (cur.weather_code != null ? cur.weather_code : (daily.weathercode ? daily.weathercode[0] : 0));
+  const tempNow = cur.temperature_2m != null ? cur.temperature_2m : (daily.temperature_2m_max ? daily.temperature_2m_max[0] : null);
+  const feelsLike = cur.apparent_temperature != null ? cur.apparent_temperature : tempNow;
+  const tempMax = daily.temperature_2m_max != null ? daily.temperature_2m_max[0] : tempNow;
+  const tempMin = daily.temperature_2m_min != null ? daily.temperature_2m_min[0] : tempNow;
+  const windKmh = cur.wind_speed_10m != null ? cur.wind_speed_10m : 0;
+  const precipNow = cur.precipitation != null ? cur.precipitation : 0;
+
+  let precipProb = null;
+  let uvMax = null;
+  try {
+    const extras = await withTimeout(fetchWeatherExtras(lat, lon), 8000);
+    const d = extras.daily || {};
+    if (d.precipitation_probability_max != null) precipProb = d.precipitation_probability_max[0];
+    if (d.uv_index_max != null) uvMax = d.uv_index_max[0];
+  } catch (e) { /* campos extra no disponibles — se sigue sin ellos */ }
+
+  const rainCodeNow = RAIN_CODES.has(code) || precipNow > 0.1;
+  const precipRisk = precipProb != null ? precipProb >= 40 : rainCodeNow;
+  const uvHigh = uvMax != null ? uvMax >= 6 : CLEAR_CODES.has(code);
+
+  return {
+    code,
+    label: WEATHER_CODE_LABELS[code] || '',
+    icon: WEATHER_CODE_ICON[code] || 'cloud',
+    tempNow, feelsLike, tempMax, tempMin, windKmh,
+    precipRisk, uvHigh,
+    precipProb, uvMax
+  };
+}
+
+/* Geocodificación inversa (lat/lon -> nombre de lugar), igual que
+   ropa.html: gratis, sin API key, con CORS. Si falla no es grave — el
+   clima igual se muestra, solo sin el nombre del lugar. */
+async function fetchLocationLabel(lat, lon) {
+  const url = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=es';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('ubicación: HTTP ' + res.status);
+  const data = await res.json();
+  const city = data.city || data.locality || '';
+  const region = data.principalSubdivision && data.principalSubdivision !== city ? data.principalSubdivision : '';
+  const country = data.countryName || '';
+  return [city, region || country].filter(Boolean).join(', ');
+}
+
+/* Búsqueda manual de ciudad (cuando la geolocalización falla o se
+   niega). Open-Meteo Geocoding: gratis, sin API key. */
+async function searchCity(query) {
+  const url = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(query) + '&count=5&language=es&format=json';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('búsqueda: HTTP ' + res.status);
+  const data = await res.json();
+  return data.results || [];
+}
+
+function getCurrentPositionOnce() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+  });
+}
+
+/* ---------------- Reglas de capas de ropa ---------------- */
+function computeLayers(w) {
+  const feels = w.feelsLike;
+  const layers = [];
+
+  // Capa base
+  if (feels >= 15) {
+    layers.push({ slot: 'Primera capa', icon: 'tshirt', item: 'Camiseta manga corta', why: 'Con ' + Math.round(feels) + '°C de sensación térmica, una tela ligera es suficiente — no hace falta cubrir los brazos.', need: true });
+  } else {
+    layers.push({ slot: 'Primera capa', icon: 'thermal', item: 'Camiseta térmica manga larga', why: 'La sensación térmica es de ' + Math.round(feels) + '°C: una capa base de manga larga ayuda a retener el calor del cuerpo.', need: true });
+  }
+
+  // Capa media
+  if (feels >= 21) {
+    layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'No hace falta hoy', why: 'Con ' + Math.round(feels) + '°C no se necesita una segunda capa — solo estorbaría.', need: false });
+  } else if (feels >= 15) {
+    layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'Sudadera ligera o camisa de manga larga', why: 'Para los ' + Math.round(feels) + '°C de hoy, una capa ligera encima de la base ayuda sin dar demasiado calor.', need: true });
+  } else if (feels >= 9) {
+    layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'Sudadera o fleece', why: 'Con ' + Math.round(feels) + '°C conviene una capa media con algo más de grosor.', need: true });
+  } else {
+    layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'Sudadera gruesa o fleece', why: 'Hace ' + Math.round(feels) + '°C de sensación — esta capa es la base para poder abrigarte bien encima.', need: true });
+  }
+
+  // Capa de aislamiento (plumas/sintética)
+  if (feels < 2) {
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'Chaqueta de plumas gruesa', why: 'Con ' + Math.round(feels) + '°C de sensación térmica hace falta el máximo abrigo posible.', need: true });
+  } else if (feels < 12) {
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'Chaqueta ligera de plumas o sintética', why: 'Con ' + Math.round(feels) + '°C conviene una capa de abrigo encima de la capa media.', need: true });
+  } else {
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'No hace falta hoy', why: 'Con ' + Math.round(feels) + '°C de sensación no necesitas una capa extra de abrigo.', need: false });
+  }
+
+  // Capa exterior (impermeable / rompevientos)
+  if (w.precipRisk) {
+    layers.push({ slot: 'Capa exterior', icon: 'shell', item: 'Chaqueta impermeable con capucha', why: 'Se espera ' + (w.label || 'lluvia') + (w.precipProb != null ? ' (' + Math.round(w.precipProb) + '% de probabilidad)' : '') + ' — una capa exterior que repela el agua evita mojar todo lo de abajo.', need: true });
+  } else if (w.windKmh >= 25) {
+    layers.push({ slot: 'Capa exterior', icon: 'shell', item: 'Rompevientos', why: 'El viento está en unos ' + Math.round(w.windKmh) + ' km/h — un rompevientos corta esa sensación de frío extra.', need: true });
+  } else {
+    layers.push({ slot: 'Capa exterior', icon: 'shell', item: 'No hace falta hoy', why: 'No se espera lluvia ni viento fuerte, así que puedes dejar la chaqueta exterior en casa.', need: false });
+  }
+
+  // Accesorios
+  const accessories = [];
+  if (w.uvHigh) accessories.push({ icon: 'sunglasses', label: 'Gafas de sol' }, { icon: 'cap', label: 'Gorra' });
+  if (feels < 9) accessories.push({ icon: 'beanie', label: 'Gorro' }, { icon: 'gloves', label: 'Guantes' });
+  if (feels < 2) accessories.push({ icon: 'scarf', label: 'Bufanda' });
+  if (w.precipRisk) accessories.push({ icon: 'umbrella', label: 'Paraguas' });
+
+  return { layers, accessories };
+}
+
+/* ---------------- Fecha/hora (eyebrow del héroe) ---------------- */
+const DAY_NAMES = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+const MONTH_NAMES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+function formatNow(d) {
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return hh + ':' + mm + ', ' + DAY_NAMES[d.getDay()] + '. ' + d.getDate() + ' ' + MONTH_NAMES[d.getMonth()];
+}
+
+/* ---------------- Estado ---------------- */
+let weatherInfo = null;
+let geoStatus = 'idle';   // idle | locating | fetching | error | manual
+let geoMessage = '';
+let manualQuery = '';
+let manualResults = [];
+let manualSearching = false;
+let selectedLayerIdx = null;
+let now = new Date();
+
+/* ---------------- Render ---------------- */
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  const icon = weatherInfo ? weatherInfo.icon : 'cloud';
+  const theme = HERO_THEME[icon] || HERO_THEME.cloud;
+
+  const hero = document.createElement('div');
+  hero.className = 'hero' + (weatherInfo ? '' : ' heroSkeleton');
+  hero.style.setProperty('--heroA', theme[0]);
+  hero.style.setProperty('--heroB', theme[1]);
+
+  const loc = weatherInfo && weatherInfo.locationLabel ? weatherInfo.locationLabel : (geoStatus === 'locating' || geoStatus === 'fetching' ? 'ubicando…' : 'ubicación no disponible');
+  hero.innerHTML =
+    '<div class="eyebrow"><span class="loc">' + loc + '</span><span class="when">' + formatNow(now) + '</span></div>' +
+    '<div class="tempRow">' +
+      svgIcon(icon) +
+      '<div class="tempBlock">' +
+        '<div class="temp">' + (weatherInfo && weatherInfo.feelsLike != null ? Math.round(weatherInfo.feelsLike) + '°C' : '--°') + '</div>' +
+        '<div class="cond">' + (weatherInfo ? weatherInfo.label : 'esperando datos') + '</div>' +
+      '</div>' +
+    '</div>' +
+    (weatherInfo ? '<div class="minmax"><span>Mín <b>' + Math.round(weatherInfo.tempMin) + '°</b></span><span>Máx <b>' + Math.round(weatherInfo.tempMax) + '°</b></span><span>Viento <b>' + Math.round(weatherInfo.windKmh) + ' km/h</b></span></div>' : '');
+  app.appendChild(hero);
+
+  if (geoStatus === 'locating' || geoStatus === 'fetching') {
+    const bar = document.createElement('div');
+    bar.className = 'statusBar';
+    bar.textContent = geoStatus === 'locating' ? 'obteniendo tu ubicación…' : 'consultando el clima…';
+    app.appendChild(bar);
+  } else if (geoStatus === 'error') {
+    const bar = document.createElement('div');
+    bar.className = 'statusBar err';
+    bar.textContent = geoMessage || 'no se pudo obtener tu ubicación';
+    app.appendChild(bar);
+    const links = document.createElement('div');
+    links.className = 'statusLinks';
+    const retryBtn = document.createElement('button');
+    retryBtn.textContent = 'reintentar';
+    retryBtn.addEventListener('click', () => initWeather(true));
+    const manualBtn = document.createElement('button');
+    manualBtn.textContent = 'buscar ciudad';
+    manualBtn.addEventListener('click', () => { geoStatus = 'manual'; render(); });
+    links.appendChild(retryBtn);
+    links.appendChild(manualBtn);
+    app.appendChild(links);
+  } else if (weatherInfo) {
+    const links = document.createElement('div');
+    links.className = 'statusLinks';
+    const manualBtn = document.createElement('button');
+    manualBtn.textContent = 'buscar otra ciudad';
+    manualBtn.addEventListener('click', () => { geoStatus = 'manual'; render(); });
+    links.appendChild(manualBtn);
+    app.appendChild(links);
+  }
+
+  if (geoStatus === 'manual') {
+    const box = document.createElement('div');
+    box.className = 'manualSearch';
+    const row = document.createElement('div');
+    row.className = 'row';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'nombre de la ciudad';
+    input.maxLength = 60;
+    input.value = manualQuery;
+    input.addEventListener('input', (e) => { manualQuery = e.target.value; });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doManualSearch(); });
+    const goBtn = document.createElement('button');
+    goBtn.className = 'goBtn';
+    goBtn.innerHTML = svgIcon('search');
+    goBtn.addEventListener('click', doManualSearch);
+    row.appendChild(input);
+    row.appendChild(goBtn);
+    box.appendChild(row);
+
+    if (manualSearching) {
+      const p = document.createElement('div');
+      p.className = 'statusBar';
+      p.textContent = 'buscando…';
+      box.appendChild(p);
+    } else if (manualResults.length) {
+      const list = document.createElement('div');
+      list.className = 'manualResults';
+      manualResults.forEach((r) => {
+        const btn = document.createElement('button');
+        btn.className = 'manualResult';
+        const sub = [r.admin1, r.country].filter(Boolean).join(', ');
+        btn.innerHTML = '<div class="name">' + r.name + '</div>' + (sub ? '<div class="sub">' + sub + '</div>' : '');
+        btn.addEventListener('click', () => chooseManualResult(r));
+        list.appendChild(btn);
+      });
+      box.appendChild(list);
+    }
+    app.appendChild(box);
+  }
+
+  const layersTitle = document.createElement('div');
+  layersTitle.className = 'sectionTitle';
+  layersTitle.textContent = 'Cómo vestirte hoy, por capas';
+  app.appendChild(layersTitle);
+
+  const { layers, accessories } = weatherInfo ? computeLayers(weatherInfo) : { layers: [], accessories: [] };
+
+  const scroll = document.createElement('div');
+  scroll.className = 'layersScroll';
+  layers.forEach((layer, idx) => {
+    const card = document.createElement('div');
+    card.className = 'layerCard' + (layer.need ? '' : ' skip') + (selectedLayerIdx === idx ? ' sel' : '');
+    card.innerHTML =
+      '<div class="ic">' + svgIcon(layer.icon) + '</div>' +
+      '<div class="slot">' + layer.slot + '</div>' +
+      '<div class="item">' + layer.item + '</div>' +
+      '<div class="chev">' + svgIcon('chev') + '</div>';
+    card.addEventListener('click', () => { selectedLayerIdx = (selectedLayerIdx === idx ? null : idx); render(); });
+    scroll.appendChild(card);
+  });
+  if (!layers.length) {
+    for (let i = 0; i < 4; i++) {
+      const card = document.createElement('div');
+      card.className = 'layerCard skip';
+      card.innerHTML = '<div class="ic"></div><div class="slot">—</div><div class="item">esperando clima…</div>';
+      scroll.appendChild(card);
+    }
+  }
+  app.appendChild(scroll);
+
+  if (selectedLayerIdx != null && layers[selectedLayerIdx]) {
+    const layer = layers[selectedLayerIdx];
+    const panel = document.createElement('div');
+    panel.className = 'detailPanel';
+    panel.innerHTML =
+      '<div class="dTitle">' + layer.slot + ': ' + layer.item + '</div>' +
+      '<div class="dWhy">' + layer.why + '</div>' +
+      '<button class="dClose">cerrar</button>';
+    panel.querySelector('.dClose').addEventListener('click', () => { selectedLayerIdx = null; render(); });
+    app.appendChild(panel);
+  }
+
+  if (weatherInfo) {
+    if (accessories.length) {
+      const accRow = document.createElement('div');
+      accRow.className = 'accessoryRow';
+      accessories.forEach((a) => {
+        const chip = document.createElement('div');
+        chip.className = 'accessoryChip';
+        chip.innerHTML = svgIcon(a.icon) + '<span>' + a.label + '</span>';
+        accRow.appendChild(chip);
+      });
+      app.appendChild(accRow);
+    } else {
+      const none = document.createElement('div');
+      none.className = 'accessoryNone';
+      none.textContent = 'No necesitas accesorios extra hoy.';
+      app.appendChild(none);
+    }
+  }
+
+  const footer = document.createElement('div');
+  footer.className = 'footer-disclaimer';
+  footer.textContent = 'Datos de Open-Meteo, actualizados cada hora. Las capas sugeridas son una guía aproximada — ajústalas según cómo te sientas.';
+  app.appendChild(footer);
+}
+
+/* ---------------- Flujo de ubicación + clima ---------------- */
+async function doManualSearch() {
+  if (!manualQuery.trim()) return;
+  manualSearching = true;
+  manualResults = [];
+  render();
+  try {
+    manualResults = await withTimeout(searchCity(manualQuery.trim()), 8000);
+  } catch (e) {
+    manualResults = [];
+  }
+  manualSearching = false;
+  render();
+}
+
+async function chooseManualResult(r) {
+  geoStatus = 'fetching';
+  render();
+  try {
+    const w = await withTimeout(fetchWeather(r.latitude, r.longitude), 10000);
+    w.locationLabel = [r.name, r.admin1 || r.country].filter(Boolean).join(', ');
+    weatherInfo = w;
+    saveWeatherCache(w);
+    geoStatus = 'idle';
+    selectedLayerIdx = null;
+  } catch (e) {
+    geoStatus = 'error';
+    geoMessage = 'no se pudo obtener el clima para esa ciudad';
+  }
+  render();
+}
+
+async function initWeather(forceLocate) {
+  if (!forceLocate) {
+    const cached = loadWeatherCache();
+    if (cached) { weatherInfo = cached; geoStatus = 'idle'; render(); return; }
+  }
+  if (!navigator.geolocation) {
+    geoStatus = 'error';
+    geoMessage = 'este navegador no puede darme tu ubicación';
+    render();
+    return;
+  }
+  geoStatus = 'locating';
+  render();
+  let pos;
+  try {
+    pos = await withTimeout(getCurrentPositionOnce(), 12000);
+  } catch (err) {
+    geoStatus = 'error';
+    geoMessage = 'activa el permiso de ubicación para ver tu clima automáticamente';
+    render();
+    return;
+  }
+  try {
+    geoStatus = 'fetching';
+    render();
+    const [wResult, locResult] = await Promise.allSettled([
+      withTimeout(fetchWeather(pos.coords.latitude, pos.coords.longitude), 12000),
+      withTimeout(fetchLocationLabel(pos.coords.latitude, pos.coords.longitude), 8000)
+    ]);
+    if (wResult.status !== 'fulfilled') throw wResult.reason;
+    const w = wResult.value;
+    w.locationLabel = locResult.status === 'fulfilled' ? locResult.value : null;
+    weatherInfo = w;
+    saveWeatherCache(w);
+    geoStatus = 'idle';
+  } catch (err) {
+    geoStatus = 'error';
+    geoMessage = 'no se pudo obtener el clima (' + (err && err.message ? err.message : err) + ')';
+  }
+  render();
+}
+
+document.getElementById('refreshBtn').innerHTML = svgIcon('refresh');
+document.getElementById('refreshBtn').addEventListener('click', (e) => {
+  e.currentTarget.classList.add('spinning');
+  initWeather(true).then(() => e.currentTarget.classList.remove('spinning'));
+});
+
+/* Reloj del encabezado: se refresca solo, sin volver a pedir el clima. */
+setInterval(() => { now = new Date(); render(); }, 60000);
+
+render();
+initWeather(false);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>
