@@ -1,16 +1,4 @@
-const CACHE = 'app-v86';
-// v86: clima.html — el usuario mandó la 10ª y última foto que faltaba
-// (la chaqueta Patagonia Retro-X, para "sudadera o fleece" / capa
-// media), procesada igual que las otras 9 (recorte + contorno blanco
-// tipo sticker, ver changelog de v85). Caso particular: esta prenda es
-// clara (crema) sobre un fondo también claro, a diferencia de las
-// prendas negras de las otras 9 fotos — igual se recortó limpio porque
-// el fondo real es muy uniforme (~240-244 de brillo) y la tela, aunque
-// clara, tiene textura de borrego con sombras que la mantienen por
-// debajo del umbral en casi toda su superficie. Con esto, las 11
-// prendas pedidas originalmente ya tienen foto real (bufanda fue
-// retirada a pedido del usuario, no cuenta). Se agregó
-// icons/clima/hoodie.png al precache de este archivo.
+const CACHE = 'app-v85';
 // v85: clima.html — el usuario pidió (verbatim) "quiero algo asi para
 // todas las imagenes" mandando un ejemplo de camiseta con el fondo
 // quitado y un borde/contorno blanco tipo "sticker" (fondo transparente
@@ -894,7 +882,6 @@ const ASSETS = [
   './nuevayork.html',
   './clima.html',
   './icons/clima/tshirt.png',
-  './icons/clima/hoodie.png',
   './icons/clima/thermal.png',
   './icons/clima/puffer.png',
   './icons/clima/shell.png',

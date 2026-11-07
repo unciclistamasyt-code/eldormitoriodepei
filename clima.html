@@ -305,13 +305,12 @@ function svgIcon(key, extra) {
 }
 
 /* Fotos reales de las prendas (el usuario las mandó para reemplazar el
-   ícono SVG genérico). Si alguna prenda se queda sin foto en el futuro,
-   se sigue usando el ícono SVG como respaldo automáticamente — agregar
-   o quitar una foto de este mapa nunca rompe nada. */
+   ícono SVG genérico). Si una prenda no tiene foto todavía (por ahora,
+   "hoodie" — capa media), se sigue usando el ícono SVG como respaldo,
+   así que agregar o quitar una foto nunca rompe nada. */
 const PHOTO_ICONS = {
   tshirt: 'icons/clima/tshirt.png',
   thermal: 'icons/clima/thermal.png',
-  hoodie: 'icons/clima/hoodie.png',
   puffer: 'icons/clima/puffer.png',
   shell: 'icons/clima/shell.png',
   sunglasses: 'icons/clima/sunglasses.png',
