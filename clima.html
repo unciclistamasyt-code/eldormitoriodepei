@@ -486,10 +486,10 @@ function computeLayers(w) {
   const layers = [];
 
   // Capa base
-  if (feels >= 15) {
-    layers.push({ slot: 'Primera capa', icon: 'tshirt', item: 'Camiseta manga corta', why: 'Con ' + Math.round(feels) + '°C de sensación térmica, una tela ligera es suficiente — no hace falta cubrir los brazos.', need: true });
+  if (feels >= 5) {
+    layers.push({ slot: 'Primera capa', icon: 'tshirt', item: 'Camiseta manga corta', why: 'Con ' + Math.round(feels) + '°C de sensación térmica, una tela ligera es suficiente — la capa media de arriba se encarga del resto.', need: true });
   } else {
-    layers.push({ slot: 'Primera capa', icon: 'thermal', item: 'Camiseta térmica manga larga', why: 'La sensación térmica es de ' + Math.round(feels) + '°C: una capa base de manga larga ayuda a retener el calor del cuerpo.', need: true });
+    layers.push({ slot: 'Primera capa', icon: 'thermal', item: 'Camiseta térmica manga larga', why: 'La sensación térmica es de ' + Math.round(feels) + '°C: a esta temperatura conviene una capa base de manga larga para retener el calor del cuerpo.', need: true });
   }
 
   // Capa media

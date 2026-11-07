@@ -1,4 +1,21 @@
-const CACHE = 'app-v86';
+const CACHE = 'app-v87';
+// v87: clima.html — el usuario notó (hoy, 14°C y sensación térmica de
+// 14°C en Charlottetown, con lluvia) que la regla de "primera capa"
+// metía la camiseta térmica manga larga para cualquier sensación por
+// debajo de 15°C, lo cual es demasiada capa de calor para ese rango
+// — a 14°C la app recomendaba térmica + sudadera/fleece + impermeable
+// a la vez. Se investigaron guías de ciclismo por temperatura
+// (Löffler: manga larga/térmica recién por debajo de 10°C, con 10-15°C
+// alcanzando manga corta + capa encima; POC: térmica "de verdad" recién
+// entre 0-5°C, con 10-15°C usando mangas removibles) para elegir un
+// corte razonable para una actividad que genera bastante calor propio
+// (uniciclo). Se bajó el umbral de "Primera capa" de 15°C a 5°C: de
+// 5-15°C ahora queda camiseta manga corta + lo que indique la capa
+// media (sudadera ligera o fleece), y la térmica manga larga solo entra
+// por debajo de 5°C. El resto de las reglas (capa media, capa de
+// aislamiento, capa exterior, accesorios) no cambiaron — se revisaron y
+// sus cortes (21/15/9°C para capa media, 12/2°C para plumas, lluvia o
+// viento ≥25 km/h para la capa exterior) se consideraron razonables.
 // v86: clima.html — el usuario mandó la 10ª y última foto que faltaba
 // (la chaqueta Patagonia Retro-X, para "sudadera o fleece" / capa
 // media), procesada igual que las otras 9 (recorte + contorno blanco
