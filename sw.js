@@ -1,4 +1,53 @@
-const CACHE = 'app-v81';
+const CACHE = 'app-v83';
+// v83: clima.html — el usuario mandó fotos reales (9) para reemplazar los
+// íconos SVG genéricos de las prendas de las tarjetas de capas y los
+// chips de accesorios: camiseta manga corta, camiseta térmica, chaqueta
+// de plumas, chaqueta impermeable/rompevientos, gafas de sol, gorra,
+// gorro (beanie), guantes y paraguas — guardadas recortadas a cuadrado
+// (300x300, JPEG) en icons/clima/. Se agregó un mapa PHOTO_ICONS en el
+// JS de clima.html: si una prenda tiene foto, se usa <img>; si no (por
+// ahora, "hoodie"/capa media, que el usuario todavía no mandó), se sigue
+// usando el ícono SVG como respaldo — agregar o quitar una foto nunca
+// rompe el render. El usuario también avisó que no usa bufanda
+// ("no utilizo bufanda"), así que se quitó por completo esa sugerencia
+// de accesorio (y su ícono SVG) de computeLayers().
+// Se agregaron las 9 fotos nuevas al precache de este archivo. No se
+// tocó ninguna otra página.
+// v82: nueva página clima.html, pedida por el usuario con una imagen de
+// referencia (mockup de una app de clima: temperatura grande, condición,
+// ubicación, hora/fecha, y una fila de tarjetas de "sugerencias de
+// vestimenta" por capas) — "quiero nueva app del clima donde me
+// refgistre automaticamente donde estoy y me coloque que ropa colocarme
+// en capas". Es una página nueva e independiente (su propio <style>,
+// como ropa.html/nuevayork.html), con acento --clima propio. Usa
+// Open-Meteo (gratis, sin API key) para el pronóstico, con el mismo
+// patrón ya probado en ropa.html: geolocalización del navegador +
+// geocodificación inversa (BigDataCloud) para el nombre del lugar,
+// caché de 1 hora en localStorage, y degradación sin bloquear si algo
+// falla. A diferencia de ropa.html, aquí la detección es automática al
+// cargar la página (no hay que tocar nada), con un botón de recarga
+// manual aparte y una búsqueda de ciudad a mano (Open-Meteo Geocoding)
+// como respaldo si la ubicación falla o se niega.
+// La llamada al clima se separó en dos peticiones a propósito: la base
+// (temperatura, código de clima, viento, humedad, precipitación, más
+// los min/max del día) usa exactamente los mismos nombres de campo que
+// ya están comprobados y funcionando en ropa.html; una segunda petición
+// aparte intenta además probabilidad de lluvia e índice UV del día
+// (uv_index_max, precipitation_probability_max), nombres que no se
+// pudieron verificar contra la documentación oficial de Open-Meteo
+// desde este entorno (la API y sus docs no son alcanzables desde este
+// sandbox). Si esa segunda petición falla por cualquier motivo, se
+// descarta en silencio y la app sigue funcionando igual, infiriendo el
+// riesgo de lluvia a partir del código de clima/precipitación actual y
+// el UV a partir de si el código es "despejado" — nunca rompe la página
+// completa por un nombre de parámetro no confirmado.
+// Los íconos de ropa y clima son SVG propios de trazo simple (mismo
+// criterio que el resto del sitio: "así no dependen de conexión ni de
+// derechos de terceros"), no fotos — el usuario ofreció mandar imágenes
+// pero el mockup que mandó ya usa este mismo estilo de ícono plano.
+// Se agregó clima.html al precache de este archivo y una tarjeta nueva
+// "Clima" (ícono SVG de sol, sin foto) a la rueda de index.html. No se
+// tocó ninguna otra página.
 // v81: comidas.html — dos pestañas nuevas pedidas por el usuario ("tengo
 // mas infor que me interesa y quiero que sea un tab al cual puedo ir me
 // gusta tener a la mano info de productos que llenen, proteicos y
@@ -797,6 +846,16 @@ const ASSETS = [
   './ski.html',
   './snowboard.html',
   './nuevayork.html',
+  './clima.html',
+  './icons/clima/tshirt.jpg',
+  './icons/clima/thermal.jpg',
+  './icons/clima/puffer.jpg',
+  './icons/clima/shell.jpg',
+  './icons/clima/sunglasses.jpg',
+  './icons/clima/cap.jpg',
+  './icons/clima/beanie.jpg',
+  './icons/clima/gloves.jpg',
+  './icons/clima/umbrella.jpg',
   './style.css',
   './manifest.json',
   './icons/icon-192.png',

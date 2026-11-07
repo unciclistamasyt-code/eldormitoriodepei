@@ -196,10 +196,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
   .layerCard .ic svg { width: 26px; height: 26px; stroke: var(--clima); fill: none; stroke-width: 1.5; }
+  .layerCard .ic img { width: 100%; height: 100%; object-fit: cover; }
   .layerCard.skip .ic { background: var(--bg); }
   .layerCard.skip .ic svg { stroke: var(--text-dim); opacity: 0.5; }
+  .layerCard.skip .ic img { opacity: 0.35; filter: grayscale(1); }
   .layerCard .slot { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-dim); margin-bottom: 4px; }
   .layerCard .item { font-size: 12.5px; font-weight: 600; line-height: 1.25; }
   .layerCard.skip .item { color: var(--text-dim); font-weight: 400; font-size: 11.5px; }
@@ -229,6 +232,9 @@
     background: var(--bg-soft);
   }
   .accessoryChip svg { width: 16px; height: 16px; stroke: var(--clima); fill: none; stroke-width: 1.6; }
+  .chipIc { width: 20px; height: 20px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--clima-soft); }
+  .chipIc svg { width: 14px; height: 14px; }
+  .chipIc img { width: 100%; height: 100%; object-fit: cover; }
   .accessoryNone { font-size: 12.5px; color: var(--text-dim); margin-bottom: 20px; }
 
   .footer-disclaimer {
@@ -278,7 +284,6 @@ const ICONS = {
   cap: '<path d="M4 15.5C4 10.5 7.5 7 12 7s8 3.5 8 8.5H4Z"/><path d="M4 15.5h16v.7c0 1-.8 1.8-1.8 1.8H5.8C4.8 18 4 17.2 4 16.2v-.7Z"/><path d="M20 15.3 23 14.6"/>',
   beanie: '<path d="M5 14.3C5 9.7 8.1 6.5 12 6.5s7 3.2 7 7.8H5Z"/><path d="M5 14.3h14V17c0 .8-.7 1.5-1.5 1.5h-11C5.7 18.5 5 17.8 5 17v-2.7Z"/><circle cx="12" cy="4.8" r="1.3"/>',
   gloves: '<path d="M8 11.5V7.3C8 6.1 8.9 5.2 10 5.2s2 .9 2 2.1v3.6M12 9.3V6.6c0-1.1.8-1.9 1.8-1.9s1.8.8 1.8 1.9v5.4c0 3.2-2.1 5.8-4.8 5.8H9.6c-2.2 0-4-1.8-4-4v-2.7c0-1 .8-1.8 1.8-1.8.4 0 .8.1 1.1.4"/>',
-  scarf: '<path d="M4 8c2 1.3 5 2 8 2s6-.7 8-2"/><path d="M12 10v7c0 1 .8 1.8 1.8 1.8S15.6 18 15.6 17v-2"/>',
   umbrella: '<path d="M3 12.5C3 7.8 7 4.5 12 4.5s9 3.3 9 8H3Z"/><path d="M12 4.5V18c0 1.4-1.1 2.5-2.4 2.5-.9 0-1.7-.5-2.1-1.2"/><path d="M3 12.5 5 11.6M21 12.5 19 11.6M12 12.5 10 11.6M12 12.5 14 11.6"/>',
 
   sun: '<circle cx="12" cy="12" r="4.3"/><path d="M12 3.5v2.3M12 18.2v2.3M4.3 12h2.3M17.4 12h2.3M6.3 6.3l1.6 1.6M16.1 16.1l1.6 1.6M6.3 17.7l1.6-1.6M16.1 7.9l1.6-1.6"/>',
@@ -291,6 +296,28 @@ const ICONS = {
 };
 function svgIcon(key, extra) {
   return '<svg viewBox="0 0 24 24"' + (extra || '') + '>' + (ICONS[key] || '') + '</svg>';
+}
+
+/* Fotos reales de las prendas (el usuario las mandó para reemplazar el
+   ícono SVG genérico). Si una prenda no tiene foto todavía (por ahora,
+   "hoodie" — capa media), se sigue usando el ícono SVG como respaldo,
+   así que agregar o quitar una foto nunca rompe nada. */
+const PHOTO_ICONS = {
+  tshirt: 'icons/clima/tshirt.jpg',
+  thermal: 'icons/clima/thermal.jpg',
+  puffer: 'icons/clima/puffer.jpg',
+  shell: 'icons/clima/shell.jpg',
+  sunglasses: 'icons/clima/sunglasses.jpg',
+  cap: 'icons/clima/cap.jpg',
+  beanie: 'icons/clima/beanie.jpg',
+  gloves: 'icons/clima/gloves.jpg',
+  umbrella: 'icons/clima/umbrella.jpg'
+};
+function iconMedia(key, alt) {
+  if (PHOTO_ICONS[key]) {
+    return '<img src="' + PHOTO_ICONS[key] + '" alt="' + (alt || '') + '" loading="lazy" />';
+  }
+  return svgIcon(key);
 }
 
 /* Tema de fondo del héroe según el tipo de clima (detalle visual, no
@@ -491,7 +518,6 @@ function computeLayers(w) {
   const accessories = [];
   if (w.uvHigh) accessories.push({ icon: 'sunglasses', label: 'Gafas de sol' }, { icon: 'cap', label: 'Gorra' });
   if (feels < 9) accessories.push({ icon: 'beanie', label: 'Gorro' }, { icon: 'gloves', label: 'Guantes' });
-  if (feels < 2) accessories.push({ icon: 'scarf', label: 'Bufanda' });
   if (w.precipRisk) accessories.push({ icon: 'umbrella', label: 'Paraguas' });
 
   return { layers, accessories };
@@ -627,7 +653,7 @@ function render() {
     const card = document.createElement('div');
     card.className = 'layerCard' + (layer.need ? '' : ' skip') + (selectedLayerIdx === idx ? ' sel' : '');
     card.innerHTML =
-      '<div class="ic">' + svgIcon(layer.icon) + '</div>' +
+      '<div class="ic">' + iconMedia(layer.icon, layer.item) + '</div>' +
       '<div class="slot">' + layer.slot + '</div>' +
       '<div class="item">' + layer.item + '</div>' +
       '<div class="chev">' + svgIcon('chev') + '</div>';
@@ -663,7 +689,7 @@ function render() {
       accessories.forEach((a) => {
         const chip = document.createElement('div');
         chip.className = 'accessoryChip';
-        chip.innerHTML = svgIcon(a.icon) + '<span>' + a.label + '</span>';
+        chip.innerHTML = '<span class="chipIc">' + iconMedia(a.icon, a.label) + '</span><span>' + a.label + '</span>';
         accRow.appendChild(chip);
       });
       app.appendChild(accRow);
