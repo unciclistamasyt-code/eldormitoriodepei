@@ -93,6 +93,12 @@
     color: var(--text-dim);
     text-transform: capitalize;
   }
+  .hero .feelsLike {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  .hero .feelsLike b { color: var(--text); font-weight: 600; }
   .hero .minmax {
     margin-top: 14px;
     font-size: 12.5px;
@@ -561,8 +567,9 @@ function render() {
     '<div class="tempRow">' +
       svgIcon(icon) +
       '<div class="tempBlock">' +
-        '<div class="temp">' + (weatherInfo && weatherInfo.feelsLike != null ? Math.round(weatherInfo.feelsLike) + '°C' : '--°') + '</div>' +
+        '<div class="temp">' + (weatherInfo && weatherInfo.tempNow != null ? Math.round(weatherInfo.tempNow) + '°C' : '--°') + '</div>' +
         '<div class="cond">' + (weatherInfo ? weatherInfo.label : 'esperando datos') + '</div>' +
+        (weatherInfo && weatherInfo.feelsLike != null ? '<div class="feelsLike">Sensación térmica <b>' + Math.round(weatherInfo.feelsLike) + '°C</b></div>' : '') +
       '</div>' +
     '</div>' +
     (weatherInfo ? '<div class="minmax"><span>Mín <b>' + Math.round(weatherInfo.tempMin) + '°</b></span><span>Máx <b>' + Math.round(weatherInfo.tempMax) + '°</b></span><span>Viento <b>' + Math.round(weatherInfo.windKmh) + ' km/h</b></span></div>' : '');
