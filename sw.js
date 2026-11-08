@@ -1,4 +1,26 @@
-const CACHE = 'app-v87';
+const CACHE = 'app-v88';
+// v88: clima.html — dos cambios juntos, ambos a partir de reportes del
+// usuario probando la app en la vida real:
+// 1) "Capa media" y "Capa de aislamiento" eran independientes y podían
+//    activarse las dos a la vez (fleece Y plumas) para el mismo frío
+//    moderado — el usuario salió con "todo" a 4°C de sensación térmica
+//    (térmica + fleece + plumas + impermeable) y le dio mucho calor.
+//    Se reescribió `computeLayers()` para que las dos sean mutuamente
+//    excluyentes: una sola capa de abrigo a la vez, igual que recomiendan
+//    las guías de ciclismo consultadas en v87 (base + UN mid-layer +
+//    shell, no dos mid-layers). La capa exterior (lluvia/viento) sigue
+//    siendo independiente, como corresponde.
+// 2) El usuario pidió (verbatim) "las imagenes le podemos hacer un blend
+//    con el background negro" — el contorno blanco tipo sticker de las
+//    10 fotos de prendas (v85/v86) se veía como una pegatina pegada
+//    encima de las tarjetas oscuras en vez de integrarse. Se regeneraron
+//    las 10 imágenes: se detectó el anillo blanco sólido ya horneado en
+//    los PNG (blanco puro + opaco — seguro porque las 10 prendas son
+//    oscuras, no hay tela blanca real que confundir) y se reemplazó por
+//    un halo oscuro suave (dilatado + muy desenfocado, tono cercano a
+//    --bg) que se desvanece hacia la tarjeta en vez de cortar en seco.
+//    Mismo recorte/cuantización de siempre (260×260, paleta de 64
+//    colores) para no aumentar el peso del precache.
 // v87: clima.html — el usuario notó (hoy, 14°C y sensación térmica de
 // 14°C en Charlottetown, con lluvia) que la regla de "primera capa"
 // metía la camiseta térmica manga larga para cualquier sensación por

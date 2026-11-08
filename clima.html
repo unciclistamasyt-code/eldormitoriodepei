@@ -492,24 +492,25 @@ function computeLayers(w) {
     layers.push({ slot: 'Primera capa', icon: 'thermal', item: 'Camiseta térmica manga larga', why: 'La sensación térmica es de ' + Math.round(feels) + '°C: a esta temperatura conviene una capa base de manga larga para retener el calor del cuerpo.', need: true });
   }
 
-  // Capa media
+  // Capa media / Capa de aislamiento — mutuamente excluyentes a partir de
+  // v88: una sola capa de abrigo a la vez (ver changelog). Antes podían
+  // activarse las dos juntas (fleece Y plumas) para el mismo frío moderado,
+  // sumando demasiadas capas de calor.
   if (feels >= 21) {
     layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'No hace falta hoy', why: 'Con ' + Math.round(feels) + '°C no se necesita una segunda capa — solo estorbaría.', need: false });
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'No hace falta hoy', why: 'Con ' + Math.round(feels) + '°C de sensación no necesitas una capa extra de abrigo.', need: false });
   } else if (feels >= 15) {
     layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'Sudadera ligera o camisa de manga larga', why: 'Para los ' + Math.round(feels) + '°C de hoy, una capa ligera encima de la base ayuda sin dar demasiado calor.', need: true });
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'No hace falta hoy', why: 'Con ' + Math.round(feels) + '°C de sensación no hace falta sumar otra capa de abrigo además de la media.', need: false });
   } else if (feels >= 9) {
     layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'Sudadera o fleece', why: 'Con ' + Math.round(feels) + '°C conviene una capa media con algo más de grosor.', need: true });
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'No hace falta hoy', why: 'La sudadera o fleece de la capa media ya abriga lo necesario a ' + Math.round(feels) + '°C — sumar plumas encima sería demasiado.', need: false });
+  } else if (feels >= 2) {
+    layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'No hace falta hoy', why: 'A ' + Math.round(feels) + '°C la chaqueta de plumas de abajo ya es el abrigo principal — no hace falta sumar también una sudadera gruesa.', need: false });
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'Chaqueta ligera de plumas o sintética', why: 'Con ' + Math.round(feels) + '°C conviene esta capa de abrigo sobre la base, sin necesidad de sumar también una capa media gruesa.', need: true });
   } else {
-    layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'Sudadera gruesa o fleece', why: 'Hace ' + Math.round(feels) + '°C de sensación — esta capa es la base para poder abrigarte bien encima.', need: true });
-  }
-
-  // Capa de aislamiento (plumas/sintética)
-  if (feels < 2) {
-    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'Chaqueta de plumas gruesa', why: 'Con ' + Math.round(feels) + '°C de sensación térmica hace falta el máximo abrigo posible.', need: true });
-  } else if (feels < 12) {
-    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'Chaqueta ligera de plumas o sintética', why: 'Con ' + Math.round(feels) + '°C conviene una capa de abrigo encima de la capa media.', need: true });
-  } else {
-    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'No hace falta hoy', why: 'Con ' + Math.round(feels) + '°C de sensación no necesitas una capa extra de abrigo.', need: false });
+    layers.push({ slot: 'Capa media', icon: 'hoodie', item: 'No hace falta hoy', why: 'Con ' + Math.round(feels) + '°C la chaqueta de plumas gruesa de abajo ya es la capa de abrigo principal.', need: false });
+    layers.push({ slot: 'Capa de aislamiento', icon: 'puffer', item: 'Chaqueta de plumas gruesa', why: 'Con ' + Math.round(feels) + '°C de sensación térmica hace falta el máximo abrigo posible, pero en una sola capa gruesa en vez de dos.', need: true });
   }
 
   // Capa exterior (impermeable / rompevientos)
