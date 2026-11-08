@@ -1,4 +1,21 @@
-const CACHE = 'app-v90';
+const CACHE = 'app-v91';
+// v91: clima.html — el usuario avisó (verbatim) "todas estan perfectas
+// excepto capa de aislamiento" mandando una captura real: la tarjeta de
+// "Capa de aislamiento" cuando dice "No hace falta hoy" (estado .skip)
+// se veía exactamente igual de sólida/oscura que una tarjeta activa,
+// porque la foto de la chaqueta de plumas ya es azul marino muy oscuro
+// — bajarle la opacidad a 0.35 y aplicarle escala de grises casi no
+// cambia nada si la foto ya era oscura sobre una tarjeta oscura. Se comparó
+// (captura de Playwright) el mismo problema en las otras prendas: con
+// hoodie (crema) y shell (gris claro en los reflejos) el atenuado sí se
+// notaba, solo con prendas oscuras como puffer fallaba.
+// Se cambió `.layerCard.skip .ic img` de `opacity:0.35; filter:
+// grayscale(1)` a `filter: grayscale(1) brightness(0) invert(1);
+// opacity: 0.3` — esto aplana cualquier foto (sin importar su color
+// original) a una silueta blanca plana antes de atenuarla, así que todas
+// las prendas se ven igual de "apagadas" en estado skip, de forma
+// consistente. Verificado con captura de las 10 prendas en estado skip
+// antes de entregar.
 // v90: clima.html — el usuario pidió (verbatim) "es posible quitar la
 // parte azul detras de las prendas?" mandando una captura real del
 // sitio: el cuadrado con fondo `--clima-soft` (azul translúcido) detrás
