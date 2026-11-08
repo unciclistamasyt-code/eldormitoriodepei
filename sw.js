@@ -1,4 +1,15 @@
-const CACHE = 'app-v89';
+const CACHE = 'app-v90';
+// v90: clima.html — el usuario pidió (verbatim) "es posible quitar la
+// parte azul detras de las prendas?" mandando una captura real del
+// sitio: el cuadrado con fondo `--clima-soft` (azul translúcido) detrás
+// de cada foto de prenda en las tarjetas de capa, y detrás del ícono de
+// cada chip de accesorio, se notaba como un recuadro separado en vez de
+// dejar que el sticker flote solo. Se cambió `background: var(--clima-
+// soft)` a `background: transparent` en `.layerCard .ic`,
+// `.layerCard.skip .ic` y `.chipIc` — ahora se ve directamente el fondo
+// de la tarjeta (`--bg-soft`) detrás de la foto, sin el tinte azul.
+// Verificado con una captura de Playwright de las 10 tarjetas reales
+// antes de entregar.
 // v89: clima.html — el usuario probó el halo oscuro de v88 y pidió volver
 // (verbatim) "me gusta el sticker quiero que sean tipo png sin background
 // solo el sticker": prefiere el estilo anterior (contorno blanco sobre
