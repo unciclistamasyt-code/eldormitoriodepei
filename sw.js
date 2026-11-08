@@ -1,4 +1,48 @@
-const CACHE = 'app-v92';
+const CACHE = 'app-v93';
+// v93: nueva página cafe.html — el usuario pidió (verbatim) "podemos hacer
+// toda una pagina nueva de aprender sobre el cafe", eligiendo formato
+// "Curso tipo escuela" (niveles, módulos con quiz, progreso guardado y
+// racha) y como temas: Métodos de preparación, Granos y origen, Tueste y
+// cata, Equipamiento y compra. Se construyó reusando el motor de
+// golf.html (CURRICULUM, progreso, quiz, TTS) con currículum 100% nuevo:
+// 5 niveles, 26 módulos, contenido redactado a partir de investigación
+// propia (extracción/preparación de café en fuentes de referencia) para
+// que los datos de ratios/temperaturas/tiempos sean reales. Se agregó
+// cafe.html al precache y al carrusel de index.html (ícono SVG de taza,
+// como Clima/Checklist/Comidas, sin foto todavía).
+// Mismo turno, el usuario pidió además (verbatim): "para todos los cursos
+// quiero un nuevo diseno, tambien como son para uso personal y no de venta
+// o para el publico agrega imagenes referentes a cada tema minimo 2 alta
+// definicion de internet, y algunos cursos que ya he hecho pierdo mi
+// avance cada vez que hago actualizacion o me meto desde otro dispositvo,
+// hay alguna forma de arreglar eso". Tres cosas en cafe.html (primero de
+// los 4 cursos en recibirlas, antes de replicarlas en golf/ski/snowboard):
+// 1) Diseño nuevo inspirado en una captura de referencia que mandó (app de
+//    cursos con anillo de progreso circular, racha y grilla de cursos):
+//    la tarjeta "continuá donde ibas" ahora usa un anillo SVG en vez de
+//    barra lineal, "Explorar niveles" pasó de grilla de íconos a una fila
+//    horizontal de tarjetas con foto de portada, y se agregó un mini
+//    gráfico de barras de actividad semanal (Lun-Dom) junto a la racha.
+//    Los 4 cursos van a compartir este mismo bloque de CSS/JS — solo
+//    cambian las variables --course-accent/--course-accent-2 de cada uno.
+// 2) Imágenes: como el usuario aclaró que esto es para uso personal (no
+//    para vender ni publicar al público), se usan fotos reales de
+//    Unsplash (licencia libre) enlazadas directo desde su CDN — el propio
+//    navegador del usuario las descarga al abrir la página, no viven en
+//    este repo. Se buscaron y verificaron con el navegador Chrome
+//    conectado del usuario (este sandbox no tiene salida a internet para
+//    descargar imágenes). 2 fotos por módulo (52 en cafe.html), agrupadas
+//    por tema para elegirlas con criterio sin tener que buscar una por
+//    una. Se usan en el hero, la tarjeta de continuar, la fila de niveles
+//    y arriba de cada lección.
+// 3) Progreso perdido entre dispositivos: se agregó sync con Supabase
+//    (mismo proyect ya usado por ropa.html/recetas.html — tabla nueva
+//    course_progress, con policies anon select/insert/update). Al cargar
+//    la página se trae el progreso remoto de ese usuario+curso y se
+//    combina con el local módulo por módulo (se queda con el más
+//    reciente de cada uno, nunca se pierde nada); después de cada cambio
+//    se vuelve a subir. Sigue funcionando 100% offline — el sync es un
+//    extra, no un requisito.
 // v92: clima.html — el usuario probó el arreglo de v91 (silueta plana
 // gris para el estado "no hace falta hoy") y avisó (verbatim)
 // "desaparecio": al aplanar la foto a una silueta sólida se perdía todo
@@ -981,6 +1025,7 @@ const ASSETS = [
   './comidas.html',
   './ski.html',
   './snowboard.html',
+  './cafe.html',
   './nuevayork.html',
   './clima.html',
   './icons/clima/tshirt.png',
