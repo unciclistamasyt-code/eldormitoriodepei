@@ -1,4 +1,13 @@
-const CACHE = 'app-v96';
+const CACHE = 'app-v97';
+// v97: cafe.html — el usuario pidió (verbatim) "quita a majo en cafe": a
+// diferencia de golf.html, Coffee School nunca necesitó selector de
+// perfil (Sebas/Majo), así que se quitó por completo (el array USERS, el
+// selector de localStorage por usuario activo, y las dos pastillas
+// "Sebas"/"Majo" arriba de los niveles). El progreso sigue viviendo bajo
+// la misma clave de localStorage que ya usaba por defecto (Sebas era el
+// primer/único perfil activo), así que nadie pierde avance con este
+// cambio. El resto de cafe.html (diseño, fotos, sync con Supabase) queda
+// igual que en v93.
 // v96: snowboard.html cierra el rediseño de los 4 cursos tipo escuela
 // (café v93, golf v94, ski v95, ahora snowboard). snowboard.html comparte
 // prácticamente el mismo motor que ski.html (mismos nombres de función y
