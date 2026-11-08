@@ -1,4 +1,79 @@
-const CACHE = 'app-v93';
+const CACHE = 'app-v96';
+// v96: snowboard.html cierra el rediseño de los 4 cursos tipo escuela
+// (café v93, golf v94, ski v95, ahora snowboard). snowboard.html comparte
+// prácticamente el mismo motor que ski.html (mismos nombres de función y
+// de clases CSS, solo --brand:var(--coral) en vez de var(--ice) y claves
+// de localStorage con prefijo snowboard_), así que se le aplicó el mismo
+// tratamiento punto por punto:
+// 1) Foto en el hero, tarjetas de "Explorar niveles" con foto de
+//    portada, anillo de progreso SVG en "Continuá donde ibas" (la barra
+//    lineal se mantiene debajo). climb-svg, heatmap y mes-a-mes quedaron
+//    intactos, igual que en ski.
+// 2) 64 fotos de Unsplash (2 por módulo × 32 módulos — snowboard no tiene
+//    nivel 6 de taller como ski), agrupadas en ~15 pools temáticos
+//    (equipo, stance/goofy-regular, bindings, ropa, caídas, deslizamiento
+//    y giros de principiante, telesilla, tienda, botas con cordones,
+//    carving, powder, park, terreno variado, backcountry/splitboard,
+//    competición), asignadas según el contenido real de cada módulo.
+// 3) Sync de progreso con Supabase — misma tabla course_progress,
+//    COURSE_NAME='snowboard', mismo merge propio (mergeModuleRecord +
+//    mergeLocalAndRemote) que ski porque comparte el mismo formato de
+//    datos (progress por módulo + activity por día, un solo usuario fijo
+//    'Sebas').
+// Con esto los 4 cursos (café/golf/ski/snowboard) ya tienen diseño con
+// fotos, anillo de progreso y sync entre dispositivos.
+// v95: ski.html recibe el mismo tratamiento de 3 partes que café (v93) y
+// golf (v94), pero adaptado en vez de copiado: ski.html ya tenía su propio
+// diseño distinto ("Duolingo" — hero con grad, greet con racha y tira
+// semanal, climb-svg de montaña, heatmap, mes a mes) y su propio motor de
+// datos (LEVELS/MODULES planos en vez de CURRICULUM anidado, progreso por
+// módulo con completed/completedAt/quizCorrect/quizTotal/timeSpentSec/
+// audioStarted, activity separado para el heatmap/racha, un solo usuario
+// fijo 'Sebas' sin selector de perfil). En vez de reemplazar ese diseño
+// por el de golf/café, se le agregaron los 3 elementos pedidos sin
+// romperlo:
+// 1) Foto en el hero (arriba a la derecha), las 4 tarjetas de "Explorar
+//    niveles" pasaron de ícono numerado a foto de portada con overlay +
+//    número, y la tarjeta "Continuá donde ibas" ahora muestra un anillo
+//    de progreso SVG (antes solo tenía la barra lineal, que se mantuvo
+//    debajo). climb-svg, heatmap y mes-a-mes de ski.html se dejaron
+//    intactos — son su propio plus, no estaban en el pedido de rediseño.
+// 2) 98 fotos de Unsplash (2 por módulo × 49 módulos), agrupadas en ~17
+//    pools temáticos (terminología/montaña, caídas de principiante,
+//    telesilla, señalización, equipo, botas/bindings, carving, powder,
+//    freestyle, backcountry, avalanchas, slalom, taller de afilado/bevel,
+//    encerado), asignadas módulo por módulo según el contenido real. Se
+//    muestran en el hero, las tarjetas de nivel y arriba de cada lección.
+// 3) Sync de progreso con Supabase — mismo proyecto y tabla
+//    course_progress que café/golf, COURSE_NAME='ski', pero con un merge
+//    propio (mergeModuleRecord + mergeLocalAndRemote) porque ski.html
+//    guarda dos cosas separadas (progress por módulo y activity por día)
+//    en vez de un solo objeto: progress se combina módulo por módulo
+//    prefiriendo "completado" sobre no completado y el quiz más reciente;
+//    activity se combina tomando el máximo de módulos por día de cada
+//    lado. Un solo usuario fijo, no hace falta sync por selector de
+//    perfil como en golf/café.
+// v94: golf.html recibe el mismo rediseño de 3 partes que ya se hizo en
+// cafe.html (v93), continuando el pedido del usuario de aplicarlo a los 4
+// cursos tipo escuela (golf/ski/snowboard/café), confirmado explícitamente
+// vía pregunta de seguimiento ("Café está aprobado, seguí con
+// Golf/Ski/Snowboard"):
+// 1) Mismo bloque de CSS/JS nuevo que café (hero-photo, anillo de progreso
+//    SVG, tarjeta de lección con foto, fila "Explorar niveles" con fotos
+//    de portada, mini gráfico de actividad semanal, fotos arriba de cada
+//    lección) — texto idéntico al de café, solo cambian las variables
+//    --course-accent/--course-accent-2/--course-wash* (golf conserva sus
+//    colores originales verde lima/rojo, café usa caramelo/terracota —
+//    solo se renombraron las variables para poder compartir el bloque).
+// 2) 2 fotos de Unsplash por módulo (80 en total, 40 módulos), buscadas y
+//    verificadas con el navegador Chrome conectado del usuario igual que
+//    en café (este sandbox no tiene salida a internet). Se agruparon en
+//    ~23 pools temáticos (grip, shaft, putting, bunker, driver, launch
+//    monitor, taller de clubmaking, etc.) para asignarlas con criterio a
+//    cada uno de los 40 módulos según su contenido real.
+// 3) Sync de progreso con Supabase igual que café — mismo proyecto, misma
+//    tabla course_progress, COURSE_NAME = 'golf', mismo merge por
+//    recencia módulo por módulo para no perder nada entre dispositivos.
 // v93: nueva página cafe.html — el usuario pidió (verbatim) "podemos hacer
 // toda una pagina nueva de aprender sobre el cafe", eligiendo formato
 // "Curso tipo escuela" (niveles, módulos con quiz, progreso guardado y

@@ -329,6 +329,39 @@
 
   .home-only{display:block;}
   .home-only.hide{display:none;}
+
+  /* ---------- foto en el hero ---------- */
+  .hero-photo{
+    position:absolute; right:16px; top:16px; width:84px; height:84px;
+    border-radius:18px; overflow:hidden; border:2px solid var(--line);
+    box-shadow:0 3px 0 var(--line); z-index:1;
+  }
+  .hero-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  /* ---------- tarjetas de "explorar niveles" con foto ---------- */
+  .explore-tile{
+    position:relative; overflow:hidden; height:98px; justify-content:flex-end;
+    background-size:cover; background-position:center;
+  }
+  .explore-tile::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(10,14,20,0.9) 12%, rgba(10,14,20,0.3) 62%, rgba(10,14,20,0.05));
+  }
+  .explore-tile-icon, .explore-tile-label{ position:relative; z-index:1; }
+  .explore-tile-icon{background:rgba(255,255,255,0.14); color:#fff; backdrop-filter:blur(2px);}
+  .explore-tile-label{color:#fff;}
+
+  /* ---------- anillo de progreso chico (tarjeta "continuá donde ibas") ---------- */
+  .continue-ring{flex-shrink:0;width:46px;height:46px;}
+  .continue-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .continue-ring .ring-bg{fill:none;stroke:var(--panel2);stroke-width:3.5;}
+  .continue-ring .ring-fg{fill:none;stroke:var(--brand);stroke-width:3.5;stroke-linecap:round;transition:stroke-dashoffset .4s ease;}
+
+  /* ---------- fotos arriba de cada lección ---------- */
+  .modPhotos{display:flex;gap:10px;margin:0 0 16px;}
+  .modPhoto{flex:1;min-width:0;background:var(--panel);border:2px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 3px 0 var(--line);}
+  .modPhoto img{width:100%;height:110px;object-fit:cover;display:block;}
+  .modPhoto .cap{padding:6px 10px 8px;font-size:10.5px;color:var(--muted);font-weight:700;}
 </style>
 </head>
 <body>
@@ -345,6 +378,7 @@
   <div id="home" class="home-only">
 
     <div class="hero">
+      <div class="hero-photo" id="heroPhoto"><img id="heroPhotoImg" src="" alt="Snowboard"></div>
       <div class="hero-eyebrow">🏂 Snowboard School</div>
       <h1 class="hero-title">Andá mejor.<br><b>Toda la temporada.</b></h1>
       <p class="hero-sub">Aprendé. Practicá. Progresá.</p>
@@ -378,7 +412,7 @@
     </div>
 
     <div class="continue-card" id="continueCard" style="display:none;" onclick="openModuleById(continueId)">
-      <div class="continue-card-icon"><svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg></div>
+      <div class="continue-ring" id="continueRing"></div>
       <div class="continue-card-body">
         <div class="eyebrow-coral">CONTINÚA DONDE IBAS</div>
         <h3 id="continueTitle"></h3>
@@ -475,6 +509,7 @@
   <div id="reader" class="reader">
     <div class="reader-eyebrow" id="rEyebrow"></div>
     <h1 id="rTitle"></h1>
+    <div class="modPhotos" id="modPhotos"></div>
     <div class="reader-body" id="rBody"></div>
     <div class="audio-btn" id="audioBtn" onclick="toggleAudio()">
       <span class="ic" id="audioIcon">▶</span>
@@ -524,6 +559,7 @@ const MODULES = [];
 MODULES.push(
 {
   id:'n1-m1', nivel:1, title:'Vocabulario esencial del snowboard',
+  imgs: [{"url": "https://images.unsplash.com/photo-1478700485868-972b69dc3fc4?w=1200&q=80&auto=format&fit=crop", "alt": "Equipo de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1625154869776-100eba31abbb?w=1200&q=80&auto=format&fit=crop", "alt": "Equipo de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Igual que en esquí, el snowboard se profesionalizó primero en inglés, así que buena parte de su vocabulario técnico se usa en inglés incluso en conversaciones en español — tanto en pista como en cualquier tienda. Dominarlo te permite entender a un instructor, a otro rider, o a un cliente sin traducir mentalmente cada palabra.</p>
     <p>La tabla tiene <b>nose</b> (punta, el extremo delantero cuando vas en tu posición natural) y <b>tail</b> (cola, el extremo trasero). A diferencia del esquí, en snowboard vas con el cuerpo de costado respecto a la dirección de desplazamiento, con ambos pies fijos a una sola tabla — nunca con un pie en cada tabla. Los dos cantos metálicos que corren por los bordes se llaman igual que en esquí, <b>edges</b>, y se dividen en <b>toe edge</b> (el canto del lado de los dedos del pie) y <b>heel edge</b> (el canto del lado del talón) — esta distinción es constante en todo el vocabulario de técnica de snowboard, porque casi cualquier maniobra se describe primero según qué canto estás usando.</p>
@@ -541,6 +577,7 @@ MODULES.push(
 },
 {
   id:'n1-m2', nivel:1, title:'Postura base y equilibrio en snowboard',
+  imgs: [{"url": "https://images.unsplash.com/photo-1625154869776-100eba31abbb?w=1200&q=80&auto=format&fit=crop", "alt": "Postura base en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1599405653894-8a595f692abf?w=1200&q=80&auto=format&fit=crop", "alt": "Postura base en snowboard", "credit": "Unsplash"}],
   content:`
     <p>La postura base en snowboard parte de una diferencia estructural clave respecto al esquí: tus dos pies están fijos a una sola tabla, uno delante del otro, en vez de tener control independiente de cada pie sobre su propio esquí. Eso significa que el equilibrio lateral (de costado) es mucho más central desde el primer segundo que en esquí, donde el equilibrio es principalmente de adelante hacia atrás.</p>
     <p>La postura atlética de snowboard: rodillas flexionadas, cadera baja y centrada entre ambos pies, columna relativamente neutra (ni muy encorvada ni muy erguida), y los brazos relajados a los costados o ligeramente adelante, listos para ajustar el equilibrio en cualquier dirección. El peso se reparte entre ambos pies de forma pareja en terreno plano, pero ese reparto cambia constantemente según qué estés haciendo — una de las habilidades centrales de este deporte es aprender a mover el peso de un pie al otro, y de un canto al otro, de forma fluida y deliberada.</p>
@@ -558,6 +595,7 @@ MODULES.push(
 },
 {
   id:'n1-m3', nivel:1, title:'Anatomía básica de la tabla y la fijación',
+  imgs: [{"url": "https://images.unsplash.com/photo-1768777156505-296818362138?w=1200&q=80&auto=format&fit=crop", "alt": "Tabla y fijación de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1768777156454-8232919c5a13?w=1200&q=80&auto=format&fit=crop", "alt": "Tabla y fijación de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Antes de entrar en detalle técnico (eso llega en el Nivel 3), conviene reconocer las partes físicas básicas de una tabla de snowboard, porque vas a usar estos nombres constantemente desde el primer día de clase. La tabla tiene <b>nose</b> (punta) y <b>tail</b> (cola); en la mayoría de tablas pensadas para principiantes ambos extremos son prácticamente simétricos, aunque no siempre es así, como vas a ver más adelante.</p>
     <p>La <b>base</b> es la superficie plástica inferior en contacto con la nieve — igual que en esquí, se encera periódicamente para reducir fricción. Los <b>edges</b> (cantos) corren por todo el perímetro de la tabla, y son los que, al inclinarse, muerden la nieve para generar agarre, girar, o frenar — el mecanismo físico es idéntico en concepto al de un esquí, aplicado a una sola tabla más ancha en vez de dos esquís angostos.</p>
@@ -575,6 +613,7 @@ MODULES.push(
 },
 {
   id:'n1-m4', nivel:1, title:'¿Regular o goofy? Determinar tu stance natural',
+  imgs: [{"url": "https://images.unsplash.com/photo-1647644768239-6e937d5e9743?w=1200&q=80&auto=format&fit=crop", "alt": "Stance regular o goofy en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1711751128991-e2c27a3f3da8?w=1200&q=80&auto=format&fit=crop", "alt": "Stance regular o goofy en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Antes de la primera clase, hay una pregunta que todo instructor va a hacer y que vale la pena que sepas responder o ayudar a determinar como vendedor: ¿el cliente es <b>regular</b> (pie izquierdo adelante) o <b>goofy</b> (pie derecho adelante)? Ninguno de los dos es más común o "mejor" que el otro — es simplemente una preferencia natural de cada persona, parecida a ser diestro o zurdo, aunque no siempre coinciden ambas cosas (hay personas diestras que son goofy, y zurdas que son regular).</p>
     <p>Hay dos pruebas simples y rápidas que se usan universalmente en tienda o en la primera clase para determinarlo, cuando la persona nunca probó antes. La primera es la <b>prueba del empujón</b>: pedirle a la persona que se quede parada normalmente, y empujarla suavemente desde atrás sin avisar el momento exacto — el pie que automáticamente da el paso adelante para recuperar el equilibrio suele ser el pie delantero natural. La segunda es la <b>prueba del deslizamiento</b> (si hay una superficie lisa disponible, como un piso de madera con calcetines): pedirle que se deslice un poco como si patinara — el pie que naturalmente queda adelante en ese deslizamiento es, otra vez, una señal fuerte de su stance natural.</p>
@@ -591,6 +630,7 @@ MODULES.push(
 },
 {
   id:'n1-m5', nivel:1, title:'Ropa, protección y seguridad básica en pista',
+  imgs: [{"url": "https://images.unsplash.com/photo-1522056615691-da7b8106c665?w=1200&q=80&auto=format&fit=crop", "alt": "Ropa y protección de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1580155957155-9576b663a8bf?w=1200&q=80&auto=format&fit=crop", "alt": "Ropa y protección de snowboard", "credit": "Unsplash"}],
   content:`
     <p>El sistema de capas en snowboard sigue el mismo principio de tres capas que en esquí: una <b>capa base</b> (térmica, pegada al cuerpo, que gestiona la humedad del sudor alejándola de la piel), una <b>capa media</b> (aislante, atrapa aire caliente — fleece o plumón sintético/natural) y una <b>capa exterior</b> (shell, impermeable y resistente al viento). La diferencia práctica más notable frente al esquí es que un rider de snowboard pasa mucho más tiempo sentado en la nieve (esperando telesillas, descansando, armando trucos en park) que un esquiador — por eso pantalones con buen refuerzo e impermeabilización en la zona de los glúteos y las rodillas son particularmente valiosos en este deporte.</p>
     <p>En protección específica de snowboard, las <b>muñequeras con refuerzo rígido</b> (wrist guards) son mucho más relevantes que en esquí, porque el reflejo instintivo de frenar una caída con las manos extendidas es extremadamente común en principiantes, y las muñecas son de las lesiones más frecuentes del deporte en ese nivel. El <b>casco</b> es igual de recomendable que en esquí, sin ninguna diferencia real de criterio entre ambos deportes. Protectores de cadera e impacto (hip protection), aunque menos universales que las muñequeras, son particularmente valorados por principiantes y por riders de park que practican trucos con caídas repetidas.</p>
@@ -607,6 +647,7 @@ MODULES.push(
 },
 {
   id:'n1-m6', nivel:1, title:'Caídas y cómo levantarte en snowboard',
+  imgs: [{"url": "https://images.unsplash.com/photo-1478700485868-972b69dc3fc4?w=1200&q=80&auto=format&fit=crop", "alt": "Caída y recuperación en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1625154869776-100eba31abbb?w=1200&q=80&auto=format&fit=crop", "alt": "Caída y recuperación en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Vas a caerte, y es parte normal del aprendizaje, exactamente igual que en esquí — la diferencia es que en snowboard la mecánica de caída y de levantarte es distinta, porque tienes ambos pies fijos a una sola tabla en vez de control independiente de cada pierna.</p>
     <p>Hay dos tipos de caída según qué canto estabas usando, y cada uno tiene su propia técnica recomendada. Cayendo hacia el <b>heel edge</b> (hacia atrás, sobre el talón), la técnica correcta es dejar caer el peso sobre los glúteos y rodar ligeramente hacia atrás, nunca extender las manos hacia atrás para frenar el impacto con las muñecas — de ahí la importancia de las wrist guards vistas en el módulo anterior, porque el reflejo instintivo de todas formas va a aparecer. Cayendo hacia el <b>toe edge</b> (hacia adelante, sobre los dedos del pie), la técnica correcta es doblar las rodillas y caer sobre los antebrazos con los puños cerrados (no con las palmas extendidas y los dedos abiertos), absorbiendo el impacto con los brazos en vez de trabarlos rígidos.</p>
@@ -627,6 +668,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n2-m1', nivel:2, title:'Deslizamiento recto y falling leaf',
+  imgs: [{"url": "https://images.unsplash.com/photo-1647644768239-6e937d5e9743?w=1200&q=80&auto=format&fit=crop", "alt": "Deslizamiento recto en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1488580923008-6f98dfbd7a25?w=1200&q=80&auto=format&fit=crop", "alt": "Deslizamiento recto en snowboard", "credit": "Unsplash"}],
   content:`
     <p>El primer contacto con el deslizamiento real en snowboard, igual que en esquí, se hace en una pendiente mínima — el objetivo es sentir cómo responde la tabla sobre la nieve antes de sumar la variable de velocidad de una pendiente más pronunciada. Pero antes de eso, conviene practicar el <b>skating</b>: con un solo pie fijo a la tabla (el delantero) y el trasero libre apoyado en el suelo, se usa ese pie libre para impulsarse en terreno plano, parecido a andar en patineta — es la forma estándar de moverte por zonas planas (filas de telesilla, caminos de conexión) sin tener ambos pies abrochados.</p>
     <p>El <b>deslizamiento recto</b> (straight glide) se practica con ambos pies ya fijos a la tabla, en una pendiente mínima, manteniendo la postura base aprendida en el nivel anterior, sin intentar girar ni frenar — simplemente dejar que la gravedad mueva la tabla hacia adelante hasta que la pendiente se acabe de forma natural. Este ejercicio te da la primera sensación real de deslizamiento con ambos pies fijos, que resulta sorprendentemente distinta a la sensación de equilibrio estático practicada en el nivel anterior.</p>
@@ -643,6 +685,7 @@ MODULES.push(
 },
 {
   id:'n2-m2', nivel:2, title:'El primer giro dirigido: J-turns',
+  imgs: [{"url": "https://images.unsplash.com/photo-1523246181290-a16e4b9a00b5?w=1200&q=80&auto=format&fit=crop", "alt": "Primer giro dirigido en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1578500107711-56e7ffcf45dd?w=1200&q=80&auto=format&fit=crop", "alt": "Primer giro dirigido en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Un <b>J-turn</b> es el primer giro dirigido y completo que aprende cualquier rider nuevo, y su nombre describe literalmente la forma que traza en la nieve: una línea recta que termina curvándose hacia un lado, como la forma de la letra "J". Es el puente natural entre el falling leaf (deslizamiento lateral sobre un solo canto) y un giro completo de canto a canto, que vas a ver en el próximo módulo.</p>
     <p>Se practica en una pendiente suave, arrancando con un deslizamiento recto (straight glide) breve, manteniendo la tabla apuntando derecho hacia abajo de la pendiente por un momento, y después, de forma deliberada, aplicando presión progresiva sobre uno de los dos cantos (empecemos con el heel edge, que suele sentirse más intuitivo al principio) mientras giras suavemente la cabeza y los hombros hacia ese mismo lado. La tabla responde curvándose en esa dirección hasta terminar completamente de costado a la pendiente, deteniéndose por efecto de la fricción del canto contra la nieve — ese final de costado y detenido es la forma de "J" completa.</p>
@@ -659,6 +702,7 @@ MODULES.push(
 },
 {
   id:'n2-m3', nivel:2, title:'Giros encadenados básicos (linking turns)',
+  imgs: [{"url": "https://images.unsplash.com/photo-1518085050105-3c33befa5442?w=1200&q=80&auto=format&fit=crop", "alt": "Giros encadenados en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1711751129036-2224bb99621e?w=1200&q=80&auto=format&fit=crop", "alt": "Giros encadenados en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Una vez que los J-turns hacia ambos lados se sienten razonablemente cómodos por separado, el siguiente paso lógico es encadenarlos: pasar de un giro terminado sobre el heel edge directamente a un nuevo giro terminado sobre el toe edge, y así sucesivamente, sin detenerte completamente entre uno y otro. A esto se le llama <b>linking turns</b> (giros encadenados), y es, en esencia, lo que la mayoría de la gente entiende visualmente como "esquiar o andar en snowboard" cuando ve a alguien bajando una pista con fluidez.</p>
     <p>El momento más delicado de un giro encadenado es exactamente el instante de transición entre un canto y el otro — ese momento en que, brevemente, la tabla pasa por su posición completamente plana (flat base), sin ningún canto mordiendo la nieve. Es un instante de equilibrio reducido, y la clave técnica para manejarlo bien es que la transición sea <b>rápida y decidida</b>, no lenta ni titubeante: cuanto más tiempo pasa la tabla plana sin canto activo, más inestable se siente el momento, así que el objetivo es minimizar ese tiempo, no evitarlo por completo (eso es físicamente imposible).</p>
@@ -675,6 +719,7 @@ MODULES.push(
 },
 {
   id:'n2-m4', nivel:2, title:'Detenerse de forma segura y controlada',
+  imgs: [{"url": "https://images.unsplash.com/photo-1541529229255-5762a41dfba4?w=1200&q=80&auto=format&fit=crop", "alt": "Detenerse en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1612180466811-921a028fe665?w=1200&q=80&auto=format&fit=crop", "alt": "Detenerse en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Frenar de forma controlada en snowboard usa el mismo principio físico que en esquí: más superficie de canto en contacto efectivo con la nieve genera más fricción y, por lo tanto, más frenado. La diferencia es que en snowboard tienes solo dos cantos disponibles (no cuatro, como en esquí con dos esquís independientes), así que el frenado siempre se hace sobre uno de los dos: heel edge o toe edge.</p>
     <p>El <b>heel stop</b> (frenado sobre el canto del talón) es, para la gran mayoría de principiantes, el más intuitivo de aprender primero: de cara a la pendiente que ya recorriste (de espaldas a la dirección en la que venías bajando), aplicas presión progresiva sobre los talones, levantando ligeramente las puntas de los pies dentro de la bota, hasta que el heel edge muerde lo suficiente como para detenerte por completo. Es intuitivo porque se parece al reflejo natural de "sentarse hacia atrás" que mencionamos como error en otros contextos — aquí, en cambio, ese reflejo sí ayuda.</p>
@@ -691,6 +736,7 @@ MODULES.push(
 },
 {
   id:'n2-m5', nivel:2, title:'Uso de remontes con tabla puesta',
+  imgs: [{"url": "https://images.unsplash.com/photo-1614619632105-b571e9f0b3d0?w=1200&q=80&auto=format&fit=crop", "alt": "Telesilla con tabla de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1562631328-9394f3f04496?w=1200&q=80&auto=format&fit=crop", "alt": "Telesilla con tabla de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Subir en telesilla o telesquí con una tabla de snowboard tiene una particularidad mecánica que no existe en esquí: la mayoría de riders viaja en el remonte con <b>un solo pie fijo a la tabla</b> (el delantero) y el pie trasero completamente libre, apoyado en un pequeño escalón o "stomp pad" sobre la tabla, o simplemente colgando — abrochar ambos pies antes de subir al telesilla es innecesario e incómodo, y hace mucho más difícil moverte en la fila de espera.</p>
     <p>Para la <b>telesilla</b>: en la fila de espera y al subir, se usa el método de skating visto en el Nivel 2 (un pie fijo, el otro empujando) para avanzar sin tener que cargar la tabla en brazos. Al sentarte, la tabla cuelga naturalmente con el pie delantero fijo; al bajar en la cima, lo importante es mantener el pie delantero bien afirmado contra el stomp pad o la superficie de la tabla mientras te deslizas fuera de la zona de bajada, antes de detenerte por completo para abrochar el segundo pie — intentar frenar de inmediato justo en la zona de bajada genera congestión para la gente que viene detrás.</p>
@@ -707,6 +753,7 @@ MODULES.push(
 },
 {
   id:'n2-m6', nivel:2, title:'Errores comunes de principiante y cómo corregirlos',
+  imgs: [{"url": "https://images.unsplash.com/photo-1511880200544-0170efd77eff?w=1200&q=80&auto=format&fit=crop", "alt": "Errores comunes de principiante en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1518608774889-b04d2abe7702?w=1200&q=80&auto=format&fit=crop", "alt": "Errores comunes de principiante en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Cerrando este nivel, vale la pena repasar los errores de principiante más frecuentes de forma consolidada — tanto porque los vas a ver todo el tiempo si trabajas en una tienda o acompañas a alguien que recién empieza, como porque reconocerlos en tu propia práctica acelera mucho la curva de aprendizaje.</p>
     <p>El error más universal, ya mencionado en el Nivel 1, es <b>mirar hacia los pies o la tabla</b> en vez de hacia adelante, en la dirección en la que vas — rompe el equilibrio y además reduce la capacidad de reacción ante obstáculos. Muy relacionado está el error de <b>no completar la rotación de hombros</b> al iniciar un giro: muchos principiantes mueven la cadera y las piernas pero dejan los hombros y la mirada mirando hacia adelante en línea recta, lo que hace que el giro se sienta forzado y poco efectivo — la corrección es la misma secuencia de mirada-hombros-cadera-canto vista en los módulos de J-turn y giros encadenados.</p>
@@ -728,6 +775,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n3-m1', nivel:3, title:'Camber, rocker y perfiles híbridos',
+  imgs: [{"url": "https://images.unsplash.com/photo-1590461283969-47fedf408cfd?w=1200&q=80&auto=format&fit=crop", "alt": "Camber y rocker de una tabla", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1518608774889-b04d2abe7702?w=1200&q=80&auto=format&fit=crop", "alt": "Camber y rocker de una tabla", "credit": "Unsplash"}],
   content:`
     <p>El <b>perfil</b> (camber profile) es la curvatura que tiene la tabla de punta a cola vista de costado, apoyada sobre una superficie plana, y es una de las variables técnicas más importantes para entender qué tipo de rider le conviene cada tabla — el equivalente conceptual más cercano en esquí sería el rocker/camber de un esquí, pero en snowboard esta variable tiene todavía más peso en la decisión de compra.</p>
     <p>El <b>camber tradicional</b> es el perfil clásico: la tabla, apoyada plana en el suelo, se eleva ligeramente en el centro (bajo el pie), tocando el suelo solo cerca del nose y del tail. Al pisar la tabla y distribuir el peso, ese arco se aplana, generando una tensión elástica que se traduce en más <b>pop</b> (rebote enérgico, útil para saltar) y más agarre de canto en pista dura y a alta velocidad — es el perfil preferido históricamente para carving y para riders que buscan precisión y respuesta directa.</p>
@@ -745,6 +793,7 @@ MODULES.push(
 },
 {
   id:'n3-m2', nivel:3, title:'Flex de la tabla: para qué sirve y a quién le conviene',
+  imgs: [{"url": "https://images.unsplash.com/photo-1676823648066-01a3e8db31c2?w=1200&q=80&auto=format&fit=crop", "alt": "Flex de una tabla de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1599405653894-8a595f692abf?w=1200&q=80&auto=format&fit=crop", "alt": "Flex de una tabla de snowboard", "credit": "Unsplash"}],
   content:`
     <p>El <b>flex</b> de una tabla es qué tan fácil o difícil es doblarla, tanto longitudinalmente (de punta a cola) como torsionalmente (retorciéndola en diagonal) — normalmente se mide en una escala relativa de 1 a 10 que varía algo de marca a marca, de más <b>blanda</b> (soft flex, valores bajos) a más <b>dura</b> (stiff flex, valores altos), con un rango <b>medio</b> en el centro.</p>
     <p>Una tabla de flex <b>blando</b> es más fácil de doblar y pivotar, perdona más los errores de técnica, y es generalmente más cómoda a baja velocidad — por eso es la opción típica para principiantes, para riders de park que buscan maniobrabilidad en jumps y rails, y para quienes priorizan un riding más lúdico y menos orientado a velocidad pura. La contrapartida es que a alta velocidad o en nieve muy dura, una tabla blanda puede sentirse inestable, "vibrando" o perdiendo precisión.</p>
@@ -762,6 +811,7 @@ MODULES.push(
 },
 {
   id:'n3-m3', nivel:3, title:'Shape: directional, twin y directional twin',
+  imgs: [{"url": "https://images.unsplash.com/photo-1647644768239-6e937d5e9743?w=1200&q=80&auto=format&fit=crop", "alt": "Shape de una tabla de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1599751449029-e4ea8f21d966?w=1200&q=80&auto=format&fit=crop", "alt": "Shape de una tabla de snowboard", "credit": "Unsplash"}],
   content:`
     <p>El <b>shape</b> (forma general) de una tabla describe si está diseñada para andar igual de bien en ambas direcciones o si está optimizada para una dirección principal — es una decisión de diseño que afecta directamente qué tan bien se comporta la tabla andando switch (al revés del stance natural, visto en el Nivel 1).</p>
     <p>Una tabla <b>twin</b> (o true twin) es perfectamente simétrica: nose y tail tienen exactamente la misma forma, el mismo flex, y las fijaciones se montan exactamente en el centro geométrico de la tabla. El resultado es que anda exactamente igual en ambas direcciones, sin ninguna diferencia real entre andar normal o switch — es el shape preferido casi universalmente para riders de park y freestyle, donde andar switch es tan frecuente como andar en stance normal.</p>
@@ -779,6 +829,7 @@ MODULES.push(
 },
 {
   id:'n3-m4', nivel:3, title:'Ancho y largo de tabla: cómo elegirlos bien',
+  imgs: [{"url": "https://images.unsplash.com/photo-1647644768239-6e937d5e9743?w=1200&q=80&auto=format&fit=crop", "alt": "Elegir ancho y largo de tabla", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1599751449029-e4ea8f21d966?w=1200&q=80&auto=format&fit=crop", "alt": "Elegir ancho y largo de tabla", "credit": "Unsplash"}],
   content:`
     <p>El <b>ancho</b> correcto de una tabla depende principalmente de la talla de bota del cliente, no de su altura o peso — es un criterio distinto al de esquí, donde el ancho de cintura se elige según uso. En snowboard, si la tabla es demasiado angosta para el pie, la puntera y el talón de la bota sobresalen por los costados y rozan la nieve al inclinar la tabla en los giros (<b>toe/heel drag</b>), lo que literalmente frena el giro de golpe y puede provocar una caída — un problema puramente mecánico, no de preferencia.</p>
     <p>Por eso el punto de partida correcto para elegir ancho nunca es "qué ancho se ve bien" sino la talla de bota exacta del cliente, comparada contra la tabla de anchos de referencia que publica cada marca (normalmente expresada como "ancho de cintura" en centímetros, igual que en esquí) — la mayoría de marcas ofrecen, para un mismo modelo, versiones regular y <b>wide</b> (ancha) específicamente para clientes con pie grande, en vez de forzarlos a una talla más larga de tabla solo para conseguir más ancho.</p>
@@ -795,6 +846,7 @@ MODULES.push(
 },
 {
   id:'n3-m5', nivel:3, title:'Disciplinas de snowboard: para qué sirve cada una',
+  imgs: [{"url": "https://images.unsplash.com/photo-1737380047092-e0cb34e12f84?w=1200&q=80&auto=format&fit=crop", "alt": "Disciplinas de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1639519273674-9ed35845f3e1?w=1200&q=80&auto=format&fit=crop", "alt": "Disciplinas de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Entender las disciplinas principales del snowboard te permite traducir lo que un cliente describe de su uso real hacia una recomendación técnica concreta, exactamente la misma lógica consultiva de categorías de esquí que ya conoces, aplicada ahora a este deporte.</p>
     <p><b>All-mountain</b> es la categoría más amplia y la que cubre a la mayoría de clientes recreativos: pensada para andar de todo un poco (pista preparada, algo de nieve variada, ocasionalmente algo de powder) sin especializarse en ningún extremo — generalmente tablas directional twin, flex medio, perfil híbrido camber-rocker, como viste en los módulos anteriores. Es el punto de partida razonable para cualquier cliente que no declare una preferencia clara por una disciplina específica.</p>
@@ -812,6 +864,7 @@ MODULES.push(
 },
 {
   id:'n3-m6', nivel:3, title:'Bindings: sistemas de sujeción y ajuste',
+  imgs: [{"url": "https://images.unsplash.com/photo-1767487018490-b3e884fc8c3a?w=1200&q=80&auto=format&fit=crop", "alt": "Sistemas de sujeción de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1788962903098-446d3af17b6e?w=1200&q=80&auto=format&fit=crop", "alt": "Sistemas de sujeción de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Más allá de la anatomía básica vista en el Nivel 1 (highback, straps), existen distintos <b>sistemas</b> de binding según cómo se sujeta la bota, y conocerlos te permite explicarle a un cliente las diferencias reales entre modelos en vez de limitarte al precio o la marca.</p>
     <p>El sistema <b>strap-in</b> (correas) es el más tradicional y todavía el más común: dos correas independientes, una sobre el ankle (tobillo) y otra sobre el toe (puntera), que se ajustan y cierran manualmente con cada uso. Es el sistema más versátil en términos de ajuste fino de presión, aunque calzarlo toma algo más de tiempo que los sistemas de entrada rápida que vas a ver a continuación — por eso sigue siendo el preferido por la mayoría de riders de park y freestyle, donde el control fino de ajuste importa más que la velocidad de calce.</p>
@@ -829,6 +882,7 @@ MODULES.push(
 },
 {
   id:'n3-m7', nivel:3, title:'Botas: flex y sistemas de cordones',
+  imgs: [{"url": "https://images.unsplash.com/photo-1771479519197-361e9928fb20?w=1200&q=80&auto=format&fit=crop", "alt": "Botas de snowboard: flex y cordones", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1739700067900-2c3a0f533226?w=1200&q=80&auto=format&fit=crop", "alt": "Botas de snowboard: flex y cordones", "credit": "Unsplash"}],
   content:`
     <p>Al igual que la tabla, las botas de snowboard tienen su propio <b>flex</b> independiente — no hay que asumir que una tabla de flex duro necesita automáticamente una bota de flex duro, aunque en la práctica suelen combinarse flex similares entre tabla y bota para un comportamiento coherente. Una bota de flex blando prioriza comodidad y maniobrabilidad (típica de park/freestyle y de principiantes); una bota de flex duro prioriza transmisión de presión precisa hacia la tabla a alta velocidad (típica de freeride y carving serio).</p>
     <p>El sistema de ajuste de cordones (<b>lacing system</b>) es, en la práctica, tan relevante para la experiencia de compra como el flex mismo. El <b>traditional lacing</b> (cordones convencionales, atados a mano como una zapatilla normal) ofrece el ajuste más preciso y personalizable zona por zona del pie, pero toma más tiempo ajustar bien, y los cordones pueden desatarse durante el día si no se asegura bien el nudo.</p>
@@ -846,6 +900,7 @@ MODULES.push(
 },
 {
   id:'n3-m8', nivel:3, title:'Venta consultiva: armando el sistema completo',
+  imgs: [{"url": "https://images.unsplash.com/photo-1543227378-f718d1839795?w=1200&q=80&auto=format&fit=crop", "alt": "Venta consultiva de sistema de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1582865479892-cc19ea44a9fa?w=1200&q=80&auto=format&fit=crop", "alt": "Venta consultiva de sistema de snowboard", "credit": "Unsplash"}],
   content:`
     <p>A diferencia del esquí, donde tabla, fijación y bota son tres decisiones relativamente independientes conectadas principalmente por el valor DIN, en snowboard las tres piezas —tabla, binding y bota— forman un <b>sistema</b> mucho más interdependiente, y venderlas bien significa pensarlas juntas desde la primera pregunta, no una por una en secuencia aislada.</p>
     <p>El orden consultivo recomendado es: primero, <b>stance</b> (regular o goofy, visto en el Nivel 1) y <b>talla de bota real</b> — estos dos datos son no-negociables y determinan directamente la orientación/ancho de la tabla y el ancho de los bindings, respectivamente, sin margen de preferencia estética. Segundo, <b>nivel técnico declarado y disciplina principal</b> (visto en el módulo de disciplinas) — estos determinan el flex recomendado tanto de tabla como de bota, y el shape (twin, directional, directional twin) más adecuado. Tercero, <b>peso corporal</b> — determina el largo de tabla dentro del rango recomendado por la marca.</p>
@@ -862,6 +917,7 @@ MODULES.push(
 },
 {
   id:'n3-m9', nivel:3, title:'Cómo leer una ficha técnica de tabla, con ejemplos reales',
+  imgs: [{"url": "https://images.unsplash.com/photo-1659514690426-4a2170b1e038?w=1200&q=80&auto=format&fit=crop", "alt": "Ficha técnica de una tabla de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1498146831523-fbe41acdc5ad?w=1200&q=80&auto=format&fit=crop", "alt": "Ficha técnica de una tabla de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Para cerrar este nivel, vale la pena practicar con ejemplos reales de tablas reconocidas de la industria cómo se combinan todas las variables vistas en los módulos anteriores (perfil, flex, shape, ancho/largo, disciplina) en una ficha técnica real — el mismo ejercicio que hiciste con el catálogo Discovery de Head en el curso de ski, aplicado ahora a snowboard.</p>
     <p>La <b>Burton Custom</b> es, probablemente, la tabla más reconocida y de mayor trayectoria histórica de la industria — una tabla directional twin, de flex medio-duro, perfil camber tradicional, pensada como una all-mountain versátil con énfasis en carving sólido y buen rendimiento a velocidad, sin ser una tabla extrema de freeride puro. Es un ejemplo representativo de cómo una marca puede mantener un modelo "insignia" durante muchísimas temporadas, actualizando materiales internamente pero conservando la identidad y el posicionamiento general del producto.</p>
@@ -883,6 +939,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n4-m1', nivel:4, title:'Carving en snowboard',
+  imgs: [{"url": "https://images.unsplash.com/photo-1478700485868-972b69dc3fc4?w=1200&q=80&auto=format&fit=crop", "alt": "Carving en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1418662589339-364ad47f98a2?w=1200&q=80&auto=format&fit=crop", "alt": "Carving en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Igual que en esquí, un giro <b>carveado</b> en snowboard deja en la nieve una línea limpia y delgada, del ancho exacto del canto, sin ningún rastro de deslizamiento lateral — a diferencia de un giro <b>derrapado</b> (skidded), donde la tabla se desliza de lado además de girar, dejando una marca notablemente más ancha y disipando velocidad en el proceso. La habilidad de sentir y distinguir ambos, bajo el pie y mirando hacia atrás en la nieve, es la base técnica central de este nivel.</p>
     <p>El mecanismo físico detrás de un carving limpio en snowboard es el mismo <b>sidecut</b> (la curva de la tabla, más angosta bajo el pie que en nose/tail) que ya conoces del esquí: al inclinar la tabla sobre un canto lo suficiente, el sidecut hace que la tabla se arquee por sí sola siguiendo esa curva, sin necesidad de forzar el giro activamente con rotación de piernas. La diferencia frente al esquí es que en snowboard ese ángulo de inclinación se controla con todo el cuerpo moviéndose de costado, no con cada pierna independiente.</p>
@@ -899,6 +956,7 @@ MODULES.push(
 },
 {
   id:'n4-m2', nivel:4, title:'Giros dinámicos y transferencia de peso',
+  imgs: [{"url": "https://images.unsplash.com/photo-1518085050105-3c33befa5442?w=1200&q=80&auto=format&fit=crop", "alt": "Giros dinámicos en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1511880200544-0170efd77eff?w=1200&q=80&auto=format&fit=crop", "alt": "Giros dinámicos en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Más allá de los giros encadenados básicos del Nivel 2, el riding dinámico de nivel intermedio-avanzado depende de una <b>transferencia de peso activa y rítmica</b> entre el pie delantero y el trasero, combinada con la transición de canto a canto — no es solo "inclinar la tabla", sino coordinar el movimiento vertical del cuerpo con el movimiento lateral de canto.</p>
     <p>Un concepto clave acá es el de <b>extensión y flexión</b> (up-unweighting y down-unweighting, según la técnica): extender las piernas momentáneamente durante la transición entre cantos reduce brevemente la presión total sobre la tabla, facilitando que el canto cambie de lado con menos esfuerzo —es parecido conceptualmente al "aligerar" que se usa en esquí avanzado para facilitar transiciones rápidas de canto en terreno más técnico—, mientras que flexionar las piernas durante la parte más cargada del giro ayuda a absorber la fuerza centrífuga sin perder el contacto del canto con la nieve.</p>
@@ -915,6 +973,7 @@ MODULES.push(
 },
 {
   id:'n4-m3', nivel:4, title:'Terreno variado: moguls y pendientes pronunciadas',
+  imgs: [{"url": "https://images.unsplash.com/photo-1772909496398-5bfdb8ff78e3?w=1200&q=80&auto=format&fit=crop", "alt": "Terreno variado: moguls en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1776247406750-6842388a6164?w=1200&q=80&auto=format&fit=crop", "alt": "Terreno variado: moguls en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Los <b>moguls</b> (bultos de nieve compactada formados por el paso repetido de riders girando en el mismo punto, el mismo concepto ya visto en el curso de ski) presentan un desafío particular en snowboard: a diferencia de un esquiador, que puede absorber el terreno irregular con cada pierna de forma relativamente independiente, un rider de snowboard tiene que absorber el mismo terreno irregular con ambas piernas moviéndose en conjunto sobre una sola plataforma rígida.</p>
     <p>La técnica central para moguls en snowboard es la <b>absorción activa de piernas</b>: flexionar y extender las rodillas de forma continua y reactiva, siguiendo el contorno del terreno bulto por bulto, manteniendo el torso relativamente estable y la mirada siempre hacia adelante (nunca hacia los pies, el mismo principio del Nivel 1 llevado a un terreno más exigente). El objetivo es que las piernas actúen como el amortiguador de un auto en un camino irregular, dejando que la "carrocería" (torso, cabeza, campo de visión) se mantenga relativamente tranquila mientras las piernas hacen el trabajo de absorción.</p>
@@ -931,6 +990,7 @@ MODULES.push(
 },
 {
   id:'n4-m4', nivel:4, title:'Powder riding básico',
+  imgs: [{"url": "https://images.unsplash.com/photo-1724054084280-6e945eab5b9e?w=1200&q=80&auto=format&fit=crop", "alt": "Powder riding en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1614602438715-8e483d3521a7?w=1200&q=80&auto=format&fit=crop", "alt": "Powder riding en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Andar en <b>powder</b> (nieve profunda y sin trackear) exige ajustes técnicos específicos frente al riding en pista preparada, porque la física del deslizamiento cambia: en vez de deslizar sobre una superficie firme y relativamente plana, la tabla tiene que desplazar nieve suelta activamente para avanzar, y necesita mantenerse lo bastante "a flote" como para no hundirse y perder velocidad de golpe.</p>
     <p>El ajuste más importante es llevar algo más de peso hacia el pie trasero que en riding de pista normal —lo opuesto a lo que podría parecer intuitivo— para que el nose de la tabla se mantenga más elevado y no se entierre en la nieve suelta, especialmente en una tabla directional diseñada específicamente para esto (vista en el Nivel 3). Este ajuste de peso hacia atrás en powder es la excepción a la regla general de peso centrado vista en niveles anteriores, y es importante explicarlo como una excepción deliberada, no como una contradicción de lo aprendido antes.</p>
@@ -947,6 +1007,7 @@ MODULES.push(
 },
 {
   id:'n4-m5', nivel:4, title:'Introducción a park: jumps y boxes',
+  imgs: [{"url": "https://images.unsplash.com/photo-1617939532603-2905b4eeb788?w=1200&q=80&auto=format&fit=crop", "alt": "Park de snowboard: jumps y boxes", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1617939533073-6c94c709370c?w=1200&q=80&auto=format&fit=crop", "alt": "Park de snowboard: jumps y boxes", "credit": "Unsplash"}],
   content:`
     <p>El <b>park</b> (visto conceptualmente en el Nivel 1) tiene su propia progresión técnica, separada en gran medida de la progresión de pista abierta vista en el resto de este curso — es, en muchos sentidos, una especialización dentro del snowboard con su propio vocabulario y sus propias habilidades fundamentales.</p>
     <p>Los <b>jumps</b> (saltos construidos) tienen tres fases técnicas claras: el <b>approach</b> (acercamiento, controlando velocidad constante y centrada antes de llegar al salto), el <b>takeoff</b> (despegue, extendiendo las piernas en el momento exacto del borde del salto para generar pop controlado, sin saltar antes ni después del punto óptimo), y el <b>landing</b> (aterrizaje, absorbiendo el impacto flexionando las piernas y buscando aterrizar con la tabla paralela a la pendiente de bajada del jump, no plana contra el suelo). El error más común de principiante en jumps es el miedo que genera despegar con muy poca extensión o, al contrario, forzar demasiado el despegue tratando de "saltar" en vez de dejar que la forma del jump haga el trabajo.</p>
@@ -963,6 +1024,7 @@ MODULES.push(
 },
 {
   id:'n4-m6', nivel:4, title:'Switch riding: andar al revés',
+  imgs: [{"url": "https://images.unsplash.com/photo-1612451473351-4dc9789846f9?w=1200&q=80&auto=format&fit=crop", "alt": "Switch riding en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1711751129019-c249a6cc39fa?w=1200&q=80&auto=format&fit=crop", "alt": "Switch riding en snowboard", "credit": "Unsplash"}],
   content:`
     <p>Andar <b>switch</b> (con el pie que normalmente va atrás puesto adelante, concepto introducido en el Nivel 1) es una habilidad que se practica de forma deliberada en este nivel, no algo que simplemente "pasa" cuando te caes y te vuelves a levantar mirando para el otro lado.</p>
     <p>La razón principal para practicar switch de forma consciente, más allá de necesitarlo en park (donde es constante, como viste en el módulo anterior), es que desarrolla una comprensión más profunda y simétrica de la técnica de giro en general: muchos riders, sin darse cuenta, dependen de pequeñas compensaciones asimétricas en su stance normal que switch expone inmediatamente, porque esas mismas compensaciones ya no funcionan igual al revés. Corregir esas asimetrías practicando switch suele mejorar, indirectamente, también el riding en stance normal.</p>
@@ -983,6 +1045,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n5-m1', nivel:5, title:'Freeride y backcountry: seguridad básica',
+  imgs: [{"url": "https://images.unsplash.com/photo-1681211657189-ded0fc1c0d87?w=1200&q=80&auto=format&fit=crop", "alt": "Freeride y seguridad backcountry en snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1675125272786-de0d53879a4f?w=1200&q=80&auto=format&fit=crop", "alt": "Freeride y seguridad backcountry en snowboard", "credit": "Unsplash"}],
   content:`
     <p>El <b>backcountry</b> (terreno fuera de cualquier área controlada o patrullada por una estación) es un contexto de riesgo completamente distinto al off-piste dentro de los límites de una estación —que, aunque sea terreno sin preparar, sigue estando dentro de la zona que la estación controla, patrulla, y donde en muchos casos hace control activo de avalanchas—. Entrar a terreno genuino de backcountry sin la preparación adecuada es, sin exagerar, una decisión que puede costar la vida, y este módulo es solo una introducción conceptual, no un sustituto de una certificación real de seguridad en avalanchas.</p>
     <p>El equipo de seguridad mínimo no-negociable para cualquier salida de backcountry, sin excepción, es el conjunto de tres piezas conocido como <b>DPS</b> (por las siglas en inglés: Beacon/DVA, Probe/sonda, Shovel/pala, aunque la sigla varía de nombre según la fuente): un <b>DVA</b> (detector de víctimas de avalancha, transceptor que emite y puede recibir señal para localizar a una persona enterrada), una <b>sonda</b> (vara plegable para localizar con precisión exacta el cuerpo una vez que el DVA da una zona aproximada), y una <b>pala</b> (para excavar rápido, literalmente contrarreloj, una vez localizada la persona). Cada una de las tres piezas es inútil sin las otras dos, y ninguna reemplaza el entrenamiento real para usarlas bajo presión.</p>
@@ -999,6 +1062,7 @@ MODULES.push(
 },
 {
   id:'n5-m2', nivel:5, title:'Splitboarding: introducción al touring con tabla',
+  imgs: [{"url": "https://images.unsplash.com/photo-1507533881441-1993df268512?w=1200&q=80&auto=format&fit=crop", "alt": "Splitboarding", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1712513246706-1e8f701291fe?w=1200&q=80&auto=format&fit=crop", "alt": "Splitboarding", "credit": "Unsplash"}],
   content:`
     <p>El <b>splitboard</b>, mencionado brevemente en el Nivel 3, es el equipo específico de snowboard para hacer <b>touring</b> (subir caminando por la montaña usando el propio esfuerzo, en vez de un remonte mecánico, para después bajar esquiando/andando) — es, en esencia, el equivalente directo del esquí de travesía, adaptado a la mecánica de una sola tabla.</p>
     <p>La tabla se divide longitudinalmente en dos mitades idénticas que, separadas, funcionan cada una como un "ski" angosto de travesía: se les colocan <b>pieles de foca</b> (bandas adhesivas con una textura direccional que permite deslizar hacia adelante pero no hacia atrás, el mismo accesorio usado en esquí de travesía) en la base de cada mitad, y se suben caminando con un sistema de fijación de travesía que libera el talón (permitiendo el paso natural de caminata, muy distinto a tener el pie completamente fijo como en riding normal). Al llegar arriba, se quitan las pieles, se vuelven a unir ambas mitades en una sola tabla, se cambia la fijación a modo riding normal (talón fijo), y se desciende con la misma técnica ya aprendida en el resto del curso.</p>
@@ -1015,6 +1079,7 @@ MODULES.push(
 },
 {
   id:'n5-m3', nivel:5, title:'Disciplinas de competición en snowboard',
+  imgs: [{"url": "https://images.unsplash.com/photo-1478700485868-972b69dc3fc4?w=1200&q=80&auto=format&fit=crop", "alt": "Competición de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1488580923008-6f98dfbd7a25?w=1200&q=80&auto=format&fit=crop", "alt": "Competición de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Igual que en el curso de ski, conocer las disciplinas de competición de snowboard te permite entender mejor a un cliente que las menciona, y traducir ese interés hacia una recomendación de equipo coherente con lo que realmente busca.</p>
     <p>El <b>slopestyle</b> consiste en recorrer un circuito de obstáculos de park (jumps, rails, boxes en secuencia) siendo evaluado por jueces según dificultad técnica, ejecución, variedad de trucos y estilo general — es, en esencia, la competición formal construida directamente sobre las habilidades de park que viste en el Nivel 4. El <b>halfpipe</b> (o "pipe") es un canal semicircular de nieve con paredes verticales a ambos lados, donde el rider genera amplitud (altura) saliendo de cada pared para ejecutar trucos aéreos, alternando de pared a pared en una secuencia continua de bajada — exige una combinación particular de amplitud, rotación aérea, y consistencia de aterrizaje que lo distingue del slopestyle.</p>
@@ -1031,6 +1096,7 @@ MODULES.push(
 },
 {
   id:'n5-m4', nivel:5, title:'Tecnología moderna en tablas de snowboard',
+  imgs: [{"url": "https://images.unsplash.com/photo-1590806351178-64634cc9613b?w=1200&q=80&auto=format&fit=crop", "alt": "Tecnología moderna de tablas de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1498146831523-fbe41acdc5ad?w=1200&q=80&auto=format&fit=crop", "alt": "Tecnología moderna de tablas de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Igual que en esquí, la industria del snowboard sigue evolucionando activamente en materiales y construcción, y vale la pena que como vendedor te mantengas al día con las tendencias generales del sector, que cambian con más frecuencia que la técnica de riding en sí misma.</p>
     <p>El uso de <b>fibra de carbono</b> en puntos estratégicos de la construcción (no en toda la tabla, sino en refuerzos localizados, por ejemplo cerca de los pies o en los extremos) sigue creciendo en tablas de gama alta, buscando más rigidez y potencia sin sumar peso extra — el mismo principio ya visto en el curso de ski aplicado a tablas de freeride y carving de alto rendimiento. Combinado con esto, muchas marcas siguen desarrollando <b>núcleos de madera de distintas densidades combinadas</b> en una sola tabla (más denso en zonas de mayor exigencia, más liviano en los extremos) para afinar el comportamiento sin depender exclusivamente de refuerzos de materiales compuestos.</p>
@@ -1048,6 +1114,7 @@ MODULES.push(
 },
 {
   id:'n5-m5', nivel:5, title:'Cierre: venta consultiva integral de snowboard',
+  imgs: [{"url": "https://images.unsplash.com/photo-1612180466811-921a028fe665?w=1200&q=80&auto=format&fit=crop", "alt": "Venta consultiva integral de snowboard", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1760373899533-dcfe3baa5be0?w=1200&q=80&auto=format&fit=crop", "alt": "Venta consultiva integral de snowboard", "credit": "Unsplash"}],
   content:`
     <p>Con todo lo visto en este curso completo —vocabulario y fundamentos, técnica de principiante, equipamiento y venta técnica, perfeccionamiento, y ahora terreno avanzado y backcountry— conviene cerrar con el mismo principio que atravesó cada nivel: la venta consultiva de snowboard no es memorizar specs de memoria para recitarlas, sino tener el criterio para traducir lo que un cliente te cuenta de su propio uso real hacia una recomendación técnica concreta y honesta.</p>
     <p>El eje que se repitió en cada nivel de este curso fue siempre el mismo, aplicado a una variable distinta cada vez: stance y talla de bota (no negociables), nivel técnico y disciplina declarada (determinan flex y shape), peso corporal (determina largo), y solo después, preferencias secundarias de sistema de binding, sistema de cordones, marca y precio. Ese orden —datos técnicos reales primero, preferencias estéticas o de marca al final— es lo que distingue una venta consultiva genuina de simplemente mostrar el catálogo completo y esperar a que el cliente señale algo.</p>
@@ -1072,9 +1139,26 @@ const PROGRESS_KEY = 'snowboard_progress_v1__Sebas';
 const ACTIVITY_KEY = 'snowboard_activity_v1__Sebas';
 
 function loadProgress(){ try{return JSON.parse(localStorage.getItem(PROGRESS_KEY))||{};}catch(e){return {};} }
-function saveProgress(p){ localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+function saveProgress(p){ localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); pushProgressSoon(); }
 function loadActivity(){ try{return JSON.parse(localStorage.getItem(ACTIVITY_KEY))||{};}catch(e){return {};} }
-function saveActivity(a){ localStorage.setItem(ACTIVITY_KEY, JSON.stringify(a)); }
+function saveActivity(a){ localStorage.setItem(ACTIVITY_KEY, JSON.stringify(a)); pushProgressSoon(); }
+
+function ringSvgSki(pct){
+  const r = 18, c = 2*Math.PI*r;
+  const off = c - (Math.max(0,Math.min(100,pct))/100)*c;
+  return `<svg viewBox="0 0 44 44">
+    <circle class="ring-bg" cx="22" cy="22" r="${r}"></circle>
+    <circle class="ring-fg" cx="22" cy="22" r="${r}" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}"></circle>
+  </svg>`;
+}
+
+function heroPhotoUrl(){
+  const withImgs = MODULES.filter(m=>m.imgs && m.imgs.length);
+  if(!withImgs.length) return '';
+  const done = loadProgress();
+  const firstIncomplete = withImgs.find(m=>!done[m.id]?.completed) || withImgs[0];
+  return firstIncomplete.imgs[0].url;
+}
 
 function todayStr(d=new Date()){ return d.toISOString().slice(0,10); }
 
@@ -1157,6 +1241,9 @@ function renderDashboard(){
   const activity = loadActivity();
   const s = computeStats();
 
+  const heroUrl = heroPhotoUrl();
+  if(heroUrl) document.getElementById('heroPhotoImg').src = heroUrl;
+
   // greeting
   const hr = new Date().getHours();
   document.getElementById('greetTime').textContent = hr<12?'BUENOS DÍAS':hr<19?'BUENAS TARDES':'BUENAS NOCHES';
@@ -1198,6 +1285,7 @@ function renderDashboard(){
       const lvDone = lvMods.filter(m=>progress[m.id]?.completed).length;
       const lvPct = lvMods.length ? Math.round(lvDone/lvMods.length*100) : 0;
       document.getElementById('continueProgressFill').style.width = lvPct+'%';
+      document.getElementById('continueRing').innerHTML = ringSvgSki(lvPct);
       document.getElementById('continueProgressPct').textContent = lvPct+'%';
       cont.style.display='flex';
     } else cont.style.display='none';
@@ -1219,13 +1307,17 @@ function renderDashboard(){
     heroCta.onclick = () => startRepaso();
   }
 
-  // explorar niveles (grilla de íconos)
+  // explorar niveles (tarjetas con foto)
   const exploreGrid = document.getElementById('exploreGrid');
-  exploreGrid.innerHTML = LEVELS.slice(0,4).map(lv=>`
-    <div class="explore-tile" onclick="scrollToLevel(${lv.id})">
+  exploreGrid.innerHTML = LEVELS.slice(0,4).map(lv=>{
+    const lvMods = MODULES.filter(m=>m.nivel===lv.id && m.imgs && m.imgs.length);
+    const bg = lvMods.length ? lvMods[0].imgs[0].url : '';
+    return `
+    <div class="explore-tile" onclick="scrollToLevel(${lv.id})" style="${bg?`background-image:url('${bg}')`:''}">
       <div class="explore-tile-icon">${lv.id}</div>
       <div class="explore-tile-label">${lv.name.split(/,| y /)[0]}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // fila de progreso rápida (estilo "Your Progress")
   const progressRow = document.getElementById('progressRow');
@@ -1422,6 +1514,16 @@ function openModuleById(id){
 
   document.getElementById('rEyebrow').textContent = `Nivel ${mod.nivel}`;
   document.getElementById('rTitle').textContent = mod.title;
+  const modPhotosEl = document.getElementById('modPhotos');
+  if(mod.imgs && mod.imgs.length){
+    modPhotosEl.style.display='flex';
+    modPhotosEl.innerHTML = mod.imgs.map(im=>`
+      <div class="modPhoto"><img src="${im.url}" alt="${im.alt}" loading="lazy"><div class="cap">${im.credit}</div></div>
+    `).join('');
+  } else {
+    modPhotosEl.style.display='none';
+    modPhotosEl.innerHTML='';
+  }
   document.getElementById('rBody').innerHTML = mod.content;
   document.getElementById('audioIcon').textContent='▶';
   document.getElementById('audioLabel').textContent='Escuchar el módulo';
@@ -1660,8 +1762,110 @@ function finishQuiz(){
   `;
 }
 
+/* =========================================================
+   SYNC DE PROGRESO CON SUPABASE (para no perder avance al
+   actualizar o entrar desde otro dispositivo) — mismo proyecto
+   y tabla course_progress que golf.html/cafe.html/ski.html,
+   adaptado al formato propio de snowboard.html (progress por
+   módulo + activity por día, un solo usuario fijo 'Sebas').
+   ========================================================= */
+const SUPABASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_9prcahBAJHmeCZ8IB_bx5w_GQ6nl4wL';
+const PROGRESS_TABLE = 'course_progress';
+const COURSE_NAME = 'snowboard';
+const SYNC_USER = 'Sebas';
+
+async function pullRemoteProgress(){
+  try{
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${PROGRESS_TABLE}?user_name=eq.${encodeURIComponent(SYNC_USER)}&course=eq.${COURSE_NAME}&select=data`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+    );
+    if(!res.ok) return null;
+    const rows = await res.json();
+    return rows[0] ? rows[0].data : null;
+  }catch(e){ return null; }
+}
+
+async function pushRemoteProgress(payload){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${PROGRESS_TABLE}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify({ user_name: SYNC_USER, course: COURSE_NAME, data: payload, updated_at: Date.now() })
+    });
+    return res.ok;
+  }catch(e){ return false; }
+}
+
+function mergeModuleRecord(a,b){
+  if(!a) return b; if(!b) return a;
+  const r = {};
+  r.completed = !!(a.completed || b.completed);
+  if(a.completed && b.completed){
+    r.completedAt = (a.completedAt||'') >= (b.completedAt||'') ? a.completedAt : b.completedAt;
+  } else {
+    r.completedAt = a.completed ? a.completedAt : (b.completed ? b.completedAt : (a.completedAt || b.completedAt || null));
+  }
+  r.timeSpentSec = Math.max(a.timeSpentSec||0, b.timeSpentSec||0);
+  if((a.quizTotal||0) >= (b.quizTotal||0)){ r.quizCorrect = a.quizCorrect; r.quizTotal = a.quizTotal; }
+  else { r.quizCorrect = b.quizCorrect; r.quizTotal = b.quizTotal; }
+  r.audioStarted = !!(a.audioStarted || b.audioStarted);
+  return r;
+}
+
+function mergeLocalAndRemote(localProgress, localActivity, remote){
+  const remoteProgress = (remote && remote.progress) || {};
+  const remoteActivity = (remote && remote.activity) || {};
+
+  const mergedProgress = {};
+  new Set([...Object.keys(localProgress), ...Object.keys(remoteProgress)]).forEach(id=>{
+    mergedProgress[id] = mergeModuleRecord(localProgress[id], remoteProgress[id]);
+  });
+
+  const mergedActivity = {};
+  new Set([...Object.keys(localActivity), ...Object.keys(remoteActivity)]).forEach(k=>{
+    mergedActivity[k] = Math.max(localActivity[k]||0, remoteActivity[k]||0);
+  });
+
+  return { progress: mergedProgress, activity: mergedActivity };
+}
+
+let pushTimer = null;
+function pushProgressSoon(){
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => {
+    pushRemoteProgress({ progress: loadProgress(), activity: loadActivity() });
+  }, 600);
+}
+
+async function syncProgressOnLoad(){
+  const remote = await pullRemoteProgress();
+  const localProgress = loadProgress();
+  const localActivity = loadActivity();
+  if(!remote){ pushRemoteProgress({ progress: localProgress, activity: localActivity }); return; }
+
+  const merged = mergeLocalAndRemote(localProgress, localActivity, remote);
+  const changed = JSON.stringify(merged.progress) !== JSON.stringify(localProgress) ||
+                   JSON.stringify(merged.activity) !== JSON.stringify(localActivity);
+  if(changed){
+    try{
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(merged.progress));
+      localStorage.setItem(ACTIVITY_KEY, JSON.stringify(merged.activity));
+    }catch(e){}
+    renderDashboard();
+  }
+  pushRemoteProgress(merged);
+}
+
 /* init */
 renderDashboard();
+syncProgressOnLoad();
 </script>
 </body>
 </html>

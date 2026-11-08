@@ -329,6 +329,39 @@
 
   .home-only{display:block;}
   .home-only.hide{display:none;}
+
+  /* ---------- foto en el hero ---------- */
+  .hero-photo{
+    position:absolute; right:16px; top:16px; width:84px; height:84px;
+    border-radius:18px; overflow:hidden; border:2px solid var(--line);
+    box-shadow:0 3px 0 var(--line); z-index:1;
+  }
+  .hero-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  /* ---------- tarjetas de "explorar niveles" con foto ---------- */
+  .explore-tile{
+    position:relative; overflow:hidden; height:98px; justify-content:flex-end;
+    background-size:cover; background-position:center;
+  }
+  .explore-tile::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(10,14,20,0.9) 12%, rgba(10,14,20,0.3) 62%, rgba(10,14,20,0.05));
+  }
+  .explore-tile-icon, .explore-tile-label{ position:relative; z-index:1; }
+  .explore-tile-icon{background:rgba(255,255,255,0.14); color:#fff; backdrop-filter:blur(2px);}
+  .explore-tile-label{color:#fff;}
+
+  /* ---------- anillo de progreso chico (tarjeta "continuá donde ibas") ---------- */
+  .continue-ring{flex-shrink:0;width:46px;height:46px;}
+  .continue-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .continue-ring .ring-bg{fill:none;stroke:var(--panel2);stroke-width:3.5;}
+  .continue-ring .ring-fg{fill:none;stroke:var(--brand);stroke-width:3.5;stroke-linecap:round;transition:stroke-dashoffset .4s ease;}
+
+  /* ---------- fotos arriba de cada lección ---------- */
+  .modPhotos{display:flex;gap:10px;margin:0 0 16px;}
+  .modPhoto{flex:1;min-width:0;background:var(--panel);border:2px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 3px 0 var(--line);}
+  .modPhoto img{width:100%;height:110px;object-fit:cover;display:block;}
+  .modPhoto .cap{padding:6px 10px 8px;font-size:10.5px;color:var(--muted);font-weight:700;}
 </style>
 </head>
 <body>
@@ -345,6 +378,7 @@
   <div id="home" class="home-only">
 
     <div class="hero">
+      <div class="hero-photo" id="heroPhoto"><img id="heroPhotoImg" src="" alt="Esquí"></div>
       <div class="hero-eyebrow">⛷️ Ski School</div>
       <h1 class="hero-title">Esquiá mejor.<br><b>Llegá más lejos.</b></h1>
       <p class="hero-sub">Aprendé. Practicá. Progresá.</p>
@@ -378,7 +412,7 @@
     </div>
 
     <div class="continue-card" id="continueCard" style="display:none;" onclick="openModuleById(continueId)">
-      <div class="continue-card-icon"><svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg></div>
+      <div class="continue-ring" id="continueRing"></div>
       <div class="continue-card-body">
         <div class="eyebrow-coral">CONTINÚA DONDE IBAS</div>
         <h3 id="continueTitle"></h3>
@@ -475,6 +509,7 @@
   <div id="reader" class="reader">
     <div class="reader-eyebrow" id="rEyebrow"></div>
     <h1 id="rTitle"></h1>
+    <div class="modPhotos" id="modPhotos"></div>
     <div class="reader-body" id="rBody"></div>
     <div class="audio-btn" id="audioBtn" onclick="toggleAudio()">
       <span class="ic" id="audioIcon">▶</span>
@@ -525,6 +560,7 @@ const MODULES = [];
 MODULES.push(
 {
   id:'n1-m1', nivel:1, title:'Terminología básica del esquí',
+  imgs: [{"url": "https://images.unsplash.com/photo-1636581563864-16c4d8fe34b9?w=1200&q=80&auto=format&fit=crop", "alt": "Pista de esquí y montaña", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1673965918877-82154906042b?w=1200&q=80&auto=format&fit=crop", "alt": "Pista de esquí y montaña", "credit": "Unsplash"}],
   content:`
     <p>Antes de pisar la nieve conviene tener claro el vocabulario que vas a escuchar todo el tiempo — en pista, en la tienda y en cualquier conversación de esquí, casi siempre en inglés porque el deporte se profesionalizó primero en Europa y Norteamérica y esos términos nunca se tradujeron del todo. Dominar este vocabulario no es un capricho: te permite entender a un instructor, a otro esquiador, o a un cliente en tienda sin traducir mentalmente cada palabra.</p>
     <p>El concepto más importante de todos es el <b>fall line</b> (línea de caída): es la línea que seguiría una pelota si la sueltas en la pendiente — la ruta más directa hacia abajo, determinada únicamente por la gravedad y la forma del terreno. Toda la técnica de esquí, desde el primer día hasta el nivel experto, gira alrededor de cómo cruzas esa línea en vez de bajarla en línea recta. Un giro no es más que una forma controlada de atravesar la línea de caída una y otra vez, regulando cuánto tiempo apuntas hacia ella (más velocidad) y cuánto tiempo te alejas de ella (menos velocidad). Entender esto de entrada cambia por completo cómo se explica cualquier técnica más adelante.</p>
@@ -544,6 +580,7 @@ MODULES.push(
 },
 {
   id:'n1-m2', nivel:1, title:'Postura y equilibrio en la nieve',
+  imgs: [{"url": "https://images.unsplash.com/photo-1565992441121-4367c2967103?w=1200&q=80&auto=format&fit=crop", "alt": "Postura y equilibrio en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1586356415056-bd7a5c2bbef7?w=1200&q=80&auto=format&fit=crop", "alt": "Postura y equilibrio en esquí", "credit": "Unsplash"}],
   content:`
     <p>La postura base del esquí se parece más a estar listo para recibir un pase de fútbol o defender en básquet que a estar parado firme como un soldado: rodillas ligeramente flexionadas, cadera hacia adelante, peso repartido sobre la planta del pie — nunca sobre los talones, y nunca completamente sobre las puntas tampoco. Esta postura se llama a veces <b>athletic stance</b> (postura atlética) en la enseñanza en inglés, y es el punto de partida al que siempre vuelves entre técnica y técnica, sin importar cuán avanzado te vuelvas.</p>
     <p>El error más clásico y más universal de cualquier principiante es "sentarse" hacia atrás por miedo instintivo a la velocidad o a la pendiente. Es una reacción completamente natural — el cerebro asocia inclinarse hacia adelante en una pendiente con caerse hacia adelante, así que compensa echando el peso hacia atrás. El problema es que hacer esto tiene el efecto exactamente contrario al que el cuerpo busca: cuando el peso se va a los talones, pierdes el control de la punta del esquí (que es la parte que dirige el giro), el esquí deja de responder a tus movimientos, y paradójicamente es <b>más</b> fácil caer, no menos. La regla mental simple para corregir esto: <b>manos al frente, a la vista</b>. Si puedes ver tus manos moviéndose frente a ti mientras esquías, tu peso tiende a estar bien colocado sobre la parte media-delantera del pie, que es donde debe estar.</p>
@@ -562,6 +599,7 @@ MODULES.push(
 },
 {
   id:'n1-m3', nivel:1, title:'Cómo ponerte y quitarte los esquís',
+  imgs: [{"url": "https://images.unsplash.com/photo-1645999141001-b58903fb94b0?w=1200&q=80&auto=format&fit=crop", "alt": "Ponerse los esquís", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1767487018490-b3e884fc8c3a?w=1200&q=80&auto=format&fit=crop", "alt": "Ponerse los esquís", "credit": "Unsplash"}],
   content:`
     <p>Siempre se ponen los esquís en una superficie plana, nunca en pendiente — en pendiente, el esquí tiende a deslizarse solo apenas lo sueltas, y perseguir un esquí suelto cuesta abajo es una de las situaciones más frustrantes (y potencialmente peligrosas para otros esquiadores) que puede pasar en la zona de aprendizaje. Si no hay una zona perfectamente plana disponible, al menos posiciónate de forma que el esquí que estás calzando quede perpendicular a cualquier inclinación mínima, nunca apuntando cuesta abajo.</p>
     <p>Antes de calzar, primero se limpia la nieve pegada en la suela de la bota — con el bastón, golpeando el talón contra el propio binding, o con la mano si es necesario. Este paso parece menor pero no lo es: un poco de nieve compactada entre la suela y el binding puede hacer que el mecanismo no cierre completamente (dejándote con una fijación floja que se suelta en momentos inoportunos) o, peor, que no se suelte cuando sí debería en una caída real, porque la nieve está impidiendo que el mecanismo interno se mueva libremente.</p>
@@ -580,6 +618,7 @@ MODULES.push(
 },
 {
   id:'n1-m4', nivel:1, title:'Subir la pendiente sin deslizarte',
+  imgs: [{"url": "https://images.unsplash.com/photo-1646297226339-febd1eaee532?w=1200&q=80&auto=format&fit=crop", "alt": "Subir la pendiente con esquís", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1586348303995-ba0cd4fd8023?w=1200&q=80&auto=format&fit=crop", "alt": "Subir la pendiente con esquís", "credit": "Unsplash"}],
   content:`
     <p>Antes de deslizarte cuesta abajo vas a necesitar moverte cuesta arriba o en plano sin resbalar hacia atrás — algo que se siente genuinamente raro las primeras veces, porque el instinto de caminar normal (un pie firme, el otro se despega del suelo) no funciona igual cuando tienes dos tablas largas atadas a los pies que no perdonan un mal ángulo.</p>
     <p>La técnica más básica para desplazarse en terreno plano es el <b>paso de patinador</b> (skating): uno de los esquís se abre ligeramente hacia afuera formando una "V" respecto al otro, y empujas contra el canto interior de ese esquí abierto — exactamente como el movimiento de patinaje sobre hielo o de patines en línea. Se alterna esquí por esquí, generando impulso hacia adelante sin necesidad de una pendiente que te empuje por gravedad. Este movimiento también es la base técnica del <b>esquí nórdico de estilo libre</b> (skate skiing), aunque ahí se perfecciona muchísimo más.</p>
@@ -598,6 +637,7 @@ MODULES.push(
 },
 {
   id:'n1-m5', nivel:1, title:'Caídas seguras y cómo levantarte',
+  imgs: [{"url": "https://images.unsplash.com/photo-1596473535762-ce7f43470748?w=1200&q=80&auto=format&fit=crop", "alt": "Caída y recuperación en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1664436341001-b02974ae7524?w=1200&q=80&auto=format&fit=crop", "alt": "Caída y recuperación en esquí", "credit": "Unsplash"}],
   content:`
     <p>Vas a caerte — es parte normal y esperada de aprender, no una señal de que algo va mal contigo o con tu progreso. Incluso esquiadores expertos y profesionales se caen; la diferencia está en la frecuencia, la velocidad a la que ocurre, y sobre todo en <b>cómo</b> caen. Lo importante para ti, desde el primer día, es aprender a caerte de forma que minimices el riesgo de lastimarte, y saber levantarte de forma eficiente sin agotar toda tu energía en el intento.</p>
     <p>Si sientes que vas a perder el equilibrio y la caída es genuinamente inevitable (no hay forma de recuperar el control a tiempo), la instrucción clásica de cualquier instructor certificado es <b>dejarte caer de lado</b>, absorbiendo el impacto principalmente con la cadera y el muslo — nunca hacia adelante con las manos extendidas para "frenar" la caída (el riesgo de lesión de muñeca es alto, incluyendo fracturas), y nunca hacia atrás de forma rígida y resistiendo (el riesgo recae sobre la espalda baja y puede lastimar la columna). El principio físico detrás de esto es simple: relajar conscientemente el cuerpo en el momento del impacto amortigua muchísimo más la fuerza que ponerse rígido y resistir — un cuerpo relajado se "dobla" y distribuye la energía del impacto en el tiempo; un cuerpo rígido concentra esa misma energía en un punto y un instante, que es exactamente lo que causa fracturas y esguinces.</p>
@@ -616,6 +656,7 @@ MODULES.push(
 },
 {
   id:'n1-m6', nivel:1, title:'Primeros deslizamientos en plano',
+  imgs: [{"url": "https://images.unsplash.com/photo-1616255381275-5b99f05a8793?w=1200&q=80&auto=format&fit=crop", "alt": "Primeros deslizamientos en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1685694590593-a0fe68b8d9b4?w=1200&q=80&auto=format&fit=crop", "alt": "Primeros deslizamientos en esquí", "credit": "Unsplash"}],
   content:`
     <p>Antes de enfrentar una pendiente real, el primer contacto con el deslizamiento se hace deliberadamente en una zona completamente plana o con inclinación mínima — el objetivo pedagógico de esto es aislar una sola variable a la vez: sentir cómo se comporta el esquí sobre la nieve sin la variable extra (y mucho más intimidante) de la velocidad generada por una pendiente real.</p>
     <p>El primer ejercicio típico, y el que casi todos los instructores certificados usan como punto de partida universal, es simplemente caminar con los esquís puestos sobre nieve plana, levantando ligeramente cada esquí del suelo con cada paso (sin arrastrarlo) — este ejercicio aparentemente trivial en realidad cumple una función importante: te da la sensación real de peso, largo, e inercia del equipo antes de intentar deslizarte, algo que resulta sorprendentemente distinto a lo que la mayoría de principiantes imagina antes de probarlo.</p>
@@ -634,6 +675,7 @@ MODULES.push(
 },
 {
   id:'n1-m7', nivel:1, title:'Seguridad básica en pista',
+  imgs: [{"url": "https://images.unsplash.com/photo-1697397005318-fc552f7d3927?w=1200&q=80&auto=format&fit=crop", "alt": "Seguridad básica en pista de esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1679983164492-59b5b57a7237?w=1200&q=80&auto=format&fit=crop", "alt": "Seguridad básica en pista de esquí", "credit": "Unsplash"}],
   content:`
     <p>El esquí es, por naturaleza, un deporte compartido: en cualquier pista, incluso en las más tranquilas, hay gente de todos los niveles moviéndose simultáneamente a velocidades muy distintas entre sí — desde un principiante absoluto en cuña hasta un experto carveando a alta velocidad. Esta convivencia funciona gracias a un conjunto de reglas no siempre escritas en la pista misma pero universalmente enseñadas, conocidas informalmente en la industria como el <b>código de responsabilidad del esquiador</b> (Skier Responsibility Code), adoptado con variaciones menores por prácticamente todas las estaciones del mundo.</p>
     <p>La regla más importante de todo el código, la que hay que interiorizar antes que cualquier otra: <b>el esquiador que va detrás es responsable de evitar al que va delante</b>, no al revés. La lógica es simple y física: si vas cuesta abajo de alguien, esa persona literalmente no puede verte (no tiene ojos en la nuca), mientras que tú sí puedes verla y anticipar sus movimientos. Por lo tanto, la responsabilidad legal, técnica y ética de mantener una distancia segura y evitar una colisión recae completamente sobre quien viene detrás — nunca asumas que "el de adelante debería haberse movido", porque esa persona probablemente ni siquiera sabía que estabas ahí.</p>
@@ -656,6 +698,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n2-m1', nivel:2, title:'Posición de cuña (snowplow)',
+  imgs: [{"url": "https://images.unsplash.com/photo-1610136389511-66e68fae9fa8?w=1200&q=80&auto=format&fit=crop", "alt": "Posición de cuña (snowplow)", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1585919269458-6259dfe9f21a?w=1200&q=80&auto=format&fit=crop", "alt": "Posición de cuña (snowplow)", "credit": "Unsplash"}],
   content:`
     <p>Ya viste la cuña como mecanismo de frenado básico en el nivel 1 — aquí la perfeccionamos hasta el punto de que deje de ser un movimiento torpe y se convierta en una herramienta precisa, porque una cuña mal ejecutada es la razón número uno por la que un principiante siente que "no controla nada" incluso después de varias sesiones.</p>
     <p>La clave técnica está en las rodillas, no en los pies. El error más común y menos evidente es abrir bien las colas de los esquís, generando una V que visualmente se ve correcta, pero dejar las rodillas rectas y sin inclinación lateral. Con las rodillas rectas, los cantos interiores casi no muerden la nieve — el esquí desliza sobre su base plana en vez de generar fricción real, y la cuña no frena aunque parezca bien abierta desde afuera. La instrucción correcta, repetida por cualquier instructor certificado, es <b>llevar las rodillas hacia adentro y ligeramente hacia adelante</b>, casi como si quisieras juntar las rodillas entre sí sin que los pies se muevan. Ese movimiento inclina los esquís lateralmente y activa el canto interior de cada uno — es exactamente el mismo principio de "meter cantos" del módulo de terminología, aplicado ahora de forma activa y bilateral.</p>
@@ -674,6 +717,7 @@ MODULES.push(
 },
 {
   id:'n2-m2', nivel:2, title:'Frenado en cuña (snowplow stop)',
+  imgs: [{"url": "https://images.unsplash.com/photo-1516351950028-b976f7373d70?w=1200&q=80&auto=format&fit=crop", "alt": "Frenado en cuña esquiando", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1735509903556-602b4d7d3ae5?w=1200&q=80&auto=format&fit=crop", "alt": "Frenado en cuña esquiando", "credit": "Unsplash"}],
   content:`
     <p>Frenar bien en cuña es la habilidad puente que te da la confianza real para soltarte a deslizar más rápido de lo que te sientes cómodo — si sabes con certeza que puedes parar por completo cuando lo decidas, el miedo asociado a la velocidad baja considerablemente, y ese cambio psicológico acelera todo lo demás en tu progresión.</p>
     <p>El frenado en cuña se controla mediante dos variables que trabajan en conjunto, no por separado: qué tan abierta está la V, y cuánta presión activa pones en los cantos interiores llevando las rodillas hacia adentro (el movimiento exacto del módulo anterior). Para frenar más intensamente, necesitas abrir más la cuña <b>y</b> presionar más con las rodillas simultáneamente — abrir la V sin presionar activamente los cantos es un error extremadamente común que hace que el frenado se sienta débil e inconsistente, porque la geometría por sí sola sin presión activa genera muy poca fricción real.</p>
@@ -692,6 +736,7 @@ MODULES.push(
 },
 {
   id:'n2-m3', nivel:2, title:'Giros en cuña (wedge turns)',
+  imgs: [{"url": "https://images.unsplash.com/photo-1771271949209-e652926407ee?w=1200&q=80&auto=format&fit=crop", "alt": "Giros en cuña esquiando", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1774228004209-3de215aabf61?w=1200&q=80&auto=format&fit=crop", "alt": "Giros en cuña esquiando", "credit": "Unsplash"}],
   content:`
     <p>El giro en cuña es el puente conceptual entre "solo frenar en línea recta" y realmente dirigir tu trayectoria hacia donde decides ir — es, en un sentido muy real, el primer giro de verdad que vas a ejecutar en este deporte, aunque todavía apoyado en la posición de cuña que ya domina tu cuerpo.</p>
     <p>La idea técnica central es un cambio respecto al frenado simétrico del módulo anterior: en vez de presión pareja en ambos esquís, ahora presionas deliberadamente <b>más el esquí de afuera del giro</b> — es decir, el que queda del lado contrario hacia donde quieres girar. Si quieres girar hacia la izquierda, presionas más el esquí derecho (que en ese momento queda "afuera" del giro), llevando la rodilla derecha hacia adentro con más fuerza e intención que la rodilla izquierda. Ese esquí, con más presión activa y más ángulo de canto efectivo, es el que realmente dirige y sostiene el giro — en la jerga de enseñanza se le llama a veces el <b>esquí guía</b> o esquí dominante del giro.</p>
@@ -710,6 +755,7 @@ MODULES.push(
 },
 {
   id:'n2-m4', nivel:2, title:'Uso de telesilla y telesquí',
+  imgs: [{"url": "https://images.unsplash.com/photo-1528659862616-22886eb53642?w=1200&q=80&auto=format&fit=crop", "alt": "Telesilla en estación de esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1614619632105-b571e9f0b3d0?w=1200&q=80&auto=format&fit=crop", "alt": "Telesilla en estación de esquí", "credit": "Unsplash"}],
   content:`
     <p>Subir en telesilla (chairlift) genera una ansiedad completamente desproporcionada a su dificultad real la primera vez — pero en realidad se reduce a tres momentos bien definidos: la fila, la subida, y la bajada, cada uno con su propia técnica simple.</p>
     <p>En la fila de espera, los esquís se mantienen apuntando hacia adelante en todo momento, evitando cruzarlos con los de la persona de al lado. Cuando llega tu turno de abordar, te colocas en la zona marcada específicamente para eso (casi siempre hay una línea pintada o una marca física en el suelo) y esperas, sin moverte de más, a que la silla te alcance físicamente por detrás. El error de timing más común: sentarse antes de tiempo (cuando la silla todavía está a cierta distancia, resultando en un mal acomodo) o, al revés, esperar demasiado y sentarse tarde (arriesgando quedar mal sentado o incluso no completar el abordaje a tiempo). La señal correcta para sentarse es sentir la silla tocarte físicamente la parte de atrás de ambas piernas — ese contacto físico, no un cálculo visual de distancia, es la referencia confiable.</p>
@@ -728,6 +774,7 @@ MODULES.push(
 },
 {
   id:'n2-m5', nivel:2, title:'Lectura de señalización de pistas',
+  imgs: [{"url": "https://images.unsplash.com/photo-1643874626316-13e4921a6214?w=1200&q=80&auto=format&fit=crop", "alt": "Señalización de pistas de esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1649225407266-1094752e6fe2?w=1200&q=80&auto=format&fit=crop", "alt": "Señalización de pistas de esquí", "credit": "Unsplash"}],
   content:`
     <p>Cada estación de esquí publica un mapa de pistas (<b>trail map</b>) tanto en formato físico en puntos clave de la montaña como digital en su sitio web o app — revisarlo con atención antes de subir, no solo cuando ya te perdiste, es un hábito que distingue a un esquiador que planifica de uno que improvisa constantemente.</p>
     <p>Más allá de los colores básicos por dificultad ya vistos (verde/azul/roja/negra), el mapa y la señalización física en pista incluyen elementos adicionales igual de importantes: los <b>cruces de pista</b> (donde una pista corta o se fusiona con otra, y donde hay que mirar activamente antes de cruzar, exactamente igual que en una intersección de calles), las <b>fusiones</b> (donde dos o más pistas convergen en una sola, generando zonas de tráfico más denso que requieren mayor atención), y las <b>zonas de reducción obligatoria de velocidad</b> (marcadas con carteles específicos, típicamente cerca de la base de la montaña, cerca de zonas de embarque de telesillas, o en cualquier punto con alta concentración de esquiadores de todos los niveles mezclados).</p>
@@ -746,6 +793,7 @@ MODULES.push(
 },
 {
   id:'n2-m6', nivel:2, title:'Transición a esquís paralelos',
+  imgs: [{"url": "https://images.unsplash.com/photo-1739012762509-7f643d35b6c0?w=1200&q=80&auto=format&fit=crop", "alt": "Transición a esquís paralelos", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1548784806-b9b21e8d740f?w=1200&q=80&auto=format&fit=crop", "alt": "Transición a esquís paralelos", "credit": "Unsplash"}],
   content:`
     <p>No existe un día mágico donde simplemente "dejas la cuña y ya" — la transición hacia esquís paralelos es un proceso genuinamente gradual, que empieza primero a velocidades algo más altas y en giros más abiertos, mucho antes de convertirse en tu forma de esquiar por defecto en cualquier situación y terreno.</p>
     <p>El primer paso natural en esta progresión, casi universal en la enseñanza moderna, es una técnica intermedia llamada <b>cuña-paralelo</b>: inicias el giro exactamente como en cuña, con la posición en V y la presión asimétrica sobre el esquí de afuera, pero a mitad del giro — en el momento en que ya llevas velocidad suficiente y el esquí de afuera está haciendo claramente la mayor parte del trabajo de dirección — el esquí de adentro, que en ese punto casi no está contribuyendo al giro, se va acercando de forma natural hasta quedar paralelo al de afuera. El giro termina entonces con ambos esquís juntos, en vez de mantenerse en V hasta el final.</p>
@@ -764,6 +812,7 @@ MODULES.push(
 },
 {
   id:'n2-m7', nivel:2, title:'Primeros giros paralelos',
+  imgs: [{"url": "https://images.unsplash.com/photo-1642516356277-163f6e1ab741?w=1200&q=80&auto=format&fit=crop", "alt": "Primeros giros paralelos en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1787513768817-2b7a5b604cba?w=1200&q=80&auto=format&fit=crop", "alt": "Primeros giros paralelos en esquí", "credit": "Unsplash"}],
   content:`
     <p>El giro paralelo real (<b>parallel turn</b>) se distingue técnicamente del cuña-paralelo visto en el módulo anterior en un punto fundamental: <b>arranca</b> ya con los esquís juntos desde el primer instante, no solo termina así después de pasar por una fase de cuña. Este es, sin exagerar, el movimiento técnico base sobre el que se construye prácticamente todo el esquí de nivel intermedio y avanzado que viene después en tu progresión, incluyendo carving, giros cortos, y técnica en terreno variado.</p>
     <p>La secuencia biomecánica de un giro paralelo completo tiene tres elementos que se repiten de forma cíclica, giro tras giro, formando un patrón rítmico continuo: el <b>cambio de canto</b> (edge change — el instante preciso en que pasas del canto que estabas usando en el giro anterior al canto contrario, invirtiendo la inclinación lateral de ambos esquís simultáneamente), la <b>flexión y extensión</b> (un movimiento vertical donde bajas ligeramente el centro de gravedad al iniciar cada giro y te extiendes hacia arriba al terminarlo, lo cual ayuda a aliviar momentáneamente la presión sobre los esquís en el instante justo del cambio de canto, facilitando que giren con mucha más fluidez de la que tendrían si mantuvieras presión constante), y la <b>rotación de piernas</b> (donde ambas piernas giran de forma coordinada por debajo de un torso que se mantiene relativamente estable y orientado, dirigiendo activamente los esquís hacia la nueva dirección deseada).</p>
@@ -786,6 +835,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n3-m1', nivel:3, title:'Anatomía del esquí',
+  imgs: [{"url": "https://images.unsplash.com/photo-1691727475583-021a99db1f99?w=1200&q=80&auto=format&fit=crop", "alt": "Anatomía de un esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1598711033181-92c75f4411f1?w=1200&q=80&auto=format&fit=crop", "alt": "Anatomía de un esquí", "credit": "Unsplash"}],
   content:`
     <p>Un esquí no es una tabla sólida y uniforme: es un sándwich cuidadosamente diseñado de materiales distintos, cada uno pensado para flexionar, absorber energía y devolverla en el momento justo. Entender esta anatomía capa por capa es lo que te permite explicarle con autoridad real a un cliente por qué un esquí de 300 dólares y uno de 900 se sienten tan radicalmente distintos bajo el pie, más allá del marketing de la marca.</p>
     <p>El <b>núcleo</b> (core) es el corazón estructural del esquí, y casi siempre es madera — a veces combinada estratégicamente con foam en zonas específicas, o reforzada con fibra de carbono. La madera sigue siendo el estándar de la industria, no por tradición sino porque ofrece la mejor combinación disponible de peso ligero, durabilidad a largo plazo, y esa "sensación viva" bajo el pie que los esquiadores experimentados notan de inmediato. El foam puro es considerablemente más barato de producir, pero se siente notablemente más "muerto" — amortigua las vibraciones de forma distinta y no devuelve energía de la misma manera cuando sales de un giro cargado.</p>
@@ -804,6 +854,7 @@ MODULES.push(
 },
 {
   id:'n3-m2', nivel:3, title:'Camber, rocker y perfiles híbridos',
+  imgs: [{"url": "https://images.unsplash.com/photo-1772955758328-e28b778d143b?w=1200&q=80&auto=format&fit=crop", "alt": "Camber y rocker de un esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1678815918041-658c2ba8c10c?w=1200&q=80&auto=format&fit=crop", "alt": "Camber y rocker de un esquí", "credit": "Unsplash"}],
   content:`
     <p>El perfil del esquí — es decir, cómo se curva de punta a cola cuando lo miras de lado sin ningún peso encima — es probablemente la variable individual que más cambia el comportamiento real sobre la nieve, incluso más que los materiales de construcción vistos en el módulo anterior. Dominar este tema es esencial tanto para tu propia técnica como para asesorar con autoridad en tienda.</p>
     <p>El <b>camber</b> clásico, el perfil tradicional que dominó el esquí durante décadas, es un arco hacia arriba: el esquí toca el suelo únicamente en la punta y en la cola cuando está sin peso, con el centro claramente levantado del suelo. Al pisar encima con todo tu peso, esa curva se aplana y la presión se reparte de forma pareja en toda la longitud de contacto. El resultado práctico: agarre de canto excepcional en nieve dura y compactada, y una sensación de "pop" — energía de rebote acumulada — al salir de cada giro, porque el esquí literalmente está almacenando y liberando energía elástica como un resorte. Es, por diseño, el perfil óptimo para pista preparada y carving técnico.</p>
@@ -822,6 +873,7 @@ MODULES.push(
 },
 {
   id:'n3-m3', nivel:3, title:'Sidecut, radio y ancho de cintura',
+  imgs: [{"url": "https://images.unsplash.com/photo-1572349213424-44d6129638c9?w=1200&q=80&auto=format&fit=crop", "alt": "Sidecut y radio de un esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1678986435406-eda0435d1b6a?w=1200&q=80&auto=format&fit=crop", "alt": "Sidecut y radio de un esquí", "credit": "Unsplash"}],
   content:`
     <p>El <b>sidecut</b> es la forma de reloj de arena que tiene todo esquí visto desde arriba: notablemente más ancho en la punta y en la cola, y más angosto en el centro, exactamente bajo donde se apoya el pie. Esta geometría no es casualidad estética — es la razón física directa por la que un esquí, al inclinarse sobre su canto, tiende a arquearse solo en un giro siguiendo esa curva: el esquiador no gira "a la fuerza" contra el material, el propio diseño del esquí colabora activamente con el movimiento.</p>
     <p>El <b>radio de giro</b> (turn radius, siempre expresado en metros en las especificaciones técnicas) describe matemáticamente qué tan cerrado o qué tan abierto es ese arco natural que el sidecut genera. Radios cortos, típicamente entre 12 y 15 metros, producen giros rápidos y cerrados — ideales para pistas estrechas, terreno con árboles, o técnica específica de giro corto que verás más adelante en este curso. Radios largos, de 18 metros en adelante, generan giros amplios y notablemente más estables a mayor velocidad — el diseño típico de esquís de carving puro o de esquís all-mountain orientados específicamente hacia velocidad y estabilidad en pista abierta.</p>
@@ -840,6 +892,7 @@ MODULES.push(
 },
 {
   id:'n3-m4', nivel:3, title:'Categorías de esquí',
+  imgs: [{"url": "https://images.unsplash.com/photo-1688619103478-5a38a2ff8a03?w=1200&q=80&auto=format&fit=crop", "alt": "Categorías de esquís en tienda", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1754583340212-5bddfda09f7e?w=1200&q=80&auto=format&fit=crop", "alt": "Categorías de esquís en tienda", "credit": "Unsplash"}],
   content:`
     <p>Con anatomía, perfil (camber/rocker) y sidecut ya dominados de los módulos anteriores, las categorías comerciales que vas a ver en cualquier catálogo o tienda son, en esencia, combinaciones típicas y probadas de esos mismos factores técnicos, empaquetadas y etiquetadas para un uso específico de cliente. Entender esto te permite ir más allá de simplemente memorizar etiquetas de marketing.</p>
     <p><b>Carving / piste</b>: cintura angosta (65-80mm), radio corto a medio, con camber claramente dominante sobre cualquier rocker. Es la categoría correcta para el cliente que esquía casi exclusivamente en pista preparada y prioriza precisión técnica y velocidad sobre versatilidad.</p>
@@ -859,6 +912,7 @@ MODULES.push(
 },
 {
   id:'n3-m5', nivel:3, title:'Largo correcto según el cliente',
+  imgs: [{"url": "https://images.unsplash.com/photo-1761604227291-db2c1a000f34?w=1200&q=80&auto=format&fit=crop", "alt": "Elegir el largo correcto de esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1691727479089-45c5a2165264?w=1200&q=80&auto=format&fit=crop", "alt": "Elegir el largo correcto de esquí", "credit": "Unsplash"}],
   content:`
     <p>El largo correcto del esquí es, sin ninguna duda, la pregunta más frecuente que vas a recibir como vendedor — y la respuesta técnicamente correcta nunca es un único número mágico basado solo en la altura. Es siempre una regla base que se ajusta activamente por varios factores adicionales que debes aprender a evaluar en conjunto.</p>
     <p><b>Regla base por altura y disciplina</b>: para un esquí all-mountain estándar, el largo suele llegar aproximadamente entre la barbilla y la frente del cliente parado normalmente. Carving y pista pura puede ir considerablemente más corto (hasta el mentón, o incluso algo por debajo), priorizando agilidad sobre estabilidad bruta. Freeride y powder típicamente va más largo, por encima de la cabeza del cliente, porque más longitud de contacto con la nieve ayuda directamente a la flotación en nieve profunda.</p>
@@ -878,6 +932,7 @@ MODULES.push(
 },
 {
   id:'n3-m6', nivel:3, title:'Botas: flex y horma',
+  imgs: [{"url": "https://images.unsplash.com/photo-1678986435406-eda0435d1b6a?w=1200&q=80&auto=format&fit=crop", "alt": "Botas de esquí: flex y horma", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1678815918041-658c2ba8c10c?w=1200&q=80&auto=format&fit=crop", "alt": "Botas de esquí: flex y horma", "credit": "Unsplash"}],
   content:`
     <p>Si un cliente solo va a invertir bien en una única pieza de equipo durante toda su visita a la tienda, esa pieza debería ser, sin ninguna duda razonable, la bota — una bota mal ajustada arruina por completo la experiencia de esquiar sin importar cuán bueno técnicamente sea el esquí que lleva debajo. Este es probablemente el consejo de venta más valioso que puedes transmitirle a un cliente que llega priorizando el esquí sobre la bota.</p>
     <p>El <b>flex index</b> (un número que típicamente va de 50 hasta más de 130 en botas de competición) mide específicamente cuánta fuerza física se necesita para doblar la caña de la bota hacia adelante durante el esquí. Flex suave, en el rango de 60 a 80, resulta considerablemente más cómodo y perdonador ante errores técnicos — la elección ideal para principiantes genuinos o esquiadores puramente casuales de pocos días al año. Flex medio, entre 90 y 110, es el punto de equilibrio correcto para esquiadores intermedios que ya buscan más respuesta directa del equipo. Flex rígido, de 120 en adelante, transmite el movimiento del esquiador al esquí con muy poca demora, pero exige simultáneamente fuerza física real y técnica depurada para aprovecharlo correctamente — venderle este nivel de flex a alguien sin el nivel técnico adecuado genera fatiga muscular prematura y, paradójicamente, menos control real, no más.</p>
@@ -895,6 +950,7 @@ MODULES.push(
 },
 {
   id:'n3-m7', nivel:3, title:'Bindings y tabla DIN',
+  imgs: [{"url": "https://images.unsplash.com/photo-1727582917307-25078b767df9?w=1200&q=80&auto=format&fit=crop", "alt": "Bindings y tabla DIN", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1790695516445-ba183fb34f1c?w=1200&q=80&auto=format&fit=crop", "alt": "Bindings y tabla DIN", "credit": "Unsplash"}],
   content:`
     <p>El binding es, sin exagerar, la pieza de seguridad más importante de todo el equipo de esquí completo: conecta físicamente la bota al esquí durante todo el uso normal (giros, baches, terreno irregular), pero está diseñado deliberadamente para soltarse en el momento exacto de una caída fuerte, protegiendo activamente la rodilla y la tibia de una lesión grave. Entender esto a fondo es esencial tanto por tu propia seguridad como por la responsabilidad real que implica venderlos.</p>
     <p>El <b>DIN</b> es el valor numérico estandarizado que determina con precisión cuánta fuerza de torsión o de impacto directo se necesita para que el binding libere la bota. Este número nunca se adivina ni se elige a criterio personal — se calcula siguiendo una tabla estándar de la industria que cruza sistemáticamente el peso corporal, la altura, el largo exacto de la suela de la bota (en milímetros), la edad del esquiador, y su nivel técnico declarado. Ponerlo demasiado alto (el binding se suelta con dificultad) aumenta directamente el riesgo de lesión de rodilla en una caída real, porque el mecanismo no libera cuando debería. Ponerlo demasiado bajo (se suelta con excesiva facilidad) puede liberar la bota en momentos de esquí normal donde el esquiador no debía caerse en absoluto, lo cual es igualmente peligroso a su manera, generando caídas inesperadas en pleno movimiento.</p>
@@ -912,6 +968,7 @@ MODULES.push(
 },
 {
   id:'n3-m8', nivel:3, title:'Bastones, cascos y protección',
+  imgs: [{"url": "https://images.unsplash.com/photo-1594383815406-39916a2a5be8?w=1200&q=80&auto=format&fit=crop", "alt": "Bastones, cascos y protección de esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1640189668430-f9791d4db74a?w=1200&q=80&auto=format&fit=crop", "alt": "Bastones, cascos y protección de esquí", "credit": "Unsplash"}],
   content:`
     <p>El largo correcto de un bastón se mide siempre de forma práctica, nunca por fórmula pura: con el cliente parado en superficie plana, calzado con zapatos normales de calle, sosteniendo el bastón boca abajo agarrando justo bajo la canasta — el codo debe quedar formando aproximadamente un ángulo de 90 grados en esa posición. El terreno de destino también influye en la elección: quien esquía principalmente powder se beneficia de canastas más grandes (evitan que el bastón se hunda completamente en nieve profunda al apoyarlo), mientras que la pista preparada favorece canastas notablemente más pequeñas y ágiles.</p>
     <p>El <b>casco</b> debería recomendarse siempre, sin ninguna excepción real en la venta moderna — ya no es un accesorio opcional en la mentalidad actual del deporte, y cualquier vendedor serio lo trata como parte integral del equipo básico, no como un extra. Se ajusta específicamente por circunferencia de cabeza, medida con cinta métrica alrededor de la frente en el punto más ancho, y hay que balancear conscientemente ventilación (más cómoda en días cálidos o esfuerzo físico alto) contra abrigo térmico (mejor para días fríos o para clientes especialmente sensibles al frío en la cabeza).</p>
@@ -929,6 +986,7 @@ MODULES.push(
 },
 {
   id:'n3-m9', nivel:3, title:'Mantenimiento y venta consultiva',
+  imgs: [{"url": "https://images.unsplash.com/photo-1581756810833-13f559ff8287?w=1200&q=80&auto=format&fit=crop", "alt": "Mantenimiento y venta consultiva de esquís", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1633104319747-9fceaf5c47b0?w=1200&q=80&auto=format&fit=crop", "alt": "Mantenimiento y venta consultiva de esquís", "credit": "Unsplash"}],
   content:`
     <p>Dos servicios técnicos básicos mantienen cualquier esquí funcionando correctamente a lo largo de su vida útil: el <b>afilado de cantos</b> (sharpening) y el <b>encerado</b> (waxing) de la base. Cantos desafilados se notan especialmente en hielo o nieve dura, donde el esquí literalmente "resbala" en vez de agarrar la nieve, incluso cuando la técnica del esquiador es correcta — un problema de equipo que se confunde fácilmente con un problema de habilidad si no se diagnostica bien. La cera protege activamente la base plástica, reduce la fricción real (mejorando el deslizamiento medible en nieve), y evita específicamente que la base se seque y se dañe con el tiempo, especialmente crítico después de guardar el equipo durante temporadas largas sin uso.</p>
     <p>Como regla práctica de asesoramiento en tienda: un esquiador frecuente que esquía principalmente en pista dura debería afilar sus cantos cada pocos días de uso genuinamente intenso; un esquiador recreativo típico puede afilar con seguridad una o dos veces por temporada completa. La cera se beneficia notablemente de aplicarse antes de cualquier salida importante planificada, y siempre resulta esencial antes de guardar el equipo al final de la temporada — una cera específica "de guardado", aplicada más gruesa de lo habitual, protege la base durante meses completos sin uso activo.</p>
@@ -946,6 +1004,7 @@ MODULES.push(
 },
 {
   id:'n3-m10', nivel:3, title:'Catálogo nuevo: la línea Discovery de Head (2026-27)',
+  imgs: [{"url": "https://images.unsplash.com/photo-1553493843-7633abefecb2?w=1200&q=80&auto=format&fit=crop", "alt": "Catálogo de esquís en tienda", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1572349213424-44d6129638c9?w=1200&q=80&auto=format&fit=crop", "alt": "Catálogo de esquís en tienda", "credit": "Unsplash"}],
   content:`
     <p>Las marcas renuevan catálogo todas las temporadas, y conviene que te mantengas al día con los cambios de las marcas que más se venden en tu tienda — no para recitarlos de memoria como un folleto, sino para poder explicarle con confianza a un cliente qué cambió realmente y si ese cambio le sirve a <i>su</i> uso declarado, aplicando exactamente la misma lógica consultiva del módulo anterior. Un caso reciente y bueno para practicar esto: para la temporada 2026-27, <b>Head</b> reemplazó por completo su línea all-mountain de volumen, antes llamada "Shape", por una línea nueva llamada <b>Discovery</b>.</p>
     <p>La diferencia conceptual entre las dos líneas es justo la que ya aprendiste a identificar en el módulo de categorías: Shape tenía un enfoque más cerrado hacia pista/carving, mientras que Discovery amplía deliberadamente la variación de forma y le suma más carácter fuera de pista, sin dejar de ser una línea pensada ante todo para pista preparada. Son 9 modelos en total, desde anchos de 70-74mm orientados a debutantes con paquete de iniciación, hasta los modelos "Pro" de 82/86mm para un perfil más exigente — es decir, la misma lógica de "ancho de cintura según uso declarado" que ya dominas, aplicada dentro de una sola línea de marca. Head todavía no publicó specs técnicas completas de los 9 modelos; los 5 con datos públicos confirmados son el 70, el 74, el 82 Sport, el 82 Pro y el 86 Pro, así que son los que vamos a repasar acá.</p>
@@ -964,6 +1023,7 @@ MODULES.push(
 },
 {
   id:'n3-m11', nivel:3, title:'La línea de pista de Head: Supershape e- (downhill de alto rendimiento)',
+  imgs: [{"url": "https://images.unsplash.com/photo-1611849468788-21fab3e06d21?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí de pista de alto rendimiento", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1529909277511-1628d64875ea?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí de pista de alto rendimiento", "credit": "Unsplash"}],
   content:`
     <p>Mientras que Discovery (visto en el módulo anterior) es la línea all-mountain versátil de Head, <b>Supershape</b> es su línea de pista pura — downhill/carving de alto rendimiento, pensada explícitamente para el esquiador avanzado o experto que prioriza agarre, precisión y estabilidad a velocidad por encima de la versatilidad fuera de pista. Un detalle de nomenclatura que vale la pena tener claro frente a un cliente informado: desde hace unas temporadas todos los modelos de esta línea llevan el prefijo <b>"e-"</b> (e-Original, e-Speed, e-Magnum, e-Rally, e-Titan) — si todavía escuchas a alguien hablar del "Supershape Titan" a secas, es el mismo esquí, pero el nombre correcto y vigente es <b>Supershape e-Titan</b>.</p>
     <p>La construcción de Supershape usa una base tecnológica distinta a la de Discovery, y es útil poder nombrar la diferencia frente a un cliente curioso: en vez de Auxetic y Superframe, Supershape combina un núcleo de madera con <b>dos capas completas de titanal</b> (metal, de punta a cola), <b>grafeno</b> ubicado estratégicamente (esta pieza sí es compartida con Discovery), la <b>Crossforce Carbon Construction</b> (un tejido de carbono que reemplaza parte de la lámina superior bajo la zona de fijación, sumando rigidez torsional) y el <b>Energy Management Circuit</b> (EMC) — placas piezo-cerámicas adelante y atrás del esquí que absorben vibración convirtiendo la energía de la flexión en energía eléctrica. Es, en otras palabras, una construcción mucho más orientada a estabilidad metálica a alta velocidad que la construcción liviana de Discovery.</p>
@@ -981,6 +1041,7 @@ MODULES.push(
 },
 {
   id:'n3-m12', nivel:3, title:'Discovery 70, explicado fácil: el más angosto de la familia',
+  imgs: [{"url": "https://images.unsplash.com/photo-1701709282639-1715831573ea?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí de entrada, familia angosta", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1768777156454-8232919c5a13?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí de entrada, familia angosta", "credit": "Unsplash"}],
   content:`
     <p>Si recién estás arrancando en esto de vender esquís, piensa el <b>Discovery 70</b> así: es como la bicicleta con la rueda más fina y lisa que existe, la de un ciclista de ruta que solo anda en asfalto liso. Una rueda así es rapidísima y súper precisa en una superficie dura y pareja, pero apenas la metes en tierra o pasto se siente insegura e inestable. El Discovery 70 es exactamente ese extremo, pero en esquí: tiene <b>70mm de ancho de cintura</b> (la parte más angosta del esquí, bajo el pie), que lo convierte en el modelo más angosto de toda la línea Discovery de Head.</p>
     <p>¿Para qué sirve ese ancho tan chico? El término técnico correcto es <b>ancho de cintura</b>, y ya lo conoces de los módulos anteriores: cuanto más angosto, más fácil y rápido es pasar de un canto al otro en pista preparada y dura, porque hay menos esquí que mover de un lado al otro. Es, literalmente, el esquí pensado para "precisión, progresión y carving" en pista — así lo describe la propia Head. Por eso es el esquí correcto para un debutante que recién está afirmando la técnica, casi siempre dentro de un paquete de iniciación (esquí + fijación + a veces botas, todo junto a un precio más accesible), no para alguien que ya pisa nieve blanda o variada fuera de pista.</p>
@@ -997,6 +1058,7 @@ MODULES.push(
 },
 {
   id:'n3-m13', nivel:3, title:'Discovery 74, explicado fácil: un paso más de margen',
+  imgs: [{"url": "https://images.unsplash.com/photo-1610989178999-1d9fbb57c1a1?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí con más margen para principiantes", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1674848472405-4b33a140fe61?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí con más margen para principiantes", "credit": "Unsplash"}],
   content:`
     <p>Sigue con la misma analogía de la bicicleta del módulo anterior, pero un escalón más ancho: el <b>Discovery 74</b> es como cambiar esa rueda de ruta purísima por una rueda de ciclocross, todavía fina y rápida en asfalto, pero con un poquito más de cuerpo para no sentirse tan nervioso si el camino no es perfectamente liso. En esquí, eso se traduce en <b>74mm de ancho de cintura</b> — cuatro milímetros más que el Discovery 70 — que le dan un poquito más de margen y estabilidad sin perder la vocación de pista y progresión de toda la gama baja de Discovery.</p>
     <p>¿Quién debería llevarse un Discovery 74 en vez de un Discovery 70? Acá es importante que sepas separar dos cosas: lo que Head confirmó oficialmente, y un criterio propio de recomendación que es útil pero no es un dato de marca. Head describe a ambos (70 y 74) con el mismo enfoque de "precisión, progresión y carving" para debutantes — no hay, de parte de la marca, una regla oficial de "a quién le toca cuál". El criterio que sí es razonable usar en el piso de venta es la <b>contextura física del cliente</b>: a un debutante de contextura más grande o más pesado, un esquí ligeramente más ancho como el 74 le va a dar algo más de soporte y flotación sin que pierda la precisión en pista que busca. Pero eso es tu criterio de vendedor, no una especificación que Head publicó — tienes que tener clara esa diferencia para no afirmarle al cliente algo como si fuera un dato oficial de catálogo.</p>
@@ -1013,6 +1075,7 @@ MODULES.push(
 },
 {
   id:'n3-m14', nivel:3, title:'Discovery 82 Sport, explicado fácil: la entrada a la familia 82',
+  imgs: [{"url": "https://images.unsplash.com/photo-1493668068984-ac1a19928fdf?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí de entrada a la familia 82", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1707464837830-3c54467fec6b?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí de entrada a la familia 82", "credit": "Unsplash"}],
   content:`
     <p>Pensá el núcleo de un esquí como el bate con el que un jugador golpea la pelota: un bate 100% de madera entera es más vivo y directo, pero un bate mixto, con algo de material compuesto mezclado, suele ser un poco más tolerante y uniforme. El <b>Discovery 82 Sport</b> usa justo esa receta mixta: un <b>núcleo de madera y composite</b>, pensado para dar un carving activo y responsivo, pero sin la exigencia total de un núcleo 100% madera. Es, dentro de la familia de 82mm de ancho de Head, el modelo de entrada — el que viene antes del Discovery 82 Pro, que vas a ver en el próximo módulo.</p>
     <p>A diferencia de los dos modelos anteriores (Discovery 70 y 74), con el 82 Sport sí tienes la ficha técnica completa y confirmada por Head, y vale la pena que la manejes de memoria porque es justo el tipo de dato que un cliente de nivel intermedio-avanzado va a pedirte: <b>sidecut 129/82/112mm</b> (punta/cintura/cola, en milímetros), <b>radio de giro de 14,4 metros</b>, y una fijación de la línea <b>"Better Balance PR"</b>, modelo <b>PR 11</b>. El ancho de cintura de <b>82mm</b> ya lo ubica, siguiendo la misma lógica de todo este nivel, como un esquí más versátil que el 70/74 — con más volumen para manejarse bien tanto en pista como con algo de nieve variada fuera de ella — pero todavía dentro del perfil "un esquí para todo" de Discovery, no del rendimiento sin compromisos de Supershape.</p>
@@ -1029,6 +1092,7 @@ MODULES.push(
 },
 {
   id:'n3-m15', nivel:3, title:'Discovery 82 Pro, explicado fácil: un escalón arriba del Sport',
+  imgs: [{"url": "https://images.unsplash.com/photo-1691727475583-021a99db1f99?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí un escalón arriba del Sport", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1645999141001-b58903fb94b0?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí un escalón arriba del Sport", "credit": "Unsplash"}],
   content:`
     <p>Retomá la analogía del bate de béisbol del módulo anterior: si el Discovery 82 Sport es el bate mixto (madera y composite), el <b>Discovery 82 Pro</b> es el bate de <b>madera entera</b> — más directo, más vivo, sin nada mezclado. Eso es exactamente lo que cambia en el núcleo: el 82 Pro tiene un <b>núcleo 100% de madera</b>, a diferencia del núcleo mixto del Sport. El resultado práctico, frente a un cliente: el 82 Pro se siente más ágil de canto a canto y con un agarre más firme en pista dura, el tipo de respuesta que busca alguien que pasa la mayoría de su tiempo esquiando en pista preparada.</p>
     <p>La segunda diferencia clave está en la fijación, y ahí la analogía que mejor funciona es la del cinturón de seguridad: una fijación básica es como un cinturón común, cumple su función; una fijación de categoría superior, con mejor sistema de liberación y ajuste, es como un cinturón con <b>pretensor</b> — reacciona mejor y de forma más precisa en el momento que realmente importa. El 82 Pro viene con la fijación <b>Protector EVO 11</b>, de categoría superior a la PR 11 del Sport, lo cual es un argumento de venta real y concreto, no solo una diferencia de nombre.</p>
@@ -1045,6 +1109,7 @@ MODULES.push(
 },
 {
   id:'n3-m16', nivel:3, title:'Discovery 86 Pro, explicado fácil: el buque insignia de la línea',
+  imgs: [{"url": "https://images.unsplash.com/photo-1727582921373-9d19faeac630?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí insignia de la línea", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1645999140947-db7546fecb30?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí insignia de la línea", "credit": "Unsplash"}],
   content:`
     <p>Para cerrar la familia Discovery, piensa la diferencia entre el Discovery 82 Pro y el <b>Discovery 86 Pro</b> con una analogía bien simple: es la diferencia entre la rueda de una bicicleta de ruta angosta y la rueda más ancha de una mountain bike real. La rueda más ancha no es "mejor" en abstracto — es más estable, absorbe mejor las irregularidades del terreno y da más confianza a velocidad, pero cede algo de la precisión quirúrgica de la rueda angosta en una superficie perfectamente lisa y dura. Eso es exactamente lo que hace el salto de 82mm a <b>86mm</b> de ancho de cintura en estos dos esquís.</p>
     <p>En construcción, el 86 Pro es idéntico al 82 Pro: mismo <b>núcleo 100% de madera</b> y misma fijación <b>Protector EVO 11</b> de categoría superior — ninguna de esas dos piezas cambia. Lo único que cambia de verdad es la forma: <b>sidecut 130/86/113mm</b> y <b>radio de giro de 15,2 metros</b>, ambos ligeramente mayores que los 129/82/112mm y 14,4m del 82 Pro, consistente con un esquí pensado para más volumen y estabilidad en vez de la agilidad más cerrada del 82.</p>
@@ -1065,6 +1130,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n4-m1', nivel:4, title:'Carving',
+  imgs: [{"url": "https://images.unsplash.com/photo-1613338130141-d1696b8b9e50?w=1200&q=80&auto=format&fit=crop", "alt": "Carving en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1418662589339-364ad47f98a2?w=1200&q=80&auto=format&fit=crop", "alt": "Carving en esquí", "credit": "Unsplash"}],
   content:`
     <p>Un giro <b>carveado</b> deja en la nieve dos líneas delgadas y limpias, exactamente del ancho del canto del esquí — nada de raspado, nada de esquís deslizando lateralmente sobre la superficie. Un giro <b>derrapado</b> (skidded), en cambio, deja marcas notablemente más anchas porque el esquí se desliza de lado además de girar, disipando velocidad y precisión en el proceso. Distinguir entre ambos, tanto sintiéndolo bajo el pie como viéndolo en la nieve detrás de ti, es la habilidad diagnóstica central de este nivel.</p>
     <p>La clave técnica del carving es <b>inclinar el esquí fuerte y temprano</b> sobre su canto, dejando deliberadamente que el sidecut (visto en profundidad en el nivel de equipamiento) haga el trabajo de arquear el giro — no forzar el giro girando las piernas de más, que es exactamente lo que produce derrape. Cuanto más confías en la geometría del esquí y menos "empujas" el giro con rotación muscular activa, más limpio sale el carving.</p>
@@ -1083,6 +1149,7 @@ MODULES.push(
 },
 {
   id:'n4-m2', nivel:4, title:'Control de velocidad avanzado',
+  imgs: [{"url": "https://images.unsplash.com/photo-1478700485868-972b69dc3fc4?w=1200&q=80&auto=format&fit=crop", "alt": "Control de velocidad avanzado en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1613252051874-42cb8029ef48?w=1200&q=80&auto=format&fit=crop", "alt": "Control de velocidad avanzado en esquí", "credit": "Unsplash"}],
   content:`
     <p>Más allá de la cuña vista en niveles anteriores, el control de velocidad real a nivel intermedio-avanzado viene principalmente de la <b>forma del giro</b>: un giro que termina cruzando bien la línea de caída (fall line, vista en el primer módulo del curso) reduce velocidad de forma natural y elegante, sin necesidad de derrapar bruscamente o frenar de forma abrupta e incómoda.</p>
     <p>Elegir entre giros cortos o largos según la situación específica es otra herramienta de control fundamental: giros más cerrados generan considerablemente más control de velocidad en terreno estrecho, entre árboles, o en pendiente pronunciada; giros más amplios mantienen más velocidad de forma intencional en terreno abierto donde eso es genuinamente deseable, como en una pista ancha sin tráfico.</p>
@@ -1101,6 +1168,7 @@ MODULES.push(
 },
 {
   id:'n4-m3', nivel:4, title:'Terreno variado: moguls, hielo y nieve pesada',
+  imgs: [{"url": "https://images.unsplash.com/photo-1735749328536-7097e30aafda?w=1200&q=80&auto=format&fit=crop", "alt": "Terreno variado en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1709882370244-4fae019515c2?w=1200&q=80&auto=format&fit=crop", "alt": "Terreno variado en esquí", "credit": "Unsplash"}],
   content:`
     <p>Cada tipo de terreno difícil exige un ajuste técnico específico y deliberado, no la misma solución genérica aplicada a todo — un error común de esquiadores intermedios es intentar usar exactamente la misma técnica de pista dura en cualquier condición, con resultados frustrantes y a veces peligrosos.</p>
     <p>En <b>moguls</b> (bultos formados por el paso repetido de esquiadores girando en el mismo punto), las piernas actúan literalmente como un sistema de suspensión: se flexionan activamente al pasar por encima de cada bulto y se extienden en el valle entre bultos consecutivos, manteniendo la cadera y el torso relativamente estables y a una altura constante mientras las piernas absorben todo el terreno irregular. Elegir conscientemente una línea (pasando por encima de los bultos en su cresta, esquivándolos por los valles entre ellos, o una combinación de ambas estrategias según la sección) importa tanto como la técnica de absorción en sí misma — muchos esquiadores técnicamente capaces fallan en moguls simplemente por mala elección de línea, no por falta de habilidad de absorción.</p>
@@ -1118,6 +1186,7 @@ MODULES.push(
 },
 {
   id:'n4-m4', nivel:4, title:'Giros cortos',
+  imgs: [{"url": "https://images.unsplash.com/photo-1613817044678-787c6f2abaa6?w=1200&q=80&auto=format&fit=crop", "alt": "Giros cortos en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1708472067917-d09ef8193d58?w=1200&q=80&auto=format&fit=crop", "alt": "Giros cortos en esquí", "credit": "Unsplash"}],
   content:`
     <p>Los giros cortos (short turns) son técnicamente esenciales en terreno empinado, en moguls, o en espacios estrechos entre árboles — situaciones donde un giro amplio simplemente no cabe físicamente en el espacio disponible, o generaría una velocidad excesiva e incontrolable dada la inclinación del terreno.</p>
     <p>La diferencia técnica principal frente al giro largo desarrollado en módulos anteriores: el <b>movimiento rotativo de las piernas es notablemente más rápido y el ritmo se vuelve considerablemente más constante</b>, con el torso manteniéndose visiblemente más quieto y estable mientras las piernas pivotan activamente por debajo de él, giro tras giro, en una secuencia casi continua.</p>
@@ -1136,6 +1205,7 @@ MODULES.push(
 },
 {
   id:'n4-m5', nivel:4, title:'Lectura de pendiente y planificación de línea',
+  imgs: [{"url": "https://images.unsplash.com/photo-1735509903556-602b4d7d3ae5?w=1200&q=80&auto=format&fit=crop", "alt": "Lectura de pendiente y planificación de línea", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1673694783311-4a7384f7f28c?w=1200&q=80&auto=format&fit=crop", "alt": "Lectura de pendiente y planificación de línea", "credit": "Unsplash"}],
   content:`
     <p>Un esquiador genuinamente avanzado no reacciona al terreno giro por giro de forma improvisada — <b>lee la pendiente completa antes de comprometerse</b> a bajarla, planeando conscientemente varios giros por adelantado en vez de descubrir cada obstáculo o cambio de terreno en el momento exacto en que llega a él.</p>
     <p>Identificar la <b>línea de caída</b> (fall line) real de cada sección específica — que puede cambiar de dirección varias veces dentro de una misma pista larga, especialmente en terreno con giros naturales del relieve — es el primer paso de esta lectura: saber con precisión hacia dónde "quiere" ir la gravedad en cada tramo concreto te dice de antemano dónde vas a necesitar más control técnico y dónde puedes relajar un poco la intensidad.</p>
@@ -1154,6 +1224,7 @@ MODULES.push(
 },
 {
   id:'n4-m6', nivel:4, title:'Esquí fluido en pista azul/roja',
+  imgs: [{"url": "https://images.unsplash.com/photo-1749062967414-ae9efa210cf0?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí fluido en pista azul/roja", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1771271949582-d5c30f95c4c5?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí fluido en pista azul/roja", "credit": "Unsplash"}],
   content:`
     <p>A este punto de la progresión técnica, la meta genuina ya no es dominar un movimiento aislado más — es lograr que todo el conjunto (postura, giro, ritmo, lectura de terreno, control de velocidad) se sienta como una sola cosa fluida e integrada, no como una lista consciente de pasos que ejecutas uno por uno de forma deliberada mientras esquías.</p>
     <p>Un esquiador genuinamente fluido mantiene un <b>ritmo consistente</b> entre giros consecutivos, ajusta la velocidad principalmente mediante la forma del giro (la técnica desarrollada en el módulo de control de velocidad avanzado), y mantiene deliberadamente la parte superior del cuerpo relajada y relativamente quieta mientras las piernas hacen visiblemente la mayor parte del trabajo activo de dirección y absorción.</p>
@@ -1172,6 +1243,7 @@ MODULES.push(
 },
 {
   id:'n4-m7', nivel:4, title:'Ajustes finos de postura y core',
+  imgs: [{"url": "https://images.unsplash.com/photo-1520967973927-e5c9957b0280?w=1200&q=80&auto=format&fit=crop", "alt": "Postura y core en esquí avanzado", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1708264129244-a18db224dba9?w=1200&q=80&auto=format&fit=crop", "alt": "Postura y core en esquí avanzado", "credit": "Unsplash"}],
   content:`
     <p>A velocidad más alta y en terreno considerablemente más exigente que el de niveles anteriores, pequeños detalles de postura que apenas importaban al inicio de tu progresión empiezan a marcar una diferencia técnica real y medible en tu control y estabilidad.</p>
     <p>El <b>core</b> (la zona media del cuerpo — abdomen y espalda baja en conjunto) trabaja como un estabilizador activo y constante: mantenerlo ligeramente activado de forma consciente (nunca completamente rígido, pero tampoco relajado por completo) ayuda genuinamente a absorber las irregularidades del terreno sin que se transmitan directamente hacia los hombros y la cabeza, lo cual mantiene considerablemente mejor tanto la visión estable del terreno como el equilibrio general a alta velocidad.</p>
@@ -1194,6 +1266,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n5-m1', nivel:5, title:'Powder',
+  imgs: [{"url": "https://images.unsplash.com/photo-1676048746226-113269dd8084?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí en powder (nieve profunda)", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1676048746230-0c11ed158c78?w=1200&q=80&auto=format&fit=crop", "alt": "Esquí en powder (nieve profunda)", "credit": "Unsplash"}],
   content:`
     <p>Esquiar en <b>powder</b> (nieve polvo, profunda y genuinamente sin trackear) requiere ajustes de técnica notables respecto a la pista dura desarrollada en niveles anteriores — la misma técnica que funciona perfectamente en pista puede hacer que las puntas de los esquís se claven bajo la superficie en vez de flotar, resultando en una caída frustrante hacia adelante.</p>
     <p>El ajuste más importante y el primero que todo esquiador debe interiorizar: <b>llevar el peso corporal ligeramente más atrás</b> de lo habitual en pista — no de forma extrema, pero sí notablemente más que en nieve compactada — específicamente para evitar que las puntas de los esquís se claven bajo la nieve en vez de flotar sobre ella. Este ajuste va directamente en contra del reflejo desarrollado en niveles anteriores de mantener el peso adelante, y requiere práctica consciente para no revertir instintivamente al patrón de pista dura.</p>
@@ -1212,6 +1285,7 @@ MODULES.push(
 },
 {
   id:'n5-m2', nivel:5, title:'Freestyle básico',
+  imgs: [{"url": "https://images.unsplash.com/photo-1707885437265-1debb3cf49cb?w=1200&q=80&auto=format&fit=crop", "alt": "Freestyle básico en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1773160498296-4dab31c8e49d?w=1200&q=80&auto=format&fit=crop", "alt": "Freestyle básico en esquí", "credit": "Unsplash"}],
   content:`
     <p>Antes de cualquier técnica específica de salto o truco, el <b>park</b> (snowpark) tiene una etiqueta propia y bien establecida que hay que respetar activamente por seguridad de todos los usuarios: siempre mirar deliberadamente hacia arriba antes de entrar a cualquier feature (salto, riel, box) para confirmar que nadie más está a punto de bajar por esa misma línea, y respetar rigurosamente el turno — una persona por feature a la vez, nunca dos personas comprometidas simultáneamente en el mismo elemento.</p>
     <p>La técnica básica de un <b>salto</b> (jump) se descompone en tres fases técnicas claramente identificables: el <b>pop</b> (un pequeño impulso vertical adicional justo al momento del despegue, generado extendiendo activamente las piernas en el instante preciso del lip del salto), el vuelo (mantener el cuerpo genuinamente centrado y estable en el aire, con o sin un <b>grab</b> opcional — tomar el esquí con la mano en algún punto del vuelo), y el <b>aterrizaje</b>, absorbiendo activamente el impacto flexionando las piernas al tocar la nieve, siguiendo exactamente el mismo principio biomecánico que la absorción en moguls desarrollada en el nivel de perfeccionamiento.</p>
@@ -1230,6 +1304,7 @@ MODULES.push(
 },
 {
   id:'n5-m3', nivel:5, title:'Seguridad backcountry: ARVA, pala y sonda',
+  imgs: [{"url": "https://images.unsplash.com/photo-1519229875649-6b8da16368fd?w=1200&q=80&auto=format&fit=crop", "alt": "Seguridad backcountry: ARVA, pala y sonda", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1563442162585-fa1426255ea9?w=1200&q=80&auto=format&fit=crop", "alt": "Seguridad backcountry: ARVA, pala y sonda", "credit": "Unsplash"}],
   content:`
     <p>Salir fuera de una pista controlada por la estación (backcountry) implica un nivel de riesgo genuinamente distinto al de cualquier terreno visto hasta ahora en este curso — y el equipo mínimo de seguridad para esta actividad no es opcional bajo ninguna circunstancia: representa la diferencia real entre un rescate exitoso de compañeros y una tragedia evitable.</p>
     <p>El <b>ARVA</b> (también llamado transceiver o beacon en inglés) es un dispositivo electrónico que puede tanto emitir como recibir una señal de radio específica — todos los integrantes de un grupo lo llevan encendido en modo "transmisión" mientras se mueven por el terreno; si alguien queda enterrado por una avalancha, el resto del grupo cambia inmediatamente sus propios dispositivos a modo "búsqueda" para localizar con precisión la señal específica de la persona enterrada.</p>
@@ -1248,6 +1323,7 @@ MODULES.push(
 },
 {
   id:'n5-m4', nivel:5, title:'Avalanchas: conceptos básicos',
+  imgs: [{"url": "https://images.unsplash.com/photo-1565299797888-204a73f008c5?w=1200&q=80&auto=format&fit=crop", "alt": "Avalanchas: conceptos básicos", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1556898085-e1ad1b96282e?w=1200&q=80&auto=format&fit=crop", "alt": "Avalanchas: conceptos básicos", "credit": "Unsplash"}],
   content:`
     <p>Este módulo, al igual que el anterior sobre equipo de rescate, es una introducción de conciencia general — <b>no sustituye en absoluto</b> un curso certificado real de seguridad en avalanchas, que resulta indispensable antes de tomar cualquier decisión real de terreno fuera de pista controlada.</p>
     <p>La gran mayoría de avalanchas ocurren estadísticamente en pendientes de <b>entre 30 y 45 grados</b> de inclinación — terreno más plano que ese rango rara vez desliza porque no acumula suficiente tensión gravitacional en el manto de nieve; terreno considerablemente más empinado que ese rango a veces libera la nieve de forma más constante y en cantidades menores, antes de que logre acumular tanto riesgo potencial concentrado. Esta franja específica de ángulo es, por lo tanto, la zona de mayor atención real para cualquier evaluación de riesgo.</p>
@@ -1266,6 +1342,7 @@ MODULES.push(
 },
 {
   id:'n5-m5', nivel:5, title:'Competición y slalom',
+  imgs: [{"url": "https://images.unsplash.com/photo-1714634562360-aefa771e6c92?w=1200&q=80&auto=format&fit=crop", "alt": "Competición y slalom en esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1646381691174-db8e14c943d5?w=1200&q=80&auto=format&fit=crop", "alt": "Competición y slalom en esquí", "credit": "Unsplash"}],
   content:`
     <p>Aunque no tengas ninguna intención personal de competir formalmente, entender la estructura real de las disciplinas de competición te ayuda genuinamente a explicar mejor equipo y técnica a cualquier cliente interesado en ese mundo específico — y varios ejercicios de entrenamiento genuinamente derivados de carrera sirven perfectamente para mejorar el esquí puramente recreativo, sin ninguna intención competitiva real.</p>
     <p>El <b>slalom</b> usa puertas (gates) colocadas muy juntas entre sí, exigiendo giros genuinamente rápidos y cerrados en sucesión constante — es, sin discusión, la disciplina técnica por excelencia dentro del esquí de competición, donde el ritmo constante y la precisión técnica importan considerablemente más que la velocidad pura bruta.</p>
@@ -1284,6 +1361,7 @@ MODULES.push(
 },
 {
   id:'n5-m6', nivel:5, title:'Tecnología moderna del esquí',
+  imgs: [{"url": "https://images.unsplash.com/photo-1665060500969-2eb875d3e9d5?w=1200&q=80&auto=format&fit=crop", "alt": "Tecnología moderna del esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1610482236722-189d24f8eec0?w=1200&q=80&auto=format&fit=crop", "alt": "Tecnología moderna del esquí", "credit": "Unsplash"}],
   content:`
     <p>El esquí como industria completa sigue evolucionando de forma constante en materiales y tecnología aplicada, y vale genuinamente la pena que como vendedor te mantengas actualizado sobre las tendencias reales del sector — este tipo específico de innovación técnica cambia con una frecuencia notablemente mayor que la técnica de esquí en sí misma, que permanece relativamente estable década tras década.</p>
     <p>El uso de <b>fibra de carbono</b> en un número creciente de puntos de la construcción (ya no limitado solo a refuerzos parciales aislados, como se veía en el nivel de equipamiento) sigue expandiéndose activamente, buscando reducir peso total sin sacrificar rigidez torsional real — esto resulta especialmente relevante en la categoría de touring, donde cada gramo adicional de peso cuenta directamente al subir la montaña caminando por esfuerzo propio.</p>
@@ -1306,6 +1384,7 @@ MODULES.push(
 MODULES.push(
 {
   id:'n6-m1', nivel:6, title:'Qué es el "bevel": las dos caras del canto',
+  imgs: [{"url": "https://images.unsplash.com/photo-1638902883554-7a04594d3166?w=1200&q=80&auto=format&fit=crop", "alt": "Bevel de un esquí en taller", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1631798872781-9cbf3fd3be4a?w=1200&q=80&auto=format&fit=crop", "alt": "Bevel de un esquí en taller", "credit": "Unsplash"}],
   content:`
     <p>Hay un nivel de conocimiento de taller que va más allá de lo que necesita un vendedor de piso para recomendar el esquí correcto, pero que te separa del resto cuando un cliente te pregunta algo sobre mantenimiento, afilado, o por qué un esquí "muerde" distinto después de un service. Ese es el terreno que vas a cubrir en este nivel: el <b>bevel</b> (el ángulo con el que se afila el canto metálico de un esquí) y el proceso de <b>stone grinding</b> (el rectificado de base con piedra). Es información de taller técnico, no de venta pura — pero un vendedor que la entiende de verdad vende servicio de taller con mucha más confianza, y evita prometerle al cliente algo que el taller después no puede cumplir.</p>
     <p>Un esquí tiene cantos metálicos en todo su perímetro, y ese canto tiene técnicamente <b>dos caras</b> que se pueden afilar con ángulos distintos entre sí: la <b>base</b> (la cara de abajo, la que toca la nieve al plano) y el <b>costado</b> (side, la cara vertical, la que mira hacia afuera del esquí). El ángulo que se le da a cada una de esas dos caras tiene nombre propio y efecto propio — y es muy común, incluso entre vendedores con experiencia, confundir uno con el otro. Este módulo te da la base conceptual antes de entrar en números concretos en los próximos dos módulos.</p>
@@ -1323,6 +1402,7 @@ MODULES.push(
 },
 {
   id:'n6-m2', nivel:6, title:'Side bevel: ángulos por disciplina y por tipo de nieve',
+  imgs: [{"url": "https://images.unsplash.com/photo-1769151267997-b9a2613791df?w=1200&q=80&auto=format&fit=crop", "alt": "Side bevel según disciplina", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1688619102363-bf64b743cedd?w=1200&q=80&auto=format&fit=crop", "alt": "Side bevel según disciplina", "credit": "Unsplash"}],
   content:`
     <p>Siguiendo del módulo anterior, el <b>side bevel</b> (grados removidos desde los 90° del canto lateral) es el que más impacto tiene sobre el agarre del esquí en superficies duras, y por eso es el que más varía según la disciplina y el tipo de esquiador. No existe un único ángulo correcto universal — existe un rango según uso, y vale la pena que conozcas referencias concretas en vez de un número vago.</p>
     <p>Para uso <b>recreativo general</b>, el rango típico citado por talleres y fabricantes está entre <b>1° y 2°</b> de side bevel. Para <b>carving de rendimiento</b> (el esquiador que busca agarre firme en pista preparada sin ser competidor formal), el rango sube a <b>2°-3°</b>. Para <b>slalom de competición</b>, donde el agarre en hielo o nieve muy dura es crítico y el margen de error es mínimo, el rango típico es de <b>3°</b>, a veces hasta más. Para <b>gigante (GS)</b>, un valor intermedio cercano a <b>3°</b> también es común. Y para disciplinas de <b>velocidad</b> (Super-G, descenso), donde la estabilidad a alta velocidad pesa más que el agarre quirúrgico en giro cerrado, el rango suele bajar levemente a <b>2°-3°</b>.</p>
@@ -1339,6 +1419,7 @@ MODULES.push(
 },
 {
   id:'n6-m3', nivel:6, title:'Base bevel: por qué "afilado" no siempre significa lo que crees',
+  imgs: [{"url": "https://images.unsplash.com/photo-1757597738186-07ed394d3b32?w=1200&q=80&auto=format&fit=crop", "alt": "Base bevel de un esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1659034072877-e90e8d6d49d2?w=1200&q=80&auto=format&fit=crop", "alt": "Base bevel de un esquí", "credit": "Unsplash"}],
   content:`
     <p>Este módulo cubre el matiz más importante —y más mal entendido, incluso dentro del oficio— de todo este nivel de taller: la diferencia entre <b>afilar</b> un canto y <b>cambiar su bevel</b>, y por qué no son lo mismo. Es un error común pensar que un canto que "se siente filoso al tacto" es automáticamente un canto bien ajustado — y ese malentendido puede llevar a un service casero mal hecho que arruina el comportamiento del esquí sin que se note a simple vista.</p>
     <p>El <b>base bevel</b> no determina si el canto está "afilado" o no en el sentido coloquial — determina la <b>responsividad</b> del esquí: qué tan rápido el canto entra en contacto efectivo con la nieve cuando el esquiador inclina el esquí. El <b>side bevel</b>, en cambio, es el que gobierna la <b>efectividad</b> del canto: cuánto puedes inclinar el esquí antes de perder agarre. Son dos propiedades distintas, y confundirlas es el error de base de este tema.</p>
@@ -1356,6 +1437,7 @@ MODULES.push(
 },
 {
   id:'n6-m4', nivel:6, title:'Herramientas de taller para ajustar bevel',
+  imgs: [{"url": "https://images.unsplash.com/photo-1783669829183-46849d7387e2?w=1200&q=80&auto=format&fit=crop", "alt": "Herramientas de taller para bevel", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1790009419840-9cc0108d1791?w=1200&q=80&auto=format&fit=crop", "alt": "Herramientas de taller para bevel", "credit": "Unsplash"}],
   content:`
     <p>Para llevar a la práctica todo lo visto en los tres módulos anteriores, un taller de esquí (y cualquier vendedor que quiera hablar con autoridad sobre el servicio que ofrece su tienda) debería reconocer las herramientas básicas del oficio, aunque no sea quien las use personalmente en el banco de trabajo.</p>
     <p>Las <b>guías de bevel</b> (file guides) son piezas metálicas que sujetan una lima o piedra a un ángulo fijo exacto mientras se pasa sobre el canto — existen guías específicas para base bevel y guías específicas para side bevel, y son las que garantizan que el ángulo elegido (por ejemplo, el "1/3" visto en el módulo 2) se mantenga constante en todo el largo del esquí, en vez de depender del pulso de la mano de quien afila.</p>
@@ -1374,6 +1456,7 @@ MODULES.push(
 },
 {
   id:'n6-m5', nivel:6, title:'Stone grinding: qué hace, y cuándo corresponde de verdad',
+  imgs: [{"url": "https://images.unsplash.com/photo-1668594914817-40de40cb4402?w=1200&q=80&auto=format&fit=crop", "alt": "Stone grinding de esquís", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1673280019212-08264cbe21f2?w=1200&q=80&auto=format&fit=crop", "alt": "Stone grinding de esquís", "credit": "Unsplash"}],
   content:`
     <p>El <b>stone grinding</b> es un proceso de taller que usa una máquina con una piedra giratoria grande (de carburo de silicio o de óxido de aluminio) que hace dos cosas <b>al mismo tiempo</b>: aplana la base del esquí a la perfección (corrigiendo cualquier deformación acumulada) y, simultáneamente, corta en esa base un patrón de textura llamado <b>estructura</b> (structure), que vas a profundizar en el próximo módulo. Es, en esencia, el "reseteo completo" de la base del esquí — el único servicio capaz de corregir de verdad el bevel de base que creció con el uso, tal como viste en el módulo 3.</p>
     <p>Es importante distinguir el stone grind de otros dos servicios con los que suele confundirse. El <b>belt grinding</b> (rectificado con banda abrasiva) es un proceso más rápido y más barato, pero deja una superficie de base con imperfecciones menores que casi siempre requieren un stone grind posterior para quedar realmente bien terminadas — no es un sustituto equivalente, es un paso previo más tosco. Y el <b>afilado o tune de rutina</b> (lo que viste en los módulos 2 y 4, con guías y piedras manuales) es un servicio mucho más frecuente y liviano, que mantiene el filo del canto entre stone grinds, pero que no corrige la planitud de la base ni resetea un bevel que ya creció demasiado.</p>
@@ -1390,6 +1473,7 @@ MODULES.push(
 },
 {
   id:'n6-m6', nivel:6, title:'Estructura, frecuencia de servicio, y cómo vender tuning técnico',
+  imgs: [{"url": "https://images.unsplash.com/photo-1758631130768-f9f77f8a4def?w=1200&q=80&auto=format&fit=crop", "alt": "Encerado y estructura de base de esquí", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1758631130769-8a2899c547cb?w=1200&q=80&auto=format&fit=crop", "alt": "Encerado y estructura de base de esquí", "credit": "Unsplash"}],
   content:`
     <p>La <b>estructura</b> (structure) es el patrón de textura que la piedra de un stone grind corta en la base del esquí al mismo tiempo que la aplana, y su función es puramente práctica: gestionar la película de agua que se forma entre la base y la nieve por fricción y presión mientras el esquí se desliza. Sin ninguna estructura, esa agua generaría succión y frenaría el esquí — la estructura le da canales por donde esa agua puede escapar.</p>
     <p>La regla general, válida en prácticamente toda fuente del oficio, es: nieve <b>húmeda o cálida</b> genera más agua por fricción, así que necesita una estructura más <b>profunda, ancha y gruesa</b> que canalice ese exceso de agua y reduzca la succión. Nieve <b>fría y seca</b>, en cambio, genera muy poca agua, así que conviene una estructura más <b>fina y suave</b>, que retenga apenas la película mínima de agua necesaria para minimizar la fricción, sin sobre-canalizar donde no hace falta.</p>
@@ -1414,9 +1498,26 @@ const PROGRESS_KEY = 'ski_progress_v1__Sebas';
 const ACTIVITY_KEY = 'ski_activity_v1__Sebas';
 
 function loadProgress(){ try{return JSON.parse(localStorage.getItem(PROGRESS_KEY))||{};}catch(e){return {};} }
-function saveProgress(p){ localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }
+function saveProgress(p){ localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); pushProgressSoon(); }
 function loadActivity(){ try{return JSON.parse(localStorage.getItem(ACTIVITY_KEY))||{};}catch(e){return {};} }
-function saveActivity(a){ localStorage.setItem(ACTIVITY_KEY, JSON.stringify(a)); }
+function saveActivity(a){ localStorage.setItem(ACTIVITY_KEY, JSON.stringify(a)); pushProgressSoon(); }
+
+function ringSvgSki(pct){
+  const r = 18, c = 2*Math.PI*r;
+  const off = c - (Math.max(0,Math.min(100,pct))/100)*c;
+  return `<svg viewBox="0 0 44 44">
+    <circle class="ring-bg" cx="22" cy="22" r="${r}"></circle>
+    <circle class="ring-fg" cx="22" cy="22" r="${r}" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}"></circle>
+  </svg>`;
+}
+
+function heroPhotoUrl(){
+  const withImgs = MODULES.filter(m=>m.imgs && m.imgs.length);
+  if(!withImgs.length) return '';
+  const done = loadProgress();
+  const firstIncomplete = withImgs.find(m=>!done[m.id]?.completed) || withImgs[0];
+  return firstIncomplete.imgs[0].url;
+}
 
 function todayStr(d=new Date()){ return d.toISOString().slice(0,10); }
 
@@ -1499,6 +1600,9 @@ function renderDashboard(){
   const activity = loadActivity();
   const s = computeStats();
 
+  const heroUrl = heroPhotoUrl();
+  if(heroUrl) document.getElementById('heroPhotoImg').src = heroUrl;
+
   // greeting
   const hr = new Date().getHours();
   document.getElementById('greetTime').textContent = hr<12?'BUENOS DÍAS':hr<19?'BUENAS TARDES':'BUENAS NOCHES';
@@ -1541,6 +1645,7 @@ function renderDashboard(){
       const lvPct = lvMods.length ? Math.round(lvDone/lvMods.length*100) : 0;
       document.getElementById('continueProgressFill').style.width = lvPct+'%';
       document.getElementById('continueProgressPct').textContent = lvPct+'%';
+      document.getElementById('continueRing').innerHTML = ringSvgSki(lvPct);
       cont.style.display='flex';
     } else cont.style.display='none';
   } else cont.style.display='none';
@@ -1561,13 +1666,17 @@ function renderDashboard(){
     heroCta.onclick = () => startRepaso();
   }
 
-  // explorar niveles (grilla de íconos)
+  // explorar niveles (tarjetas con foto)
   const exploreGrid = document.getElementById('exploreGrid');
-  exploreGrid.innerHTML = LEVELS.slice(0,4).map(lv=>`
-    <div class="explore-tile" onclick="scrollToLevel(${lv.id})">
+  exploreGrid.innerHTML = LEVELS.slice(0,4).map(lv=>{
+    const lvMods = MODULES.filter(m=>m.nivel===lv.id && m.imgs && m.imgs.length);
+    const bg = lvMods.length ? lvMods[0].imgs[0].url : '';
+    return `
+    <div class="explore-tile" onclick="scrollToLevel(${lv.id})" style="${bg?`background-image:url('${bg}')`:''}">
       <div class="explore-tile-icon">${lv.id}</div>
       <div class="explore-tile-label">${lv.name.split(/,| y /)[0]}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // fila de progreso rápida (estilo "Your Progress")
   const progressRow = document.getElementById('progressRow');
@@ -1764,6 +1873,16 @@ function openModuleById(id){
 
   document.getElementById('rEyebrow').textContent = `Nivel ${mod.nivel}`;
   document.getElementById('rTitle').textContent = mod.title;
+  const modPhotosEl = document.getElementById('modPhotos');
+  if(mod.imgs && mod.imgs.length){
+    modPhotosEl.style.display='flex';
+    modPhotosEl.innerHTML = mod.imgs.map(im=>`
+      <div class="modPhoto"><img src="${im.url}" alt="${im.alt}" loading="lazy"><div class="cap">${im.credit}</div></div>
+    `).join('');
+  } else {
+    modPhotosEl.style.display='none';
+    modPhotosEl.innerHTML='';
+  }
   document.getElementById('rBody').innerHTML = mod.content;
   document.getElementById('audioIcon').textContent='▶';
   document.getElementById('audioLabel').textContent='Escuchar el módulo';
@@ -2002,8 +2121,110 @@ function finishQuiz(){
   `;
 }
 
+/* =========================================================
+   SYNC DE PROGRESO CON SUPABASE (para no perder avance al
+   actualizar o entrar desde otro dispositivo) — mismo proyecto
+   y tabla course_progress que golf.html/cafe.html, adaptado al
+   formato propio de ski.html (progress por módulo + activity
+   por día, un solo usuario fijo 'Sebas').
+   ========================================================= */
+const SUPABASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_9prcahBAJHmeCZ8IB_bx5w_GQ6nl4wL';
+const PROGRESS_TABLE = 'course_progress';
+const COURSE_NAME = 'ski';
+const SYNC_USER = 'Sebas';
+
+async function pullRemoteProgress(){
+  try{
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${PROGRESS_TABLE}?user_name=eq.${encodeURIComponent(SYNC_USER)}&course=eq.${COURSE_NAME}&select=data`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+    );
+    if(!res.ok) return null;
+    const rows = await res.json();
+    return rows[0] ? rows[0].data : null;
+  }catch(e){ return null; }
+}
+
+async function pushRemoteProgress(payload){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${PROGRESS_TABLE}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify({ user_name: SYNC_USER, course: COURSE_NAME, data: payload, updated_at: Date.now() })
+    });
+    return res.ok;
+  }catch(e){ return false; }
+}
+
+function mergeModuleRecord(a,b){
+  if(!a) return b; if(!b) return a;
+  const r = {};
+  r.completed = !!(a.completed || b.completed);
+  if(a.completed && b.completed){
+    r.completedAt = (a.completedAt||'') >= (b.completedAt||'') ? a.completedAt : b.completedAt;
+  } else {
+    r.completedAt = a.completed ? a.completedAt : (b.completed ? b.completedAt : (a.completedAt || b.completedAt || null));
+  }
+  r.timeSpentSec = Math.max(a.timeSpentSec||0, b.timeSpentSec||0);
+  if((a.quizTotal||0) >= (b.quizTotal||0)){ r.quizCorrect = a.quizCorrect; r.quizTotal = a.quizTotal; }
+  else { r.quizCorrect = b.quizCorrect; r.quizTotal = b.quizTotal; }
+  r.audioStarted = !!(a.audioStarted || b.audioStarted);
+  return r;
+}
+
+function mergeLocalAndRemote(localProgress, localActivity, remote){
+  const remoteProgress = (remote && remote.progress) || {};
+  const remoteActivity = (remote && remote.activity) || {};
+
+  const mergedProgress = {};
+  new Set([...Object.keys(localProgress), ...Object.keys(remoteProgress)]).forEach(id=>{
+    mergedProgress[id] = mergeModuleRecord(localProgress[id], remoteProgress[id]);
+  });
+
+  const mergedActivity = {};
+  new Set([...Object.keys(localActivity), ...Object.keys(remoteActivity)]).forEach(k=>{
+    mergedActivity[k] = Math.max(localActivity[k]||0, remoteActivity[k]||0);
+  });
+
+  return { progress: mergedProgress, activity: mergedActivity };
+}
+
+let pushTimer = null;
+function pushProgressSoon(){
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => {
+    pushRemoteProgress({ progress: loadProgress(), activity: loadActivity() });
+  }, 600);
+}
+
+async function syncProgressOnLoad(){
+  const remote = await pullRemoteProgress();
+  const localProgress = loadProgress();
+  const localActivity = loadActivity();
+  if(!remote){ pushRemoteProgress({ progress: localProgress, activity: localActivity }); return; }
+
+  const merged = mergeLocalAndRemote(localProgress, localActivity, remote);
+  const changed = JSON.stringify(merged.progress) !== JSON.stringify(localProgress) ||
+                   JSON.stringify(merged.activity) !== JSON.stringify(localActivity);
+  if(changed){
+    try{
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(merged.progress));
+      localStorage.setItem(ACTIVITY_KEY, JSON.stringify(merged.activity));
+    }catch(e){}
+    renderDashboard();
+  }
+  pushRemoteProgress(merged);
+}
+
 /* init */
 renderDashboard();
+syncProgressOnLoad();
 </script>
 </body>
 </html>
