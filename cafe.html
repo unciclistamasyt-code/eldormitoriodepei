@@ -110,19 +110,6 @@
   .progress-num { font-size: 16px; font-weight: 800; }
   .progress-lbl { font-size: 9px; color: var(--text-dim); line-height: 1.25; }
 
-  /* ---- Selector de usuario ---- */
-  .userSwitch { display: flex; gap: 8px; margin-bottom: 20px; }
-  .userPill {
-    flex: 1;
-    text-align: center;
-    padding: 11px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    font-size: 13.5px;
-    color: var(--text-dim);
-  }
-  .userPill.active { border-color: var(--text); color: var(--text); font-weight: 600; }
-
   /* ---- Botón de repaso ---- */
   .reviewBtn {
     display: flex;
@@ -454,19 +441,11 @@
    más abajo) para no perderse entre dispositivos.
    ============================================================ */
 
-/* Dos usuarios, cada uno con su propio progreso guardado por separado
-   (cada uno lleva su propio ritmo, sus propios módulos completados y
-   su propio pronóstico). */
-const USERS = ['Sebas', 'Majo'];
-const ACTIVE_USER_KEY = 'cafe_active_user';
-
-function getActiveUser() {
-  try { return localStorage.getItem(ACTIVE_USER_KEY) || USERS[0]; } catch (e) { return USERS[0]; }
-}
-function setActiveUser(name) {
-  try { localStorage.setItem(ACTIVE_USER_KEY, name); } catch (e) {}
-}
-let activeUser = getActiveUser();
+/* Un solo usuario (Sebas) — Coffee School no tiene selector de perfil,
+   a diferencia de golf.html. Se mantiene la misma clave de localStorage
+   que ya se usaba por defecto (Sebas era el primer/único perfil activo),
+   así que no se pierde ningún progreso ya guardado. */
+const activeUser = 'Sebas';
 
 function progressKey(user) { return 'cafe_progress_v1__' + user; }
 
@@ -481,15 +460,6 @@ function saveProgress(p) {
   pushProgressSoon();
 }
 let progress = loadProgress(activeUser);
-
-function switchUser(name) {
-  if (name === activeUser) return;
-  activeUser = name;
-  setActiveUser(name);
-  progress = loadProgress(activeUser);
-  render();
-  syncProgressOnLoad();
-}
 
 /* ================= Sync de progreso con Supabase =================
    El progreso vive principalmente en localStorage (la app funciona 100%
@@ -1911,17 +1881,6 @@ function renderProgressRow(app, fc, gs) {
 }
 
 function renderNiveles(app) {
-  const userSwitch = document.createElement('div');
-  userSwitch.className = 'userSwitch';
-  USERS.forEach(name => {
-    const pill = document.createElement('div');
-    pill.className = 'userPill' + (name === activeUser ? ' active' : '');
-    pill.textContent = name;
-    pill.addEventListener('click', () => switchUser(name));
-    userSwitch.appendChild(pill);
-  });
-  app.appendChild(userSwitch);
-
   const totalDone = Object.keys(progress.completed).length;
   const next = nextIncompleteModule();
   const fc = courseForecast();
