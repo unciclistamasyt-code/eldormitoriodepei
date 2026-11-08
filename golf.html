@@ -41,7 +41,7 @@
     flex-direction: column;
   }
 
-  :root { --lime: #8ed64f; --lime-dim: rgba(142,214,79,0.14); }
+  :root { --course-accent: #8ed64f; --course-accent-dim: rgba(142,214,79,0.14); }
 
   /* ---- Hero ---- */
   .hero {
@@ -60,13 +60,13 @@
     background: radial-gradient(circle, rgba(142,214,79,0.2), transparent 70%);
     pointer-events: none;
   }
-  .hero-eyebrow { position: relative; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--lime); font-weight: 700; margin-bottom: 9px; }
+  .hero-eyebrow { position: relative; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--course-accent); font-weight: 700; margin-bottom: 9px; }
   .hero-title { position: relative; font-size: 23px; line-height: 1.25; font-weight: 800; margin: 0 0 7px; }
-  .hero-title b { color: var(--lime); }
+  .hero-title b { color: var(--course-accent); }
   .hero-sub { position: relative; font-size: 13px; color: var(--text-dim); margin: 0 0 16px; }
   .hero-cta {
     position: relative; display: inline-flex; align-items: center; gap: 8px;
-    background: var(--lime); color: #0a0a0c; font-weight: 700; font-size: 13.5px;
+    background: var(--course-accent); color: #0a0a0c; font-weight: 700; font-size: 13.5px;
     padding: 11px 20px; border-radius: 999px;
   }
   .hero-cta svg { width: 12px; height: 12px; fill: #0a0a0c; }
@@ -79,20 +79,20 @@
   }
   .lesson-card-icon {
     width: 50px; height: 50px; border-radius: 14px; flex-shrink: 0;
-    background: var(--lime-dim);
+    background: var(--course-accent-dim);
     display: flex; align-items: center; justify-content: center;
   }
-  .lesson-card-icon svg { width: 22px; height: 22px; stroke: var(--lime); fill: none; stroke-width: 1.8; }
+  .lesson-card-icon svg { width: 22px; height: 22px; stroke: var(--course-accent); fill: none; stroke-width: 1.8; }
   .lesson-card-body { flex: 1; min-width: 0; }
   .lesson-card-eyebrow { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 4px; }
   .lesson-card-title { font-size: 14.5px; font-weight: 700; margin-bottom: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lesson-progress-row { display: flex; align-items: center; gap: 8px; }
   .lesson-progress { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
-  .lesson-progress-fill { height: 100%; background: var(--lime); border-radius: 3px; }
+  .lesson-progress-fill { height: 100%; background: var(--course-accent); border-radius: 3px; }
   .lesson-progress-pct { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
   .lesson-card-btn {
     margin-top: 11px; display: inline-flex; align-items: center; gap: 6px;
-    background: var(--lime); color: #0a0a0c; font-weight: 700; font-size: 12.5px;
+    background: var(--course-accent); color: #0a0a0c; font-weight: 700; font-size: 12.5px;
     padding: 8px 14px; border-radius: 999px;
   }
 
@@ -100,7 +100,7 @@
   .explore-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-bottom: 20px; }
   .explore-tile { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px 4px; border-radius: 16px; border: 1px solid var(--line); text-align: center; }
   .explore-tile.locked { opacity: 0.35; }
-  .explore-tile-icon { width: 36px; height: 36px; border-radius: 11px; background: var(--lime-dim); display: flex; align-items: center; justify-content: center; font-size: 13.5px; font-weight: 800; color: var(--lime); }
+  .explore-tile-icon { width: 36px; height: 36px; border-radius: 11px; background: var(--course-accent-dim); display: flex; align-items: center; justify-content: center; font-size: 13.5px; font-weight: 800; color: var(--course-accent); }
   .explore-tile-label { font-size: 9.5px; color: var(--text-dim); line-height: 1.25; }
 
   /* ---- Fila de progreso (estilo "Your Progress") ---- */
@@ -137,11 +137,11 @@
   .reviewIcon {
     width: 38px; height: 38px;
     border-radius: 12px;
-    background: var(--lime-dim);
+    background: var(--course-accent-dim);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .reviewIcon svg { width: 17px; height: 17px; stroke: var(--lime); fill: none; stroke-width: 1.8; }
+  .reviewIcon svg { width: 17px; height: 17px; stroke: var(--course-accent); fill: none; stroke-width: 1.8; }
   .reviewText { flex: 1; }
   .reviewTitle { font-size: 14px; font-weight: 600; }
   .reviewSub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
@@ -161,9 +161,9 @@
   .levelNum {
     width: 32px; height: 32px;
     border-radius: 10px;
-    background: var(--lime-dim);
+    background: var(--course-accent-dim);
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; color: var(--lime);
+    font-size: 12px; font-weight: 700; color: var(--course-accent);
     flex-shrink: 0;
   }
   .levelBody { flex: 1; min-width: 0; }
@@ -293,7 +293,7 @@
   .speed-lbl { font-size: 11px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
   .speed-pills { display: flex; gap: 6px; flex-wrap: wrap; }
   .speed-pill { background: none; border: 1px solid var(--line); border-radius: 20px; padding: 5px 11px; font-size: 12px; font-weight: 600; color: var(--text-dim); cursor: pointer; }
-  .speed-pill.active { background: var(--flag); color: #fff; border-color: transparent; }
+  .speed-pill.active { background: var(--course-accent-2); color: #fff; border-color: transparent; }
 
   /* ---- Diagramas ----
      Ilustraciones propias en SVG (no son fotos ni diagramas bajados de
@@ -304,7 +304,65 @@
   .diagram svg { display: block; width: 100%; height: auto; }
   .diagram svg text { font-size: 9px; fill: var(--text-dim); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
   .diagramCaption { font-size: 11.5px; color: var(--text-dim); margin-top: 8px; line-height: 1.45; }
-  :root { --grass: rgba(120,190,130,0.16); --grass-line: rgba(120,190,130,0.55); --sand: rgba(214,181,124,0.28); --sand-line: rgba(214,181,124,0.7); --flag: #d97070; }
+  :root { --course-wash: rgba(120,190,130,0.16); --course-wash-line: rgba(120,190,130,0.55); --course-wash2: rgba(214,181,124,0.28); --course-wash2-line: rgba(214,181,124,0.7); --course-accent-2: #d97070; }
+
+  /* ================= Diseño nuevo 2026-11: fotos + anillo + racha semanal =================
+     Mismo bloque que cafe.html/ski.html/snowboard.html — ver el comentario
+     completo en cafe.html. Las variables --course-accent* de arriba son lo
+     único que cambia de un curso a otro. */
+
+  .hero { display: flex; align-items: center; gap: 16px; }
+  .hero-body { flex: 1; min-width: 0; }
+  .hero-photo {
+    position: relative; z-index: 1; flex-shrink: 0;
+    width: 86px; height: 86px; border-radius: 20px; overflow: hidden;
+    border: 1px solid var(--course-wash-line);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  }
+  .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .ringCardRow { display: flex; align-items: center; gap: 14px; }
+  .ring-wrap { position: relative; width: 54px; height: 54px; flex-shrink: 0; }
+  .ring-wrap svg { width: 54px; height: 54px; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--line); stroke-width: 5; }
+  .ring-fill { fill: none; stroke: var(--course-accent); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset .4s ease; }
+  .ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--course-accent); }
+  .lesson-card-photo {
+    width: 44px; height: 44px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+    border: 1px solid var(--line);
+  }
+  .lesson-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .explore-row { display: flex; gap: 10px; overflow-x: auto; margin: 0 -20px 20px; padding: 0 20px 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .explore-row::-webkit-scrollbar { display: none; }
+  .explore-card {
+    position: relative; flex: 0 0 150px; height: 108px; border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--bg-soft);
+  }
+  .explore-card.locked { opacity: 0.45; }
+  .explore-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .explore-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(10,10,12,0) 30%, rgba(10,10,12,0.88) 100%);
+  }
+  .explore-card-body { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
+  .explore-card-name { font-size: 12.5px; font-weight: 700; line-height: 1.2; }
+  .explore-card-sub { font-size: 9.5px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+
+  .weekChartCard { display: flex; align-items: flex-end; gap: 10px; flex: 1.4; min-width: 0; }
+  .weekChart { flex: 1; display: flex; align-items: flex-end; gap: 5px; height: 44px; }
+  .weekChart-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+  .weekChart-track { width: 100%; max-width: 14px; flex: 1; display: flex; align-items: flex-end; border-radius: 4px; background: var(--bg-soft); overflow: hidden; }
+  .weekChart-bar { width: 100%; border-radius: 4px; background: var(--line); min-height: 3px; }
+  .weekChart-bar.active { background: var(--course-accent); }
+  .weekChart-col.today .weekChart-lbl { color: var(--text); font-weight: 700; }
+  .weekChart-lbl { font-size: 8.5px; color: var(--text-dim); }
+  .weekChartLabel { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+
+  .modPhotos { display: flex; gap: 8px; margin: 0 0 16px; }
+  .modPhotos figure { flex: 1; min-width: 0; margin: 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--bg-soft); }
+  .modPhotos img { width: 100%; height: 118px; object-fit: cover; display: block; }
+  .modPhotos figcaption { font-size: 9.5px; color: var(--text-dim); padding: 6px 9px 8px; line-height: 1.3; }
 
   /* ---- Pronóstico ---- */
   .forecastCard {
@@ -320,13 +378,13 @@
 
   /* ---- Dashboard (racha, semana, estadísticas, mes, heatmap) ---- */
   .streakRow { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .streakBadge { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 16px; border: 1px solid var(--flag); background: rgba(217,112,112,0.08); flex-shrink: 0; }
-  .streakBadge .n { font-size: 20px; font-weight: 700; color: var(--flag); line-height: 1.1; }
-  .streakBadge .lbl { font-size: 8.5px; color: var(--flag); opacity: .85; text-transform: uppercase; letter-spacing: .05em; margin-top: 1px; }
+  .streakBadge { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 16px; border: 1px solid var(--course-accent-2); background: rgba(217,112,112,0.08); flex-shrink: 0; }
+  .streakBadge .n { font-size: 20px; font-weight: 700; color: var(--course-accent-2); line-height: 1.1; }
+  .streakBadge .lbl { font-size: 8.5px; color: var(--course-accent-2); opacity: .85; text-transform: uppercase; letter-spacing: .05em; margin-top: 1px; }
   .weekStrip { display: flex; gap: 6px; flex: 1; }
   .dayCell { flex: 1; aspect-ratio: 1; border-radius: 8px; background: var(--bg-soft); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 9.5px; color: var(--text-dim); }
-  .dayCell.active { background: var(--flag); color: #fff; border-color: transparent; }
-  .dayCell.today { outline: 2px solid var(--flag); outline-offset: 1px; }
+  .dayCell.active { background: var(--course-accent-2); color: #fff; border-color: transparent; }
+  .dayCell.today { outline: 2px solid var(--course-accent-2); outline-offset: 1px; }
 
   .statGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
   .statCard { padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; }
@@ -339,7 +397,7 @@
 
   .monthChart { display: flex; align-items: flex-end; gap: 6px; height: 64px; margin: 6px 0 4px; }
   .monthCol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; justify-content: flex-end; height: 100%; }
-  .monthBar { width: 60%; border-radius: 5px 5px 0 0; background: var(--flag); min-height: 2px; }
+  .monthBar { width: 60%; border-radius: 5px 5px 0 0; background: var(--course-accent-2); min-height: 2px; }
   .monthLbl { font-size: 9px; color: var(--text-dim); text-transform: uppercase; }
 
   .heatGrid { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin: 4px 0 10px; }
@@ -348,7 +406,7 @@
   .heatCell.l2 { background: rgba(217,112,112,0.4); }
   .heatCell.l3 { background: rgba(217,112,112,0.6); }
   .heatCell.l4 { background: rgba(217,112,112,0.8); }
-  .heatCell.l5 { background: var(--flag); }
+  .heatCell.l5 { background: var(--course-accent-2); }
   .heatLegend { display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: var(--text-dim); justify-content: flex-end; }
   .heatLegend .heatCell { width: 9px; height: 9px; }
 
@@ -410,6 +468,7 @@ function loadProgress(user) {
 }
 function saveProgress(p) {
   try { localStorage.setItem(progressKey(activeUser), JSON.stringify(p)); } catch (e) {}
+  pushProgressSoon();
 }
 let progress = loadProgress(activeUser);
 
@@ -419,6 +478,75 @@ function switchUser(name) {
   setActiveUser(name);
   progress = loadProgress(activeUser);
   render();
+  syncProgressOnLoad();
+}
+
+/* ================= Sync de progreso con Supabase =================
+   Ver el comentario completo en cafe.html — mismo patrón exacto, misma
+   tabla course_progress, solo cambia COURSE_NAME. El progreso sigue
+   viviendo principalmente en localStorage (la app funciona 100% offline);
+   esto solo evita que se pierda al cambiar de dispositivo o borrar datos
+   del navegador. */
+const SUPABASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_9prcahBAJHmeCZ8IB_bx5w_GQ6nl4wL';
+const PROGRESS_TABLE = 'course_progress';
+const COURSE_NAME = 'golf';
+
+async function pullRemoteProgress(user) {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${PROGRESS_TABLE}?user_name=eq.${encodeURIComponent(user)}&course=eq.${COURSE_NAME}&select=data`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows[0] ? rows[0].data : null;
+  } catch (e) { return null; }
+}
+
+async function pushRemoteProgress(user, prog) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${PROGRESS_TABLE}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify({ user_name: user, course: COURSE_NAME, data: prog, updated_at: Date.now() })
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+
+function mergeProgressObjects(a, b) {
+  const merged = { completed: {} };
+  const ac = (a && a.completed) || {};
+  const bc = (b && b.completed) || {};
+  new Set([...Object.keys(ac), ...Object.keys(bc)]).forEach(id => {
+    const x = ac[id], y = bc[id];
+    merged.completed[id] = (x && y) ? ((x.at || 0) >= (y.at || 0) ? x : y) : (x || y);
+  });
+  return merged;
+}
+
+let pushTimer = null;
+function pushProgressSoon() {
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => pushRemoteProgress(activeUser, progress), 600);
+}
+
+async function syncProgressOnLoad() {
+  const remote = await pullRemoteProgress(activeUser);
+  if (!remote) { pushRemoteProgress(activeUser, progress); return; }
+  const merged = mergeProgressObjects(progress, remote);
+  if (JSON.stringify(merged) !== JSON.stringify(progress)) {
+    progress = merged;
+    try { localStorage.setItem(progressKey(activeUser), JSON.stringify(progress)); } catch (e) {}
+    render();
+  }
+  pushRemoteProgress(activeUser, progress);
 }
 
 /* ================= CURRICULUM ================= */
@@ -438,6 +566,7 @@ const CURRICULUM = [
         id: 'n1m1',
         title: '¿Qué es el golf?',
         minutes: 5,
+        imgs: [{"url": "https://images.unsplash.com/photo-1629673120178-53a664eec9e8?w=1200&q=80&auto=format&fit=crop", "alt": "Cancha de golf para principiantes", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1535132011086-b8818f016104?w=1200&q=80&auto=format&fit=crop", "alt": "Cancha de golf para principiantes", "credit": "Unsplash"}],
         content: `
           <p>El golf es un deporte donde el objetivo es meter una bola en una serie de hoyos golpeándola con palos, usando la menor cantidad de golpes posible — cada golpe se llama <span class="term">stroke</span>.</p>
           <p>Una ronda estándar tiene 18 <span class="term">holes</span> (hoyos), aunque muchos campos también ofrecen rondas cortas de 9. Los primeros 9 hoyos se conocen como el <span class="term">front nine</span> y los últimos 9 como el <span class="term">back nine</span>.</p>
@@ -457,6 +586,7 @@ const CURRICULUM = [
         id: 'n1m2',
         title: 'Vocabulario esencial: el campo y el puntaje',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1580406438339-30fbf07749c0?w=1200&q=80&auto=format&fit=crop", "alt": "Tarjeta de puntaje de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1684952659374-a06bd726ad6c?w=1200&q=80&auto=format&fit=crop", "alt": "Tarjeta de puntaje de golf", "credit": "Unsplash"}],
         content: `
           <p>Para entender cualquier conversación en la cancha, primero hay que conocer las partes básicas de un hoyo:</p>
           <ul>
@@ -481,14 +611,14 @@ const CURRICULUM = [
           </ul>
           <div class="diagram">
             <svg viewBox="0 0 320 130">
-              <rect x="4" y="14" width="312" height="102" rx="16" fill="var(--grass)" fill-opacity="0.35" stroke="var(--line)" stroke-width="1.2"/>
-              <path d="M22 65 Q 60 42 150 50 Q 220 55 278 65 Q 220 92 150 82 Q 60 78 22 65 Z" fill="var(--grass)" stroke="var(--grass-line)" stroke-width="1.4"/>
+              <rect x="4" y="14" width="312" height="102" rx="16" fill="var(--course-wash)" fill-opacity="0.35" stroke="var(--line)" stroke-width="1.2"/>
+              <path d="M22 65 Q 60 42 150 50 Q 220 55 278 65 Q 220 92 150 82 Q 60 78 22 65 Z" fill="var(--course-wash)" stroke="var(--course-wash-line)" stroke-width="1.4"/>
               <rect x="17" y="50" width="27" height="30" rx="4" fill="var(--bg-soft)" stroke="currentColor" stroke-width="1.4"/>
-              <ellipse cx="205" cy="80" rx="17" ry="10" fill="var(--sand)" stroke="var(--sand-line)" stroke-width="1.4"/>
-              <circle cx="258" cy="63" r="21" fill="var(--grass)" fill-opacity="0.6" stroke="currentColor" stroke-width="1.4"/>
+              <ellipse cx="205" cy="80" rx="17" ry="10" fill="var(--course-wash2)" stroke="var(--course-wash2-line)" stroke-width="1.4"/>
+              <circle cx="258" cy="63" r="21" fill="var(--course-wash)" fill-opacity="0.6" stroke="currentColor" stroke-width="1.4"/>
               <circle cx="258" cy="63" r="2.2" fill="var(--bg)" stroke="currentColor" stroke-width="1.2"/>
               <line x1="258" y1="63" x2="258" y2="38" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M258 38 L271 43.5 L258 49 Z" fill="var(--flag)" stroke="none"/>
+              <path d="M258 38 L271 43.5 L258 49 Z" fill="var(--course-accent-2)" stroke="none"/>
               <text x="31" y="100" text-anchor="middle">TEE</text>
               <text x="130" y="36" text-anchor="middle">FAIRWAY</text>
               <text x="150" y="124" text-anchor="middle">ROUGH</text>
@@ -510,6 +640,7 @@ const CURRICULUM = [
         id: 'n1m3',
         title: 'El equipo: palos, bolas y bolsa',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1530028828-25e8270793c5?w=1200&q=80&auto=format&fit=crop", "alt": "Bolsa de golf con palos", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1627310706118-b23fe91e3661?w=1200&q=80&auto=format&fit=crop", "alt": "Bolsa de golf con palos", "credit": "Unsplash"}],
         content: `
           <p>Un jugador puede llevar un máximo de 14 palos en la bolsa durante una ronda — es una regla oficial (Rule 4.1b del reglamento), no solo una costumbre.</p>
           <p>Los palos se dividen en cuatro grandes familias, que vas a ver en detalle en los próximos niveles:</p>
@@ -555,6 +686,7 @@ const CURRICULUM = [
         id: 'n1m4',
         title: 'Vestimenta y qué llevar a la cancha',
         minutes: 4,
+        imgs: [{"url": "https://images.unsplash.com/photo-1697448524689-8dfd3d11071e?w=1200&q=80&auto=format&fit=crop", "alt": "Vestimenta de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1633597468456-d11ea13ede88?w=1200&q=80&auto=format&fit=crop", "alt": "Vestimenta de golf", "credit": "Unsplash"}],
         content: `
           <p>El código de vestimenta varía según el campo, pero hay convenciones generales que se repiten en la mayoría de los clubes:</p>
           <ul>
@@ -578,6 +710,7 @@ const CURRICULUM = [
         id: 'n1m5',
         title: 'Grip, stance y alignment',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1776245110260-b87c80c836a7?w=1200&q=80&auto=format&fit=crop", "alt": "Grip y postura de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1773338426284-7de9d703a506?w=1200&q=80&auto=format&fit=crop", "alt": "Grip y postura de golf", "credit": "Unsplash"}],
         content: `
           <p>Antes de pensar en el swing, hay tres fundamentos que se practican sin siquiera golpear la bola: el <span class="term">grip</span>, el <span class="term">stance</span> y el <span class="term">alignment</span>.</p>
           <p><strong>Grip (empuñadura):</strong> hay tres formas estándar de agarrar el palo:</p>
@@ -617,6 +750,7 @@ const CURRICULUM = [
         id: 'n1m6',
         title: 'El swing básico, paso a paso',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&q=80&auto=format&fit=crop", "alt": "Swing de golf paso a paso", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=1200&q=80&auto=format&fit=crop", "alt": "Swing de golf paso a paso", "credit": "Unsplash"}],
         content: `
           <p>El swing de golf se puede dividir en 5 etapas:</p>
           <ol>
@@ -698,6 +832,7 @@ const CURRICULUM = [
         id: 'n1m7',
         title: 'Reglas esenciales para tu primera ronda',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1710880696639-f19f6f659d7e?w=1200&q=80&auto=format&fit=crop", "alt": "Reglas básicas de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1662152333949-9ceb7d64ac4c?w=1200&q=80&auto=format&fit=crop", "alt": "Reglas básicas de golf", "credit": "Unsplash"}],
         content: `
           <p>No hace falta memorizar todo el reglamento para tu primera ronda, pero sí conviene conocer estas reglas básicas de las <span class="term">Rules of Golf</span> (edición 2023, USGA y The R&A):</p>
           <ul>
@@ -720,6 +855,7 @@ const CURRICULUM = [
         id: 'n1m8',
         title: 'Etiqueta y seguridad en la cancha',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1627308162175-04da997d5e47?w=1200&q=80&auto=format&fit=crop", "alt": "Etiqueta en la cancha de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1632347639583-b77941b7282a?w=1200&q=80&auto=format&fit=crop", "alt": "Etiqueta en la cancha de golf", "credit": "Unsplash"}],
         content: `
           <p>Más allá de las reglas formales, el golf tiene una fuerte cultura de <span class="term">etiquette</span> (etiqueta) que hace que el juego sea seguro y agradable para todos:</p>
           <ul>
@@ -748,6 +884,7 @@ const CURRICULUM = [
         id: 'n2m1',
         title: 'Los palos y cuándo usar cada uno',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&q=80&auto=format&fit=crop", "alt": "Palos de golf: hierros y maderas", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=1200&q=80&auto=format&fit=crop", "alt": "Palos de golf: hierros y maderas", "credit": "Unsplash"}],
         content: `
           <p>Un set típico se organiza en familias, cada una pensada para una parte distinta del juego:</p>
           <ul>
@@ -772,6 +909,7 @@ const CURRICULUM = [
         id: 'n2m2',
         title: 'Vocabulario técnico de golpes: draw, fade, hook, slice',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1632244112951-95b29c92eee1?w=1200&q=80&auto=format&fit=crop", "alt": "Trayectoria de la pelota de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1627955433445-d233480dd65d?w=1200&q=80&auto=format&fit=crop", "alt": "Trayectoria de la pelota de golf", "credit": "Unsplash"}],
         content: `
           <p>La instrucción moderna (posible gracias a los datos de <span class="term">launch monitors</span> como TrackMan) reemplazó una explicación más vieja y menos precisa por lo que hoy se conoce como las <span class="term">ball flight laws</span> ("leyes del vuelo de la bola"): la <strong>cara del palo</strong> en el impacto, respecto a la línea objetivo, es lo que más determina la <strong>dirección inicial</strong> de la bola; el <strong>swing path</strong> (camino del palo), respecto a esa misma cara, es lo que determina cuánto se <strong>curva</strong>.</p>
           <p>Con esa base, así se definen los golpes (para un jugador diestro):</p>
@@ -790,22 +928,22 @@ const CURRICULUM = [
               <text x="20" y="20" text-anchor="start">LÍNEA OBJETIVO</text>
               <g>
                 <line x1="40" y1="112" x2="40" y2="60" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M40 60 C 20 40, 25 15, 60 8" fill="none" stroke="var(--grass-line)" stroke-width="1.6"/>
-                <path d="M56 12 L60 8 L58 14" fill="none" stroke="var(--grass-line)" stroke-width="1.4"/>
+                <path d="M40 60 C 20 40, 25 15, 60 8" fill="none" stroke="var(--course-wash-line)" stroke-width="1.6"/>
+                <path d="M56 12 L60 8 L58 14" fill="none" stroke="var(--course-wash-line)" stroke-width="1.4"/>
                 <circle cx="40" cy="115" r="2" fill="currentColor" stroke="none"/>
                 <text x="40" y="128" text-anchor="middle">DRAW</text>
               </g>
               <g>
                 <line x1="140" y1="112" x2="140" y2="60" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M140 60 C 160 40, 155 15, 120 8" fill="none" stroke="var(--sand-line)" stroke-width="1.6"/>
-                <path d="M124 12 L120 8 L122 14" fill="none" stroke="var(--sand-line)" stroke-width="1.4"/>
+                <path d="M140 60 C 160 40, 155 15, 120 8" fill="none" stroke="var(--course-wash2-line)" stroke-width="1.6"/>
+                <path d="M124 12 L120 8 L122 14" fill="none" stroke="var(--course-wash2-line)" stroke-width="1.4"/>
                 <circle cx="140" cy="115" r="2" fill="currentColor" stroke="none"/>
                 <text x="140" y="128" text-anchor="middle">FADE</text>
               </g>
               <g>
                 <line x1="230" y1="112" x2="230" y2="60" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M230 60 C 195 45, 195 20, 220 6" fill="none" stroke="var(--flag)" stroke-width="1.6"/>
-                <path d="M212 8 L220 6 L216 14" fill="none" stroke="var(--flag)" stroke-width="1.4"/>
+                <path d="M230 60 C 195 45, 195 20, 220 6" fill="none" stroke="var(--course-accent-2)" stroke-width="1.6"/>
+                <path d="M212 8 L220 6 L216 14" fill="none" stroke="var(--course-accent-2)" stroke-width="1.4"/>
                 <circle cx="230" cy="115" r="2" fill="currentColor" stroke="none"/>
                 <text x="230" y="128" text-anchor="middle">HOOK</text>
               </g>
@@ -825,6 +963,7 @@ const CURRICULUM = [
         id: 'n2m3',
         title: 'Juego corto: chip y pitch',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1632946269126-0f8edbe8b068?w=1200&q=80&auto=format&fit=crop", "alt": "Chip y pitch en el juego corto", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&q=80&auto=format&fit=crop", "alt": "Chip y pitch en el juego corto", "credit": "Unsplash"}],
         content: `
           <p>Chip y pitch son los dos golpes básicos para cuando estás cerca del green pero no sobre él, y se diferencian en la técnica y en el resultado que buscan:</p>
           <p><strong>Chip:</strong> un movimiento simple, descrito por instructores como "de una sola palanca" — básicamente los hombros se mueven en bloque, con poco o nada de <span class="term">wrist hinge</span> (quiebre de muñeca). Se usa cuando estás muy cerca del green. La bola sale <strong>baja y rueda mucho</strong> más de lo que vuela. Postura: bola atrás en el stance, peso favoreciendo el pie delantero, manos adelantadas.</p>
@@ -843,6 +982,7 @@ const CURRICULUM = [
         id: 'n2m4',
         title: 'Putting: técnica y lectura de greens',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1631213611148-aa45cfbb9472?w=1200&q=80&auto=format&fit=crop", "alt": "Putting en el green", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1621005570352-6418df03796b?w=1200&q=80&auto=format&fit=crop", "alt": "Putting en el green", "credit": "Unsplash"}],
         content: `
           <p>Hay varios <span class="term">grips</span> estándar de putt, y ninguno es "el correcto" — cada jugador prueba hasta encontrar el que más control le da:</p>
           <ul>
@@ -866,6 +1006,7 @@ const CURRICULUM = [
         id: 'n2m5',
         title: 'Cómo salir de bunkers',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1632244112951-95b29c92eee1?w=1200&q=80&auto=format&fit=crop", "alt": "Golpe desde el bunker", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1662224107342-c2bfd01a17f1?w=1200&q=80&auto=format&fit=crop", "alt": "Golpe desde el bunker", "credit": "Unsplash"}],
         content: `
           <p>El golpe de bunker greenside se juega distinto a casi cualquier otro: la idea NO es golpear la bola directamente, sino "sacarla" con un colchón de arena.</p>
           <ul>
@@ -888,6 +1029,7 @@ const CURRICULUM = [
         id: 'n2m6',
         title: 'Situaciones difíciles: agua, OB, pelota perdida',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1758870598985-a31b06acde60?w=1200&q=80&auto=format&fit=crop", "alt": "Hazard de agua en el campo de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1761015426970-a9850daff1c2?w=1200&q=80&auto=format&fit=crop", "alt": "Hazard de agua en el campo de golf", "credit": "Unsplash"}],
         content: `
           <p>Estas situaciones se rigen por las <span class="term">Rules of Golf</span> 2023 (USGA/The R&A) y suelen generar dudas incluso entre jugadores con experiencia:</p>
           <p><strong>Penalty areas (zonas de penalización, antes llamadas "water hazards"):</strong> se marcan en amarillo o rojo. En ambos colores tenés, por 1 golpe de penalización: jugar <span class="term">stroke and distance</span> (volver a jugar desde el golpe anterior), o alivio <span class="term">back-on-the-line</span> (dejar caer la bola en cualquier punto de una línea imaginaria que una el hoyo con donde la bola cruzó hacia la zona, tan atrás como quieras). Las zonas <strong>rojas</strong> además permiten <span class="term">lateral relief</span>: dejar caer dentro de dos largos de palo de donde la bola cruzó, sin acercarte al hoyo. Importante: una bola en una penalty area <strong>no se puede declarar injugable</strong> — solo tenés las opciones de arriba.</p>
@@ -906,6 +1048,7 @@ const CURRICULUM = [
         id: 'n2m7',
         title: 'Course management básico',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1629673489435-f6a8bfa98c5a?w=1200&q=80&auto=format&fit=crop", "alt": "Course management en golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1526166729864-ddc57657d48f?w=1200&q=80&auto=format&fit=crop", "alt": "Course management en golf", "credit": "Unsplash"}],
         content: `
           <p>Jugar bien no es solo pegarle bien a la bola — también es elegir bien qué intentar en cada golpe. Algunos principios que se repiten en la enseñanza de estrategia de juego:</p>
           <ul>
@@ -927,6 +1070,7 @@ const CURRICULUM = [
         id: 'n2m8',
         title: 'El sistema de hándicap (World Handicap System)',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1559041891-40106e3d3f1f?w=1200&q=80&auto=format&fit=crop", "alt": "Sistema de hándicap de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1741243854609-fdc503dbf66f?w=1200&q=80&auto=format&fit=crop", "alt": "Sistema de hándicap de golf", "credit": "Unsplash"}],
         content: `
           <p>El <span class="term">World Handicap System</span> (WHS) es administrado conjuntamente por la USGA y The R&A desde su lanzamiento en 2020, y reemplazó varios sistemas regionales que existían antes en distintas partes del mundo, unificando cómo se mide el nivel de un jugador en todo el planeta.</p>
           <ul>
@@ -950,6 +1094,7 @@ const CURRICULUM = [
         id: 'n2m9',
         title: 'Formatos de juego: stroke play vs. match play',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1766206096924-c78074981e84?w=1200&q=80&auto=format&fit=crop", "alt": "Torneo de golf: stroke play y match play", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1766206096984-5b13b0f1eedd?w=1200&q=80&auto=format&fit=crop", "alt": "Torneo de golf: stroke play y match play", "credit": "Unsplash"}],
         content: `
           <p>Las Rules of Golf definen dos grandes formas de competir, con lógicas bien distintas:</p>
           <p><strong><span class="term">Stroke play</span></strong>: todos los jugadores compiten según su puntaje total. Cada golpe de la ronda (o de todas las rondas, en torneos de varios días) suma al total, y gana quien termina con menos golpes en total. No importa cómo te fue en un hoyo puntual — todo se acumula.</p>
@@ -973,6 +1118,7 @@ const CURRICULUM = [
         id: 'n3m1',
         title: 'Anatomía del palo: cara, hosel, sweet spot y forgiveness',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1591491640784-3232eb748d4b?w=1200&q=80&auto=format&fit=crop", "alt": "Anatomía de la cara de un palo de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?w=1200&q=80&auto=format&fit=crop", "alt": "Anatomía de la cara de un palo de golf", "credit": "Unsplash"}],
         content: `
           <p>Conocer las partes de la cabeza del palo ayuda a entender por qué unos palos "perdonan" más los golpes descentrados que otros:</p>
           <ul>
@@ -999,6 +1145,7 @@ const CURRICULUM = [
         id: 'n3m2',
         title: 'Bolas de golf: construcción y por qué importa cuál elegís',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1632946269126-0f8edbe8b068?w=1200&q=80&auto=format&fit=crop", "alt": "Construcción de la pelota de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1200&q=80&auto=format&fit=crop", "alt": "Construcción de la pelota de golf", "credit": "Unsplash"}],
         content: `
           <p>No todas las bolas de golf son iguales por dentro, y la construcción afecta directamente cómo se comportan:</p>
           <ul>
@@ -1022,6 +1169,7 @@ const CURRICULUM = [
         id: 'n3m3',
         title: 'Shafts: materiales, flex/stiffness, torque y kick point',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1627307887011-8a5029b6adcb?w=1200&q=80&auto=format&fit=crop", "alt": "Shafts de golf: materiales y flex", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1627307886970-04e0d82d17b6?w=1200&q=80&auto=format&fit=crop", "alt": "Shafts de golf: materiales y flex", "credit": "Unsplash"}],
         content: `
           <p>El shaft es, para muchos fitters, la parte del palo con más impacto en cómo se siente y se comporta el golpe:</p>
           <p><strong>Materiales:</strong> <span class="term">steel</span> (acero) es más pesado y en general más consistente/predecible en su flexión — el material más común en hierros. <span class="term">Graphite</span> (grafito) es más liviano, típico en maderas y drivers, y suele asociarse con mayor absorción de vibración y más velocidad de cabeza para un mismo esfuerzo del jugador.</p>
@@ -1041,6 +1189,7 @@ const CURRICULUM = [
         id: 'n3m4',
         title: 'El driver a fondo: loft, ángulos y forgiveness vs. distancia',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&q=80&auto=format&fit=crop", "alt": "Driver de golf en el tee", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=1200&q=80&auto=format&fit=crop", "alt": "Driver de golf en el tee", "credit": "Unsplash"}],
         content: `
           <p>El driver es el palo más especializado de la bolsa, y varios ángulos determinan cómo vuela la bola:</p>
           <ul>
@@ -1068,6 +1217,7 @@ const CURRICULUM = [
         id: 'n4m1',
         title: 'Biomecánica del swing y plano de swing',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1632244112951-95b29c92eee1?w=1200&q=80&auto=format&fit=crop", "alt": "Biomecánica del swing de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1591491719565-9cae8fd89f8d?w=1200&q=80&auto=format&fit=crop", "alt": "Biomecánica del swing de golf", "credit": "Unsplash"}],
         content: `
           <p>El <span class="term">swing plane</span> (plano de swing) es, técnicamente, el ángulo entre el piso y el círculo que describe la cabeza del palo durante la parte baja del arco del swing (aproximadamente desde la altura de la rodilla en el downswing hasta el impacto). Los palos más largos y con menos loft (como el driver) generan planos más "planos" (ángulo menor); los palos más cortos y con más loft, planos más "verticales".</p>
           <p>Un marco de enseñanza popular (del instructor Jim Hardy) distingue entre <span class="term">one-plane swing</span> (el palo gira "alrededor" del cuerpo en un arco más ancho y plano, impulsado sobre todo por la rotación del cuerpo) y <span class="term">two-plane swing</span> (el palo se mueve más "arriba y abajo" por delante del cuerpo, con más participación de los brazos). Vale aclarar: esto es <strong>una filosofía de enseñanza específica, no un consenso biomecánico universal</strong> — hay swings híbridos, y distintos instructores enseñan distinto.</p>
@@ -1085,6 +1235,7 @@ const CURRICULUM = [
         id: 'n4m2',
         title: 'Trabajar la pelota: draw, fade y control de trayectoria',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1621005570368-8c1f58c98ca5?w=1200&q=80&auto=format&fit=crop", "alt": "Control de trayectoria: draw y fade", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1730372610389-addd187a9979?w=1200&q=80&auto=format&fit=crop", "alt": "Control de trayectoria: draw y fade", "credit": "Unsplash"}],
         content: `
           <p>Más allá de entender la teoría (Nivel 2), producir un draw o fade <em>a propósito</em> es una habilidad que se trabaja con setup e intención:</p>
           <p>Para un <strong>draw intencional</strong>, el patrón habitual es un swing path relativamente hacia la derecha del objetivo (<span class="term">in-to-out</span>), combinado con una cara que apunta a la derecha de la línea objetivo pero cerrada respecto al path. Para un <strong>fade intencional</strong>, el patrón inverso: path hacia la izquierda del objetivo (<span class="term">out-to-in</span>), con la cara abierta respecto al path pero cerrada respecto al objetivo.</p>
@@ -1103,6 +1254,7 @@ const CURRICULUM = [
         id: 'n4m3',
         title: 'El reglamento oficial a fondo (Rules of Golf 2023)',
         minutes: 10,
+        imgs: [{"url": "https://images.unsplash.com/photo-1684952660094-263b03730842?w=1200&q=80&auto=format&fit=crop", "alt": "Reglamento oficial de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1669165266608-5aa72f61303b?w=1200&q=80&auto=format&fit=crop", "alt": "Reglamento oficial de golf", "credit": "Unsplash"}],
         content: `
           <p>Las Rules of Golf vigentes son la edición <strong>2023</strong>, publicada conjuntamente por USGA y The R&A, en vigor desde el 1 de enero de 2023. Al día de hoy no se ha publicado una edición numerada nueva — el reglamento se actualiza con "aclaraciones" (clarifications) trimestrales, no con ediciones completas nuevas (aunque el ciclo histórico de grandes revisiones, cada 4 años aproximadamente, sugiere que la próxima podría llegar alrededor de 2027, sin confirmación oficial todavía).</p>
           <p><strong><span class="term">Unplayable ball</span> (Regla 19):</strong> podés declarar tu bola injugable en casi cualquier parte del campo (excepto dentro de una penalty area), con tres opciones de alivio, cada una de 1 golpe de penalización: <span class="term">stroke and distance</span> (volver a jugar desde antes), <span class="term">back-on-the-line relief</span> (dejar caer sobre la línea que une el hoyo con la bola, tan atrás como quieras) o alivio lateral (dentro de dos largos de palo, sin acercarte al hoyo). Si la bola injugable está en un bunker, hay una cuarta opción: salir del bunker en línea hacia atrás, mas 2 golpes de penalización.</p>
@@ -1121,6 +1273,7 @@ const CURRICULUM = [
         id: 'n4m4',
         title: 'Preparación física y mental para competir',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&q=80&auto=format&fit=crop", "alt": "Preparación física para competir en golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1593282153762-a41e3cceb06c?w=1200&q=80&auto=format&fit=crop", "alt": "Preparación física para competir en golf", "credit": "Unsplash"}],
         content: `
           <p>Competir bien no depende solo de la técnica del swing — hay dos áreas que los jugadores avanzados suelen trabajar de forma deliberada:</p>
           <p><strong>Preparación mental:</strong> una <span class="term">pre-shot routine</span> (rutina previa al golpe) consistente y repetible es una de las herramientas más enseñadas en la psicología deportiva del golf — asociada, entre otros, al psicólogo deportivo Bob Rotella. La idea es que repetir siempre los mismos pasos antes de cada golpe ayuda a mantener la concentración, manejar la presión y ejecutar con confianza en vez de duda, sin importar lo que pasó en el golpe anterior.</p>
@@ -1139,6 +1292,7 @@ const CURRICULUM = [
         id: 'n4m5',
         title: 'Torneos y formatos de competencia',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1753378694730-522ce423639b?w=1200&q=80&auto=format&fit=crop", "alt": "Torneo y competencia de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1783870083706-798e1579ce23?w=1200&q=80&auto=format&fit=crop", "alt": "Torneo y competencia de golf", "credit": "Unsplash"}],
         content: `
           <p>Más allá de stroke play y match play (Nivel 2), estos son formatos y conceptos que aparecen en competencias más serias:</p>
           <ul>
@@ -1162,6 +1316,7 @@ const CURRICULUM = [
         id: 'n4m6',
         title: 'Estadísticas de juego: cómo analizar tu rendimiento',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1591266871922-7ec7b50de8b2?w=1200&q=80&auto=format&fit=crop", "alt": "Estadísticas de juego de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1561503616-64b54b7da444?w=1200&q=80&auto=format&fit=crop", "alt": "Estadísticas de juego de golf", "credit": "Unsplash"}],
         content: `
           <p>El marco de <span class="term">strokes gained</span> ("golpes ganados") fue desarrollado por Mark Broadie, profesor de la Columbia Business School, y popularizado en su libro <em>Every Shot Counts</em>. El PGA Tour lo adoptó oficialmente, organizándolo en cuatro categorías: <span class="term">off-the-tee</span>, <span class="term">approach-the-green</span>, <span class="term">around-the-green</span> y <span class="term">putting</span>.</p>
           <p>La idea central: en vez de mirar un golpe de forma aislada, se compara tu resultado contra un promedio de referencia según la distancia y posición de cada golpe — así se puede medir con precisión cuánto aporta (o resta) cada faceta del juego a tu puntaje final, algo que las estadísticas tradicionales no lograban capturar bien.</p>
@@ -1170,11 +1325,11 @@ const CURRICULUM = [
             <svg viewBox="0 0 300 120">
               <line x1="16" y1="100" x2="16" y2="10" stroke="var(--line)" stroke-width="1"/>
               <line x1="16" y1="100" x2="290" y2="100" stroke="var(--line)" stroke-width="1"/>
-              <rect x="34" y="34" width="40" height="66" fill="var(--grass)" stroke="var(--grass-line)" stroke-width="1.3"/>
+              <rect x="34" y="34" width="40" height="66" fill="var(--course-wash)" stroke="var(--course-wash-line)" stroke-width="1.3"/>
               <text x="54" y="112" text-anchor="middle">TEE</text>
-              <rect x="98" y="20" width="40" height="80" fill="var(--grass)" stroke="var(--grass-line)" stroke-width="1.3"/>
+              <rect x="98" y="20" width="40" height="80" fill="var(--course-wash)" stroke="var(--course-wash-line)" stroke-width="1.3"/>
               <text x="118" y="112" text-anchor="middle">APPROACH</text>
-              <rect x="162" y="66" width="40" height="34" fill="var(--sand)" stroke="var(--sand-line)" stroke-width="1.3"/>
+              <rect x="162" y="66" width="40" height="34" fill="var(--course-wash2)" stroke="var(--course-wash2-line)" stroke-width="1.3"/>
               <text x="182" y="112" text-anchor="middle">A-GREEN</text>
               <rect x="226" y="72" width="40" height="28" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.3"/>
               <text x="246" y="112" text-anchor="middle">PUTT</text>
@@ -1199,6 +1354,7 @@ const CURRICULUM = [
         id: 'n5m1',
         title: 'Conformidad y homologación de equipo (USGA/R&A)',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1627307887011-8a5029b6adcb?w=1200&q=80&auto=format&fit=crop", "alt": "Homologación de equipo de golf USGA/R&A", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1530028828-25e8270793c5?w=1200&q=80&auto=format&fit=crop", "alt": "Homologación de equipo de golf USGA/R&A", "credit": "Unsplash"}],
         content: `
           <p>Que un palo o una bola sean <span class="term">conforming</span> (conformes) significa que cumplen las <span class="term">Equipment Rules</span> publicadas conjuntamente por USGA y The R&A — y deben seguir siendo conformes no solo cuando son nuevos, sino también con el desgaste normal del uso.</p>
           <p>La USGA mantiene dos listas públicas: la <strong>List of Conforming Driver Heads</strong> y la <strong>Conforming Golf Ball List</strong>. Antes de que un modelo nuevo pueda usarse en competición, el fabricante tiene que someterlo a pruebas de la USGA y conseguir que aparezca en la lista correspondiente.</p>
@@ -1217,6 +1373,7 @@ const CURRICULUM = [
         id: 'n5m2',
         title: 'El debate del "rollback" de la pelota',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1591491698714-9631092f6c4f?w=1200&q=80&auto=format&fit=crop", "alt": "Debate del rollback de la pelota de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1653515906212-ba8bd8ab6000?w=1200&q=80&auto=format&fit=crop", "alt": "Debate del rollback de la pelota de golf", "credit": "Unsplash"}],
         content: `
           <p>Este es un tema regulatorio en desarrollo activo — la situación descrita acá es la más actual disponible a <strong>agosto de 2026</strong>, y puede seguir cambiando.</p>
           <p>En 2023, USGA y The R&A propusieron primero una regla local opcional solo para competiciones de élite, y en diciembre de ese año la reemplazaron por un plan de <span class="term">rollback</span> universal: cambiar las condiciones de prueba de la <span class="term">Overall Distance Standard</span> (la norma que limita cuánto puede volar+rodar una bola bajo condiciones estandarizadas) para reducir la distancia, aplicándolo en principio a todos los niveles de juego con fechas escalonadas (2028 para golf de élite, 2030 para recreativo). El PGA Tour y la PGA of America se opusieron públicamente, argumentando que el cambio era excesivo y afectaba de forma desproporcionada a jugadores recreativos.</p>
@@ -1235,6 +1392,7 @@ const CURRICULUM = [
         id: 'n5m3',
         title: 'Fitting profesional y launch monitors',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1550707227-6140ec0a5044?w=1200&q=80&auto=format&fit=crop", "alt": "Fitting profesional con launch monitor", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1578510933691-7e3ac75257c1?w=1200&q=80&auto=format&fit=crop", "alt": "Fitting profesional con launch monitor", "credit": "Unsplash"}],
         content: `
           <p>Un <span class="term">fitting</span> profesional conecta todo lo visto en Nivel 3 (cabeza, bola, shaft, driver) con las características reales del swing de un jugador, en vez de dar recomendaciones genéricas.</p>
           <p>Los <span class="term">launch monitors</span> capturan datos objetivos durante el fitting: <span class="term">ball speed</span> (velocidad de la bola tras el impacto), <span class="term">launch angle</span> (ángulo inicial de salida), <span class="term">spin rate</span> (velocidad de rotación) y las distancias de <span class="term">carry</span> (vuelo) y total. Las dos marcas más citadas de la industria son <strong>TrackMan</strong> y <strong>Foresight Sports</strong> (con sus modelos GCQuad y GC3) — usadas tanto por jugadores de gira como por fitters en tiendas especializadas.</p>
@@ -1252,6 +1410,7 @@ const CURRICULUM = [
         id: 'n5m4',
         title: 'Reparación y mantenimiento de palos',
         minutes: 8,
+        imgs: [{"url": "https://images.unsplash.com/photo-1675106643711-498e35472178?w=1200&q=80&auto=format&fit=crop", "alt": "Reparación y mantenimiento de palos de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1645639554326-6d738cf1695b?w=1200&q=80&auto=format&fit=crop", "alt": "Reparación y mantenimiento de palos de golf", "credit": "Unsplash"}],
         content: `
           <p>Una tienda de golf suele ofrecer varios servicios de reparación y mantenimiento, más allá de la venta de equipo nuevo:</p>
           <ul>
@@ -1273,6 +1432,7 @@ const CURRICULUM = [
         id: 'n5m5',
         title: 'Cómo dirigir una tienda de golf',
         minutes: 9,
+        imgs: [{"url": "https://images.unsplash.com/photo-1705637841133-2fd5b3c4512b?w=1200&q=80&auto=format&fit=crop", "alt": "Tienda de golf (pro shop)", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1664080487506-de26ae78fcc6?w=1200&q=80&auto=format&fit=crop", "alt": "Tienda de golf (pro shop)", "credit": "Unsplash"}],
         content: `
           <p>Dirigir una tienda de golf combina principios generales de retail especializado con algunas particularidades propias del negocio:</p>
           <ul>
@@ -1295,6 +1455,7 @@ const CURRICULUM = [
         id: 'n5m6',
         title: 'El camino para ser profesional de golf (PGA)',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1623113807896-3b3a7fc2aec0?w=1200&q=80&auto=format&fit=crop", "alt": "Profesional de golf dando clase", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1591491653056-4313c0e2f379?w=1200&q=80&auto=format&fit=crop", "alt": "Profesional de golf dando clase", "credit": "Unsplash"}],
         content: `
           <p>"Profesional de la PGA" y "jugador del PGA Tour" son <strong>dos carreras completamente distintas</strong>, con procesos separados — una fuente común de confusión, aunque ambas compartan la sigla "PGA".</p>
           <p><strong>Camino A — Profesional de Clase A de la PGA of America</strong> (profesor de club/gestión, el perfil más relacionado con dirigir una tienda de golf): hay dos rutas oficiales. El <span class="term">Associate Program</span> combina empleo en una instalación de golf aprobada con cursos en línea, un <span class="term">Playing Ability Test</span> (PAT — dos rondas de 18 hoyos con un puntaje límite específico) y tres niveles de educación (seminarios presenciales + trabajo de portafolio). Alternativamente, el <span class="term">PGA Golf Management University Program</span> es una carrera universitaria de 4.5-5 años que combina una licenciatura con ~16 meses de pasantías en instalaciones de golf, en universidades acreditadas específicamente para este programa.</p>
@@ -1312,6 +1473,7 @@ const CURRICULUM = [
         id: 'n5m7',
         title: 'Tendencias y el futuro del golf',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1763114696334-6efac2769d6b?w=1200&q=80&auto=format&fit=crop", "alt": "Tecnología y futuro del golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1747224317356-6dd1a4a078fd?w=1200&q=80&auto=format&fit=crop", "alt": "Tecnología y futuro del golf", "credit": "Unsplash"}],
         content: `
           <p>Algunos datos verificados y recientes sobre hacia dónde va el golf como industria:</p>
           <ul>
@@ -1339,6 +1501,7 @@ const CURRICULUM = [
         id: 'n6m1',
         title: 'Swingweight: qué mide realmente y cómo se calcula',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1595884537801-be390dd9935a?w=1200&q=80&auto=format&fit=crop", "alt": "Medición de swingweight de un palo de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1592967449177-d88a95223c86?w=1200&q=80&auto=format&fit=crop", "alt": "Medición de swingweight de un palo de golf", "credit": "Unsplash"}],
         content: `
           <p>Hay un nivel de conocimiento de taller que va más allá de lo que necesita un vendedor de piso para recomendar el palo correcto, pero que te separa del resto cuando un cliente pregunta por qué dos palos del "mismo peso" se sienten completamente distintos en la mano. Ese es el terreno de este nivel: <span class="term">clubmaking</span> y <span class="term">fitting</span> técnico — el oficio de construir y ajustar palos a medida, no solo de venderlos de catálogo.</p>
           <p>El <span class="term">swingweight</span> no mide el peso total del palo — mide <b>cómo se distribuye</b> ese peso a lo largo del palo, es decir, qué tan "pesado" se siente en el swing. Dos palos pueden pesar exactamente los mismos gramos en una balanza de cocina y sentirse completamente distintos si uno tiene más masa concentrada hacia la cabeza y el otro hacia el grip.</p>
@@ -1358,6 +1521,7 @@ const CURRICULUM = [
         id: 'n6m2',
         title: 'Lie y loft: el ajuste que más cambia tu impacto',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1731694411560-050e5b91e943?w=1200&q=80&auto=format&fit=crop", "alt": "Ajuste de lie y loft de un palo de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1627307886605-309bba4cb9a5?w=1200&q=80&auto=format&fit=crop", "alt": "Ajuste de lie y loft de un palo de golf", "credit": "Unsplash"}],
         content: `
           <p>El <span class="term">lie angle</span> es el ángulo entre la línea central del shaft y el suelo, medido con la cabeza del palo asentada completamente plana (<span class="term">sole flat</span>). El <span class="term">loft</span> es el ángulo de la cara del palo respecto a la vertical. Son dos de las especificaciones más importantes de un fitting completo, y a diferencia del swingweight, un lie angle incorrecto afecta directamente hacia dónde viaja la bola, no solo cómo se siente el palo.</p>
           <p>En el taller, ambos se miden con precisión en una <span class="term">máquina de lie-loft</span>, pero la forma de verificarlos en la práctica, con el jugador real golpeando bolas, es la <span class="term">cinta de impacto</span>: se pega una cinta especial en la suela del palo y, después de varios golpes, la marca que deja revela si el contacto fue centrado, hacia el <span class="term">toe</span> (punta) o hacia el <span class="term">heel</span> (tacón) — señal de que el lie angle está mal ajustado para ese jugador.</p>
@@ -1377,6 +1541,7 @@ const CURRICULUM = [
         id: 'n6m3',
         title: 'Shafts a fondo: frequency matching, tip trimming y el debate del spine',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1592967449177-d88a95223c86?w=1200&q=80&auto=format&fit=crop", "alt": "Frequency matching de shafts de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1777554060049-0d26da211afe?w=1200&q=80&auto=format&fit=crop", "alt": "Frequency matching de shafts de golf", "credit": "Unsplash"}],
         content: `
           <p>Más allá de lo que ya viste sobre flex y launch monitors en el Nivel 3, el oficio de clubmaking tiene sus propias herramientas y mediciones específicas para ajustar un shaft con precisión de taller, antes incluso de que el jugador pegue una bola.</p>
           <p>El <span class="term">frequency matching</span> mide la rigidez real de un shaft en <span class="term">CPM</span> (ciclos por minuto), usando un <span class="term">analizador de frecuencia</span>: el shaft se sujeta fijo por el extremo del grip, se deflecta la punta con un peso calibrado, se suelta, y el aparato cuenta cuántas oscilaciones completa por minuto. Es una medición física directa de la rigidez, independiente de lo que diga la etiqueta de flex del fabricante.</p>
@@ -1396,6 +1561,7 @@ const CURRICULUM = [
         id: 'n6m4',
         title: 'Grips: core sizes, cinta de armado e instalación profesional',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1776245293168-dac97aebf9b8?w=1200&q=80&auto=format&fit=crop", "alt": "Instalación profesional de grips de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1763111332218-bf71f80d258d?w=1200&q=80&auto=format&fit=crop", "alt": "Instalación profesional de grips de golf", "credit": "Unsplash"}],
         content: `
           <p>El grip es la pieza que más directamente toca al jugador en cada golpe, y su instalación tiene sus propias especificaciones técnicas que un clubmaker necesita conocer para ajustar el grosor final en la mano sin depender de "probar y ver".</p>
           <p>Los catálogos de grips publican su medida como <span class="term">core size</span> (el diámetro interno hueco del grip antes de instalarlo), y hay dos tamaños de referencia muy citados en la industria: <b>0.580"</b> y <b>0.600"</b>. El diámetro estándar del extremo (butt) de la gran mayoría de shafts es <b>0.600"</b> — así que un grip de core 0.600" calza directo y ajustado sobre el shaft sin necesitar nada extra, mientras que un grip de core 0.580" necesita vueltas adicionales de cinta para compensar esa diferencia de 0.020" y lograr un calce correcto.</p>
@@ -1415,6 +1581,7 @@ const CURRICULUM = [
         id: 'n6m5',
         title: 'El banco de taller: epoxy, calor, reshaft y armado de un set',
         minutes: 7,
+        imgs: [{"url": "https://images.unsplash.com/photo-1599256630445-67b5772b1204?w=1200&q=80&auto=format&fit=crop", "alt": "Banco de taller de clubmaking", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1560801124-4a95dc193b94?w=1200&q=80&auto=format&fit=crop", "alt": "Banco de taller de clubmaking", "credit": "Unsplash"}],
         content: `
           <p>Instalar una cabeza nueva sobre un shaft, o remover una vieja para reemplazarla (<span class="term">reshaft</span>), depende de dos herramientas básicas del banco de taller: el epoxy de armado y la pistola de calor — y de usarlas con la paciencia correcta, no con prisa.</p>
           <p>El <span class="term">epoxy de dos componentes</span> para armado de palos tiene dos tiempos distintos que no hay que confundir: el <span class="term">tack</span> o agarre inicial, que puede ocurrir en menos de una hora y da la falsa sensación de que "ya quedó pegado", y la <span class="term">cura estructural completa</span>, que recién se alcanza alrededor de las <b>24 horas</b>. Existen epoxys rápidos de 5 minutos en el mercado, pero se recomienda evitarlos para cabezas de driver, que reciben cargas de impacto mucho más altas — el riesgo de que la unión falle bajo ese estrés es real.</p>
@@ -1434,6 +1601,7 @@ const CURRICULUM = [
         id: 'n6m6',
         title: 'Cómo armar y vender un servicio de fitting y clubmaking',
         minutes: 6,
+        imgs: [{"url": "https://images.unsplash.com/photo-1728997907996-b946a76e211b?w=1200&q=80&auto=format&fit=crop", "alt": "Servicio de fitting y clubmaking de golf", "credit": "Unsplash"}, {"url": "https://images.unsplash.com/photo-1760302318620-261f5e4d1940?w=1200&q=80&auto=format&fit=crop", "alt": "Servicio de fitting y clubmaking de golf", "credit": "Unsplash"}],
         content: `
           <p>Todo el conocimiento técnico de este nivel vale poco en un negocio real si no sabes cómo estructurarlo y cobrarlo como un servicio claro. Este módulo cierra el Nivel 6 con la parte de negocio: cómo una tienda o taller arma y vende fitting y clubmaking de forma profesional.</p>
           <p>Lo primero es separar conceptualmente dos etapas que muchos clientes mezclan sin darse cuenta: el <span class="term">fitting</span> (la sesión de diagnóstico con launch monitor, donde se determinan las especificaciones correctas — swingweight, lie/loft, flex, largo) y el <span class="term">build</span> (la construcción física del palo con esas especificaciones: cortar, instalar cabeza, armar grip, balancear). Son dos trabajos distintos con costos distintos, y por eso la mayoría de los talleres profesionales los cobran por separado: el tiempo del especialista haciendo el diagnóstico tiene un valor propio, independiente de la mano de obra física de armar el palo después.</p>
@@ -1566,7 +1734,8 @@ function computeGolfStats() {
   const week = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday); d.setDate(monday.getDate() + i);
-    week.push({ label: ['L', 'M', 'X', 'J', 'V', 'S', 'D'][i], active: !!byDay[dayKey(d.getTime())], isToday: dayKey(d.getTime()) === dayKey(today.getTime()) });
+    const count = byDay[dayKey(d.getTime())] || 0;
+    week.push({ label: ['L', 'M', 'X', 'J', 'V', 'S', 'D'][i], active: !!count, count, isToday: dayKey(d.getTime()) === dayKey(today.getTime()) });
   }
 
   // Heatmap: últimas 20 semanas (140 días), 5 columnas por semana visualmente
@@ -1956,17 +2125,26 @@ function nextIncompleteModule() {
   return null;
 }
 
+function heroPhotoUrl() {
+  const first = CURRICULUM[0] && CURRICULUM[0].modules[0];
+  return first && first.imgs && first.imgs[0] ? first.imgs[0].url : null;
+}
+
 function renderHero(app, next) {
   const hero = document.createElement('div');
   hero.className = 'hero';
+  const photo = heroPhotoUrl();
   hero.innerHTML = `
-    <div class="hero-eyebrow">⛳ Golf School</div>
-    <h1 class="hero-title">Jugá mejor.<br><b>Cada ronda.</b></h1>
-    <p class="hero-sub">Construí tu técnica, un módulo a la vez.</p>
-    <div class="hero-cta">
-      <svg viewBox="0 0 24 24"><path d="M6 4 L20 12 L6 20 Z"/></svg>
-      <span>${next ? 'Seguir aprendiendo' : 'Repasar el curso'}</span>
+    <div class="hero-body">
+      <div class="hero-eyebrow">⛳ Golf School</div>
+      <h1 class="hero-title">Jugá mejor.<br><b>Cada ronda.</b></h1>
+      <p class="hero-sub">Construí tu técnica, un módulo a la vez.</p>
+      <div class="hero-cta">
+        <svg viewBox="0 0 24 24"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+        <span>${next ? 'Seguir aprendiendo' : 'Repasar el curso'}</span>
+      </div>
     </div>
+    ${photo ? `<div class="hero-photo"><img src="${photo}" alt="" loading="lazy" /></div>` : ''}
   `;
   hero.querySelector('.hero-cta').addEventListener('click', () => {
     if (next) push('leccion', { moduleId: next.module.id });
@@ -1975,22 +2153,36 @@ function renderHero(app, next) {
   app.appendChild(hero);
 }
 
+function ringSvg(pct) {
+  const r = 24, c = 2 * Math.PI * r;
+  const offset = c * (1 - pct / 100);
+  return `
+    <div class="ring-wrap">
+      <svg viewBox="0 0 54 54">
+        <circle class="ring-track" cx="27" cy="27" r="${r}" />
+        <circle class="ring-fill" cx="27" cy="27" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}" />
+      </svg>
+      <div class="ring-pct">${pct}%</div>
+    </div>
+  `;
+}
+
 function renderLessonCard(app, next) {
   if (!next) return;
   const { level, module: m } = next;
   const stats = levelStats(level);
   const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
+  const photo = m.imgs && m.imgs[0] ? m.imgs[0].url : null;
   const card = document.createElement('div');
   card.className = 'lesson-card';
   card.innerHTML = `
-    <div class="lesson-card-icon"><svg viewBox="0 0 24 24"><path d="M4 9 v6 h4 l5 4 V5 L8 9 Z"/><path d="M17 9 a4 4 0 0 1 0 6"/></svg></div>
+    <div class="ringCardRow">
+      ${ringSvg(pct)}
+      ${photo ? `<div class="lesson-card-photo"><img src="${photo}" alt="" loading="lazy" /></div>` : ''}
+    </div>
     <div class="lesson-card-body">
       <div class="lesson-card-eyebrow">${level.name} · continuá donde ibas</div>
       <div class="lesson-card-title">${m.title}</div>
-      <div class="lesson-progress-row">
-        <div class="lesson-progress"><div class="lesson-progress-fill" style="width:${pct}%"></div></div>
-        <div class="lesson-progress-pct">${pct}%</div>
-      </div>
       <div class="lesson-card-btn">Continuar lección →</div>
     </div>
   `;
@@ -1999,20 +2191,24 @@ function renderLessonCard(app, next) {
 }
 
 function renderExploreGrid(app) {
-  const grid = document.createElement('div');
-  grid.className = 'explore-grid';
-  CURRICULUM.slice(0, 4).forEach(level => {
-    const tile = document.createElement('div');
-    tile.className = 'explore-tile' + (level.locked ? ' locked' : '');
-    const shortLabel = level.subtitle.split(/,| y /)[0];
-    tile.innerHTML = `
-      <div class="explore-tile-icon">${level.name.replace('Nivel ', '')}</div>
-      <div class="explore-tile-label">${shortLabel}</div>
+  const row = document.createElement('div');
+  row.className = 'explore-row';
+  CURRICULUM.forEach(level => {
+    const firstMod = level.modules[0];
+    const cover = firstMod && firstMod.imgs && firstMod.imgs[0] ? firstMod.imgs[0].url : null;
+    const card = document.createElement('div');
+    card.className = 'explore-card' + (level.locked ? ' locked' : '');
+    card.innerHTML = `
+      ${cover ? `<img src="${cover}" alt="" loading="lazy" />` : ''}
+      <div class="explore-card-body">
+        <div class="explore-card-name">${level.name}</div>
+        <div class="explore-card-sub">${level.locked ? 'próximamente' : level.modules.length + ' módulos'}</div>
+      </div>
     `;
-    if (!level.locked) tile.addEventListener('click', () => push('nivel', { levelId: level.id }));
-    grid.appendChild(tile);
+    if (!level.locked) card.addEventListener('click', () => push('nivel', { levelId: level.id }));
+    row.appendChild(card);
   });
-  app.appendChild(grid);
+  app.appendChild(row);
 }
 
 function renderProgressRow(app, fc, gs) {
@@ -2025,6 +2221,26 @@ function renderProgressRow(app, fc, gs) {
     <div class="progress-item"><div class="progress-icon">🔥</div><div class="progress-num">${gs.streak}</div><div class="progress-lbl">Racha<br>de días</div></div>
   `;
   app.appendChild(row);
+
+  const chartCard = document.createElement('div');
+  chartCard.className = 'levelCard';
+  chartCard.style.cssText = 'flex-direction:column; align-items:stretch; cursor:default;';
+  const maxCount = Math.max(1, ...gs.week.map(d => d.count || 0));
+  chartCard.innerHTML = `
+    <div class="weekChartLabel">Actividad de la semana</div>
+    <div class="weekChart">
+      ${gs.week.map(d => {
+        const h = d.count ? Math.max(14, Math.round((d.count / maxCount) * 100)) : 6;
+        return `
+          <div class="weekChart-col${d.isToday ? ' today' : ''}">
+            <div class="weekChart-track"><div class="weekChart-bar${d.count ? ' active' : ''}" style="height:${h}%"></div></div>
+            <div class="weekChart-lbl">${d.label}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  app.appendChild(chartCard);
 }
 
 function renderNiveles(app) {
@@ -2141,6 +2357,18 @@ function renderLeccion(app, data) {
     <div class="lessonMeta">${m.minutes} min de lectura</div>
   `;
   app.appendChild(head);
+
+  if (m.imgs && m.imgs.length) {
+    const photos = document.createElement('div');
+    photos.className = 'modPhotos';
+    photos.innerHTML = m.imgs.map(im => `
+      <figure>
+        <img src="${im.url}" alt="${im.alt || ''}" loading="lazy" />
+        <figcaption>${im.credit || ''}</figcaption>
+      </figure>
+    `).join('');
+    app.appendChild(photos);
+  }
 
   const listenRow = document.createElement('div');
   listenRow.className = 'listenRow';
@@ -2352,6 +2580,7 @@ function runQuizSession(app, questions, opts) {
 }
 
 render();
+syncProgressOnLoad();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(function(){});
