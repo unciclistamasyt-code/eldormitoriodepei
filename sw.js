@@ -1,4 +1,14 @@
-const CACHE = 'app-v88';
+const CACHE = 'app-v89';
+// v89: clima.html — el usuario probó el halo oscuro de v88 y pidió volver
+// (verbatim) "me gusta el sticker quiero que sean tipo png sin background
+// solo el sticker": prefiere el estilo anterior (contorno blanco sobre
+// fondo transparente) al halo oscuro nuevo. Se revirtieron las 10
+// imágenes de icons/clima/ a esa versión (las mismas de app-v86/v87,
+// conservadas en el sandbox desde antes de generar el halo) — vuelven a
+// ser PNG con transparencia real y el contorno blanco tipo sticker, sin
+// ningún relleno/halo agregado. El cambio de reglas de capas de v88
+// (capa media / aislamiento mutuamente excluyentes) no se tocó, sigue
+// igual.
 // v88: clima.html — dos cambios juntos, ambos a partir de reportes del
 // usuario probando la app en la vida real:
 // 1) "Capa media" y "Capa de aislamiento" eran independientes y podían
