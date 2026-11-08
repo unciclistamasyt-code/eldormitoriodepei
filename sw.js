@@ -1,4 +1,26 @@
-const CACHE = 'app-v97';
+const CACHE = 'app-v98';
+// v98: los 4 cursos (cafe/golf/ski/snowboard) reciben un segundo ajuste de
+// diseño a partir de una nueva captura de referencia (app tipo "Good
+// morning, Alex!" con learning path y barra inferior). Confirmado con el
+// usuario (alcance: los 4 cursos; tema: mantener oscuro con esta
+// estructura; barra inferior: sí, agregarla dentro de cada curso). Se
+// sumaron 2 piezas nuevas en todos:
+// 1) "Tu recorrido" — tira horizontal de un círculo por nivel, conectados
+//    por una línea: check verde/dorado si el nivel está 100% completo,
+//    número resaltado si es el nivel actual o tiene progreso parcial,
+//    candado (decorativo, sigue siendo tocable) si todavía no se empezó.
+// 2) Barra inferior fija con 4 tabs — Inicio (scroll arriba), Niveles
+//    (scroll a "explorar niveles"), Progreso (scroll a las stats) y
+//    Perfil (vuelve a index.html, ya que no hay un perfil propio por
+//    curso — cada página es independiente, no una app con navegación
+//    global entre los 4 cursos).
+// En cafe.html/golf.html (mismo motor) además se consolidó la fila de 3
+// stats + el gráfico semanal en una sola tarjeta "Tu progreso" de dos
+// columnas (anillo a la izquierda, actividad semanal + racha a la
+// derecha), más parecida a la referencia. En ski.html/snowboard.html NO
+// se tocó su panel de estadísticas existente (heatmap, mes a mes, "tu
+// ascenso") — ya era más completo que lo que pide la referencia, así que
+// solo se le sumaron el recorrido y la barra inferior, sin duplicar nada.
 // v97: cafe.html — el usuario pidió (verbatim) "quita a majo en cafe": a
 // diferencia de golf.html, Coffee School nunca necesitó selector de
 // perfil (Sebas/Majo), así que se quitó por completo (el array USERS, el

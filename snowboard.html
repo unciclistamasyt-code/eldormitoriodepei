@@ -22,6 +22,7 @@
     --green:#58cc02;
     --red:#ff5c5c;
     --brand: var(--coral);
+    --brand-wash: rgba(255,150,0,0.16);
     --grad: linear-gradient(90deg, var(--coral), var(--violet));
     color-scheme: dark;
   }
@@ -362,6 +363,29 @@
   .modPhoto{flex:1;min-width:0;background:var(--panel);border:2px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 3px 0 var(--line);}
   .modPhoto img{width:100%;height:110px;object-fit:cover;display:block;}
   .modPhoto .cap{padding:6px 10px 8px;font-size:10.5px;color:var(--muted);font-weight:700;}
+
+  /* ---------- Tu recorrido (learning path, tipo árbol de niveles) ---------- */
+  .pathTitle{font-size:16px;margin:0 0 12px;font-weight:800;}
+  .pathTrack{display:flex;align-items:flex-start;overflow-x:auto;gap:0;margin:0 -16px 20px;padding:4px 16px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .pathTrack::-webkit-scrollbar{display:none;}
+  .pathStep{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;width:58px;cursor:pointer;}
+  .pathCircle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:800;border:2px solid var(--line);color:var(--muted);background:var(--panel2);flex-shrink:0;}
+  .pathCircle svg{width:17px;height:17px;stroke-width:2.3;fill:none;}
+  .pathCircle.done{background:var(--brand);border-color:var(--brand);color:#0a0e14;}
+  .pathCircle.done svg{stroke:#0a0e14;}
+  .pathCircle.current{border-color:var(--brand);color:var(--brand);background:var(--brand-wash);}
+  .pathCircle.upcoming svg{stroke:var(--muted);opacity:.55;width:15px;height:15px;}
+  .pathLine{flex-shrink:0;width:22px;height:2px;background:var(--line);margin-top:18px;}
+  .pathLine.done{background:var(--brand);}
+  .pathLabel{font-size:9.5px;color:var(--muted);text-align:center;white-space:nowrap;font-weight:700;}
+
+  /* ---------- barra inferior fija (Inicio / Niveles / Progreso / Perfil) ---------- */
+  .bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(10,14,20,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);}
+  .navItem{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;padding:4px 10px;cursor:pointer;color:var(--muted);text-decoration:none;font-family:'Nunito',sans-serif;}
+  .navItem svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;}
+  .navItem span{font-size:9.5px;font-weight:700;}
+  .navItem.active{color:var(--brand);}
+  .navSpacer{height:78px;}
 </style>
 </head>
 <body>
@@ -424,6 +448,9 @@
         <div class="continue-card-btn">Continuar lección →</div>
       </div>
     </div>
+
+    <h2 class="pathTitle">Tu recorrido</h2>
+    <div class="pathTrack" id="pathTrack"></div>
 
     <div class="explore-grid" id="exploreGrid"></div>
 
@@ -501,6 +528,26 @@
     <div class="panel">
       <div class="panel-head"><h2>Módulos</h2></div>
       <div id="moduleList"></div>
+    </div>
+
+    <div class="navSpacer"></div>
+    <div class="bottomNav">
+      <button type="button" class="navItem active" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <svg viewBox="0 0 24 24"><path d="M4 11 L12 4 L20 11"/><path d="M6 10 L6 20 L18 20 L18 10"/></svg>
+        <span>Inicio</span>
+      </button>
+      <button type="button" class="navItem" onclick="document.getElementById('exploreGrid').scrollIntoView({behavior:'smooth',block:'start'})">
+        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+        <span>Niveles</span>
+      </button>
+      <button type="button" class="navItem" onclick="document.getElementById('progressRow').scrollIntoView({behavior:'smooth',block:'start'})">
+        <svg viewBox="0 0 24 24"><path d="M4 20 L4 12"/><path d="M12 20 L12 6"/><path d="M20 20 L20 14"/></svg>
+        <span>Progreso</span>
+      </button>
+      <a class="navItem" href="index.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20 a7 7 0 0 1 14 0"/></svg>
+        <span>Perfil</span>
+      </a>
     </div>
 
   </div>
@@ -1317,6 +1364,30 @@ function renderDashboard(){
       <div class="explore-tile-icon">${lv.id}</div>
       <div class="explore-tile-label">${lv.name.split(/,| y /)[0]}</div>
     </div>`;
+  }).join('');
+
+  // tu recorrido — un círculo por nivel, conectados por una línea.
+  const pathTrack = document.getElementById('pathTrack');
+  const firstIncompleteForPath = MODULES.find(m=>!progress[m.id]?.completed);
+  pathTrack.innerHTML = LEVELS.map((lv, idx)=>{
+    const mods = MODULES.filter(m=>m.nivel===lv.id);
+    const doneCount = mods.filter(m=>progress[m.id]?.completed).length;
+    let state = 'upcoming';
+    if(mods.length && doneCount===mods.length) state = 'done';
+    else if(firstIncompleteForPath && firstIncompleteForPath.nivel===lv.id) state = 'current';
+    else if(doneCount>0) state = 'current';
+    const circleInner = state==='done'
+      ? '<svg viewBox="0 0 24 24"><path d="M5 13 L10 18 L19 7"/></svg>'
+      : state==='upcoming'
+        ? '<svg viewBox="0 0 24 24"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3"/></svg>'
+        : String(idx+1);
+    const step = `
+      <div class="pathStep" onclick="scrollToLevel(${lv.id})">
+        <div class="pathCircle ${state}">${circleInner}</div>
+        <div class="pathLabel">N.${lv.id}</div>
+      </div>`;
+    const line = idx < LEVELS.length-1 ? `<div class="pathLine${state==='done'?' done':''}"></div>` : '';
+    return step + line;
   }).join('');
 
   // fila de progreso rápida (estilo "Your Progress")
