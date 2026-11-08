@@ -1,4 +1,17 @@
-const CACHE = 'app-v91';
+const CACHE = 'app-v92';
+// v92: clima.html — el usuario probó el arreglo de v91 (silueta plana
+// gris para el estado "no hace falta hoy") y avisó (verbatim)
+// "desaparecio": al aplanar la foto a una silueta sólida se perdía todo
+// el detalle de la prenda (costuras, bolsillo, logo), que es justo lo
+// que no quería — confirmado con una pregunta directa antes de tocar
+// nada de nuevo. Se cambió el filtro de
+// `grayscale(1) brightness(0) invert(1); opacity: 0.3` a
+// `grayscale(1) brightness(1.8) opacity(0.5)` — esto sí mantiene el
+// detalle real de la foto (se sigue viendo la prenda, no una forma
+// genérica) pero la aclara lo suficiente para que incluso las prendas
+// muy oscuras (puffer, shell) se noten claramente atenuadas frente a su
+// versión activa a color. Probado contra las 10 prendas en estado activo
+// vs. skip lado a lado con Playwright antes de entregar.
 // v91: clima.html — el usuario avisó (verbatim) "todas estan perfectas
 // excepto capa de aislamiento" mandando una captura real: la tarjeta de
 // "Capa de aislamiento" cuando dice "No hace falta hoy" (estado .skip)
