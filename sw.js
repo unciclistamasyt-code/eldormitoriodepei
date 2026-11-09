@@ -1,4 +1,53 @@
-const CACHE = 'app-v98';
+const CACHE = 'app-v100';
+// v100: cafe.html recibe audio pregrabado real con voz Laura (Cartesia),
+// igual que golf/ski/snowboard. El usuario pidió (verbatim, respondiendo a
+// la pregunta de los emojis de fondo) "no hagamos nada mas de las fotos,
+// hagamos los adudios" — se pausa la parte 3 pendiente del pedido de v99
+// (fondo de emojis) y se hacen los audios de café en su lugar.
+// - Se generaron los 26 módulos de café (n1-n5, curso completo) con la voz
+//   Laura — Trustworthy Guide de Cartesia (voice_id
+//   1cc00672-e9d4-455e-b3fb-31dfb7aad231, model sonic-3.6), mismo pipeline
+//   ya usado para golf/ski/snowboard: fetch() desde el navegador real del
+//   usuario (api.cartesia.ai está bloqueado desde el entorno en la nube),
+//   con el texto exacto extraído con moduleSpeechText() replicada en
+//   Node+jsdom.
+// - Verificado independientemente (no solo el reporte del navegador): los
+//   26 archivos se recalcularon contra los bytes reales ya movidos a la
+//   carpeta del usuario. Rango real: 941.6-1152.2 B/char, mediana ~1040,
+//   cero archivos sospechosos (<700).
+// - Destino de subida: a diferencia de golf (que comparte el bucket
+//   site-media/audio/), café tiene su PROPIO bucket nuevo cafe-audio — los
+//   ids de módulo de café (n1m1, n2m3, etc.) tienen el mismo formato que
+//   los de golf, así que compartir carpeta hubiera pisado audio de un
+//   curso con el del otro. cafe.html ahora apunta a
+//   cafe-audio/<id>.mp3 en vez de site-media/audio/.
+// - PREGEN_AUDIO_MODULES en cafe.html pasó de un Set vacío a los 26 ids
+//   reales — el mensaje de "audio grabado con voz humana real" ya existía
+//   en el código (compartido con golf/ski) y ahora se activa solo.
+// v99: ajuste pedido por el usuario sobre el v98 (verbatim: "quita los
+// botones de abajo, ya cambia los colores de todo mas como los del cafe y
+// ponle fondo de emojis a todos de lo que se habla"). Se hicieron las
+// primeras 2 partes en los 4 cursos:
+// 1) Se quitó la barra inferior fija de 4 tabs agregada en v98 (Inicio/
+//    Niveles/Progreso/Perfil) — en cafe.html/golf.html se eliminó la
+//    función renderBottomNav() y su llamada; en ski.html/snowboard.html se
+//    eliminó el bloque HTML estático equivalente. El CSS .bottomNav/
+//    .navItem/.navSpacer se quitó en los 4. El resto de lo agregado en v98
+//    ("Tu recorrido" y, en cafe/golf, la tarjeta "Tu progreso" consolidada)
+//    se mantiene sin cambios.
+// 2) Se unificó la paleta de acento de golf/ski/snowboard para que se vea
+//    "como los del café" (caramelo #cf9a5c / terracota #c15b3e), en vez de
+//    que cada curso tenga su propio color (golf era verde lima, ski celeste/
+//    violeta, snowboard naranja/violeta). Café ya usaba esta paleta, así
+//    que no se tocó. Se actualizaron las variables CSS de acento
+//    (--course-accent/--course-accent-2 en golf; --ice/--violet/--coral/
+//    --brand-wash en ski y snowboard) más los literales rgba() sueltos que
+//    no pasaban por esas variables (hero, streak badge, heatmap). Los
+//    colores de feedback de quiz (verde=correcto, rojo=incorrecto) NO se
+//    tocaron por no ser colores de marca del curso.
+// Queda pendiente (parte 3 del mismo pedido, "fondo de emojis a todos de lo
+// que se habla") — el alcance todavía no quedó claro con el usuario, se le
+// pregunta de nuevo antes de implementarlo.
 // v98: los 4 cursos (cafe/golf/ski/snowboard) reciben un segundo ajuste de
 // diseño a partir de una nueva captura de referencia (app tipo "Good
 // morning, Alex!" con learning path y barra inferior). Confirmado con el

@@ -16,13 +16,13 @@
     --line:#3a2b1f;
     --ink:#f5eee6;
     --muted:#a89687;
-    --ice:#1cb0f6;
-    --violet:#58cc02;
-    --coral:#ff9600;
+    --ice:#cf9a5c;
+    --violet:#c15b3e;
+    --coral:#c15b3e;
     --green:#58cc02;
     --red:#ff5c5c;
     --brand: var(--coral);
-    --brand-wash: rgba(255,150,0,0.16);
+    --brand-wash: rgba(193,91,62,0.16);
     --grad: linear-gradient(90deg, var(--coral), var(--violet));
     color-scheme: dark;
   }
@@ -71,7 +71,7 @@
     box-shadow:0 4px 0 var(--line);
   }
   .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--grad);}
-  .hero::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,150,0,0.18),transparent 70%);pointer-events:none;}
+  .hero::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(193,91,62,0.18),transparent 70%);pointer-events:none;}
   .hero-eyebrow{font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);margin-bottom:9px;position:relative;}
   .hero-title{font-size:24px;line-height:1.25;font-weight:900;margin:0 0 7px;position:relative;}
   .hero-title b{color:var(--brand);}
@@ -129,7 +129,7 @@
   .greet .sub{color:var(--muted);font-size:13px;margin:0;font-weight:600;}
   .streak-badge{
     display:flex;flex-direction:column;align-items:center;
-    background:rgba(255,150,0,.12);
+    background:rgba(193,91,62,.12);
     border:2px solid var(--coral);
     border-radius:14px;
     padding:8px 14px;
@@ -256,9 +256,9 @@
   .heat-scroll{overflow-x:auto;padding-bottom:4px;}
   .heat-grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);gap:3px;width:max-content;}
   .heat-cell{width:11px;height:11px;border-radius:3px;background:var(--panel2);}
-  .heat-cell.l1{background:rgba(255,150,0,0.18);}
-  .heat-cell.l2{background:rgba(255,150,0,0.4);}
-  .heat-cell.l3{background:rgba(255,150,0,0.65);}
+  .heat-cell.l1{background:rgba(193,91,62,0.18);}
+  .heat-cell.l2{background:rgba(193,91,62,0.4);}
+  .heat-cell.l3{background:rgba(193,91,62,0.65);}
   .heat-cell.l4{background:var(--ice);}
   .heat-cell.l5{background:var(--coral);}
   .heat-legend{display:flex;align-items:center;gap:5px;margin-top:10px;font-size:10.5px;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:700;justify-content:flex-end;}
@@ -306,7 +306,7 @@
     font-weight:800;font-size:14px;cursor:pointer;flex:1;
     text-transform:uppercase;letter-spacing:.02em;
   }
-  .btn-primary{background:var(--violet);color:#120d0a;box-shadow:0 4px 0 #2e6a01;}
+  .btn-primary{background:var(--violet);color:#fff;box-shadow:0 4px 0 #7a3826;}
   .btn-ghost{background:var(--panel2);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);}
 
   /* ---------- quiz ---------- */
@@ -378,14 +378,6 @@
   .pathLine{flex-shrink:0;width:22px;height:2px;background:var(--line);margin-top:18px;}
   .pathLine.done{background:var(--brand);}
   .pathLabel{font-size:9.5px;color:var(--muted);text-align:center;white-space:nowrap;font-weight:700;}
-
-  /* ---------- barra inferior fija (Inicio / Niveles / Progreso / Perfil) ---------- */
-  .bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(10,14,20,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);}
-  .navItem{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;padding:4px 10px;cursor:pointer;color:var(--muted);text-decoration:none;font-family:'Nunito',sans-serif;}
-  .navItem svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;}
-  .navItem span{font-size:9.5px;font-weight:700;}
-  .navItem.active{color:var(--brand);}
-  .navSpacer{height:78px;}
 </style>
 </head>
 <body>
@@ -528,26 +520,6 @@
     <div class="panel">
       <div class="panel-head"><h2>Módulos</h2></div>
       <div id="moduleList"></div>
-    </div>
-
-    <div class="navSpacer"></div>
-    <div class="bottomNav">
-      <button type="button" class="navItem active" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-        <svg viewBox="0 0 24 24"><path d="M4 11 L12 4 L20 11"/><path d="M6 10 L6 20 L18 20 L18 10"/></svg>
-        <span>Inicio</span>
-      </button>
-      <button type="button" class="navItem" onclick="document.getElementById('exploreGrid').scrollIntoView({behavior:'smooth',block:'start'})">
-        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
-        <span>Niveles</span>
-      </button>
-      <button type="button" class="navItem" onclick="document.getElementById('progressRow').scrollIntoView({behavior:'smooth',block:'start'})">
-        <svg viewBox="0 0 24 24"><path d="M4 20 L4 12"/><path d="M12 20 L12 6"/><path d="M20 20 L20 14"/></svg>
-        <span>Progreso</span>
-      </button>
-      <a class="navItem" href="index.html">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20 a7 7 0 0 1 14 0"/></svg>
-        <span>Perfil</span>
-      </a>
     </div>
 
   </div>
