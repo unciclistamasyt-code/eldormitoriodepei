@@ -2110,8 +2110,14 @@ function renderLeccion(app, data) {
   listenBtn.addEventListener('click', () => toggleSpeak(moduleSpeechText(m), listenBtn, m.id));
   listenRow.appendChild(listenBtn);
 
+  // El selector de "voz de respaldo del dispositivo" solo tiene sentido
+  // cuando este módulo NO tiene audio pregrabado — si ya tiene la voz real
+  // (PREGEN_AUDIO_MODULES), ese selector nunca entra en juego salvo que
+  // falle la descarga, así que mostrarlo es puro ruido. El usuario pidió
+  // (verbatim) "solo quiero la voz" al ver este dropdown en un módulo que
+  // ya tiene voz real.
   const voiceOpts = voiceOptions();
-  if (voiceOpts.length > 1) {
+  if (voiceOpts.length > 1 && !PREGEN_AUDIO_MODULES.has(m.id)) {
     const select = document.createElement('select');
     select.className = 'voiceSelect';
     select.title = 'Voz de respaldo de tu dispositivo';
