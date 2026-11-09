@@ -1,4 +1,13 @@
-const CACHE = 'app-v100';
+const CACHE = 'app-v101';
+// v101: cafe.html — el usuario vio, en un módulo que YA tiene audio real
+// (n1m1), el selector de "voz de respaldo del dispositivo" (el <select>
+// nativo con voces de macOS tipo Eddy/Flo/Mónica/Paulina/etc.) y pidió
+// (verbatim) "solo quiero la voz". Ese selector solo tiene sentido cuando
+// el módulo NO tiene audio pregrabado — para los 26 módulos de café, que
+// ya tienen voz real desde v100, mostrarlo era puro ruido, porque esa voz
+// de respaldo nunca entra en juego salvo que falle la descarga del mp3.
+// Se agregó la condición `!PREGEN_AUDIO_MODULES.has(m.id)` para que el
+// selector solo aparezca en módulos sin audio pregrabado (hoy, ninguno).
 // v100: cafe.html recibe audio pregrabado real con voz Laura (Cartesia),
 // igual que golf/ski/snowboard. El usuario pidió (verbatim, respondiendo a
 // la pregunta de los emojis de fondo) "no hagamos nada mas de las fotos,
