@@ -41,7 +41,7 @@
     flex-direction: column;
   }
 
-  :root { --course-accent: #8ed64f; --course-accent-dim: rgba(142,214,79,0.14); }
+  :root { --course-accent: #cf9a5c; --course-accent-dim: rgba(207,154,92,0.14); }
 
   /* ---- Hero ---- */
   .hero {
@@ -49,7 +49,7 @@
     border-radius: 22px;
     padding: 22px 20px 20px;
     margin-bottom: 20px;
-    background: linear-gradient(145deg, rgba(142,214,79,0.16), rgba(10,10,12,0) 62%), var(--bg-soft);
+    background: linear-gradient(145deg, rgba(207,154,92,0.16), rgba(10,10,12,0) 62%), var(--bg-soft);
     border: 1px solid var(--line);
     overflow: hidden;
   }
@@ -57,7 +57,7 @@
     content: '';
     position: absolute; right: -36px; top: -36px; width: 170px; height: 170px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(142,214,79,0.2), transparent 70%);
+    background: radial-gradient(circle, rgba(207,154,92,0.2), transparent 70%);
     pointer-events: none;
   }
   .hero-eyebrow { position: relative; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--course-accent); font-weight: 700; margin-bottom: 9px; }
@@ -304,7 +304,7 @@
   .diagram svg { display: block; width: 100%; height: auto; }
   .diagram svg text { font-size: 9px; fill: var(--text-dim); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
   .diagramCaption { font-size: 11.5px; color: var(--text-dim); margin-top: 8px; line-height: 1.45; }
-  :root { --course-wash: rgba(120,190,130,0.16); --course-wash-line: rgba(120,190,130,0.55); --course-wash2: rgba(214,181,124,0.28); --course-wash2-line: rgba(214,181,124,0.7); --course-accent-2: #d97070; }
+  :root { --course-wash: rgba(207,154,92,0.16); --course-wash-line: rgba(207,154,92,0.55); --course-wash2: rgba(193,91,62,0.28); --course-wash2-line: rgba(193,91,62,0.7); --course-accent-2: #c15b3e; }
 
   /* ================= Diseño nuevo 2026-11: fotos + anillo + racha semanal =================
      Mismo bloque que cafe.html/ski.html/snowboard.html — ver el comentario
@@ -427,24 +427,6 @@
 
   /* ---- Tags bajo cada tarjeta de nivel en "explorar" ---- */
   .explore-card-tags { font-size: 9px; color: rgba(255,255,255,0.65); margin-top: 1px; }
-
-  /* ---- Barra inferior fija (Inicio / Niveles / Progreso / Perfil) ---- */
-  .bottomNav {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-    display: flex; justify-content: space-around;
-    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-    background: rgba(10,10,12,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    border-top: 1px solid var(--line);
-  }
-  .navItem {
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    background: none; border: none; padding: 4px 10px; cursor: pointer;
-    color: var(--text-dim); text-decoration: none; font-family: inherit;
-  }
-  .navItem svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.8; }
-  .navItem span { font-size: 9.5px; font-weight: 600; }
-  .navItem.active { color: var(--course-accent); }
-  .navSpacer { height: 78px; }
 
   .monthChart { display: flex; align-items: flex-end; gap: 6px; height: 64px; margin: 6px 0 4px; }
   .monthCol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; justify-content: flex-end; height: 100%; }
@@ -2346,42 +2328,6 @@ function renderProgressRow(app, fc, gs) {
   app.appendChild(card);
 }
 
-function renderBottomNav(app) {
-  const spacer = document.createElement('div');
-  spacer.className = 'navSpacer';
-  app.appendChild(spacer);
-
-  const nav = document.createElement('div');
-  nav.className = 'bottomNav';
-  nav.innerHTML = `
-    <button type="button" class="navItem active" data-nav="inicio">
-      <svg viewBox="0 0 24 24"><path d="M4 11 L12 4 L20 11"/><path d="M6 10 L6 20 L18 20 L18 10"/></svg>
-      <span>Inicio</span>
-    </button>
-    <button type="button" class="navItem" data-nav="niveles">
-      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
-      <span>Niveles</span>
-    </button>
-    <button type="button" class="navItem" data-nav="progreso">
-      <svg viewBox="0 0 24 24"><path d="M4 20 L4 12"/><path d="M12 20 L12 6"/><path d="M20 20 L20 14"/></svg>
-      <span>Progreso</span>
-    </button>
-    <a class="navItem" href="index.html">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20 a7 7 0 0 1 14 0"/></svg>
-      <span>Perfil</span>
-    </a>
-  `;
-  nav.querySelector('[data-nav="inicio"]').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-  nav.querySelector('[data-nav="niveles"]').addEventListener('click', () => {
-    const el = document.getElementById('levelsSection');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-  nav.querySelector('[data-nav="progreso"]').addEventListener('click', () => {
-    const el = document.getElementById('progressSection');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-  app.appendChild(nav);
-}
 
 function renderNiveles(app) {
   const userSwitch = document.createElement('div');
@@ -2447,7 +2393,6 @@ function renderNiveles(app) {
   });
 
   renderDashboard(app, fc, gs);
-  renderBottomNav(app);
 }
 
 function renderNivel(app, data) {

@@ -422,24 +422,6 @@
   /* ---- Tags bajo cada tarjeta de nivel en "explorar" ---- */
   .explore-card-tags { font-size: 9px; color: rgba(255,255,255,0.65); margin-top: 1px; }
 
-  /* ---- Barra inferior fija (Inicio / Niveles / Progreso / Perfil) ---- */
-  .bottomNav {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-    display: flex; justify-content: space-around;
-    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-    background: rgba(10,10,12,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    border-top: 1px solid var(--line);
-  }
-  .navItem {
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    background: none; border: none; padding: 4px 10px; cursor: pointer;
-    color: var(--text-dim); text-decoration: none; font-family: inherit;
-  }
-  .navItem svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.8; }
-  .navItem span { font-size: 9.5px; font-weight: 600; }
-  .navItem.active { color: var(--course-accent); }
-  .navSpacer { height: 78px; }
-
   .monthChart { display: flex; align-items: flex-end; gap: 6px; height: 64px; margin: 6px 0 4px; }
   .monthCol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; justify-content: flex-end; height: 100%; }
   .monthBar { width: 60%; border-radius: 5px 5px 0 0; background: var(--course-accent-2); min-height: 2px; }
@@ -1699,12 +1681,25 @@ function playSynthChunk(text, voice) {
    la primera reproducción para funcionar offline después. Si el archivo no
    está o falla, cae al flujo en vivo de siempre (Google Translate TTS con
    fallback a la voz del dispositivo). */
-const PREGEN_AUDIO_MODULES = new Set([]);
+const PREGEN_AUDIO_MODULES = new Set([
+  'n1m1', 'n1m2', 'n1m3', 'n1m4',
+  'n2m1', 'n2m2', 'n2m3', 'n2m4', 'n2m5',
+  'n3m1', 'n3m2', 'n3m3', 'n3m4', 'n3m5',
+  'n4m1', 'n4m2', 'n4m3', 'n4m4', 'n4m5', 'n4m6', 'n4m7',
+  'n5m1', 'n5m2', 'n5m3', 'n5m4', 'n5m5',
+]);
 
 const MEDIA_BASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/site-media';
 
+/* El audio pregrabado de café vive en su PROPIO bucket (cafe-audio), no en
+   site-media/audio — ese ya es de uso exclusivo de golf.html, y los ids de
+   módulo de café (n1m1, n2m3, etc.) tienen el mismo formato que los de
+   golf, así que compartir carpeta pisaría archivos de un curso con los
+   del otro. */
+const CAFE_AUDIO_BASE_URL = 'https://ahritihlqnbjvcighhwb.supabase.co/storage/v1/object/public/cafe-audio';
+
 function pregenAudioUrl(moduleId) {
-  return `${MEDIA_BASE_URL}/audio/${moduleId}.mp3`;
+  return `${CAFE_AUDIO_BASE_URL}/${moduleId}.mp3`;
 }
 
 function playPregenAudio(moduleId, btn, text, fallbackVoice) {
@@ -1988,45 +1983,6 @@ function renderProgressRow(app, fc, gs) {
   app.appendChild(card);
 }
 
-/* Barra inferior fija, tipo app con tabs — Inicio / Niveles / Progreso
-   (todas dentro de la misma página, con scroll) / Perfil (vuelve al menú
-   principal del sitio, ya que no hay un perfil propio por curso). */
-function renderBottomNav(app) {
-  const spacer = document.createElement('div');
-  spacer.className = 'navSpacer';
-  app.appendChild(spacer);
-
-  const nav = document.createElement('div');
-  nav.className = 'bottomNav';
-  nav.innerHTML = `
-    <button type="button" class="navItem active" data-nav="inicio">
-      <svg viewBox="0 0 24 24"><path d="M4 11 L12 4 L20 11"/><path d="M6 10 L6 20 L18 20 L18 10"/></svg>
-      <span>Inicio</span>
-    </button>
-    <button type="button" class="navItem" data-nav="niveles">
-      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
-      <span>Niveles</span>
-    </button>
-    <button type="button" class="navItem" data-nav="progreso">
-      <svg viewBox="0 0 24 24"><path d="M4 20 L4 12"/><path d="M12 20 L12 6"/><path d="M20 20 L20 14"/></svg>
-      <span>Progreso</span>
-    </button>
-    <a class="navItem" href="index.html">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20 a7 7 0 0 1 14 0"/></svg>
-      <span>Perfil</span>
-    </a>
-  `;
-  nav.querySelector('[data-nav="inicio"]').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-  nav.querySelector('[data-nav="niveles"]').addEventListener('click', () => {
-    const el = document.getElementById('levelsSection');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-  nav.querySelector('[data-nav="progreso"]').addEventListener('click', () => {
-    const el = document.getElementById('progressSection');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-  app.appendChild(nav);
-}
 
 function renderNiveles(app) {
   const totalDone = Object.keys(progress.completed).length;
@@ -2081,7 +2037,6 @@ function renderNiveles(app) {
   });
 
   renderDashboard(app, fc, gs);
-  renderBottomNav(app);
 }
 
 function renderNivel(app, data) {
